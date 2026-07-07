@@ -1,0 +1,22 @@
+{
+  "model_type": "sklearn_logistic_regression",
+  "feature_type": "tfidf",
+  "dataset_type": "mock",
+  "train_results": {
+    "accuracy": 1.0,
+    "model_type": "sklearn_logistic_regression",
+    "feature_type": "tfidf"
+  },
+  "val_results": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  },
+  "test_results": {
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1_score": 1.0
+  }
+}

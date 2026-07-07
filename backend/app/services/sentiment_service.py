@@ -1,19 +1,37 @@
 """
-情感分析服务层
+情感分析服务层（生产环境版）
 
 模块名称: sentiment_service.py
 模块职责: 情感分析模型调用、批量分析、结果保存
 
-注意: 当前为占位实现，需加载实际 BERT 模型
+当前使用 Sklearn 轻量模型（无 GPU/无网络环境）。
+可替换为 BERT 模型（需下载预训练权重）。
 """
 
 import logging
+import os
 from datetime import datetime
 from typing import List, Dict, Optional
 
 from sqlalchemy.orm import Session
 
 from app.models import HotTopic, SentimentResult
+
+# 尝试加载 Sklearn 模型（如果存在）
+_model = None
+
+def _get_model():
+    """懒加载模型"""
+    global _model
+    if _model is None:
+        model_path = os.path.join(os.path.dirname(__file__), '../../model_output/sklearn_model.pkl')
+        if os.path.exists(model_path):
+            from app.ml.sklearn_model import SklearnSentimentModel
+            _model = SklearnSentimentModel(model_path)
+            logging.info(f"Loaded sentiment model from {model_path}")
+        else:
+            logging.warning("Sentiment model not found, using mock predictions")
+    return _model
 
 logger = logging.getLogger(__name__)
 
@@ -23,8 +41,7 @@ class SentimentService:
     
     def __init__(self, db: Session):
         self.db = db
-        # TODO: 加载 BERT 模型
-        # self.model = load_model()
+        self.model = _get_model()
     
     def analyze_text(self, text: str) -> Dict:
         """
@@ -34,10 +51,12 @@ class SentimentService:
             text: 待分析文本
             
         Returns:
-            Dict: 分析结果 {label, confidence, scores}
+            Dict: 分析结果
         """
-        # TODO: 替换为模型推理
-        return self._mock_analyze(text)
+        if self.model:
+            return self.model.predict([text])[0]
+        else:
+            return self._mock_analyze(text)
     
     def analyze_batch(self, texts: List[str]) -> List[Dict]:
         """
@@ -49,8 +68,10 @@ class SentimentService:
         Returns:
             List[Dict]: 分析结果列表
         """
-        # TODO: 批量推理优化
-        return [self._mock_analyze(text) for text in texts]
+        if self.model:
+            return self.model.predict(texts)
+        else:
+            return [self._mock_analyze(text) for text in texts]
     
     def analyze_unprocessed_topics(self, limit: int = 100) -> int:
         """
@@ -74,17 +95,17 @@ class SentimentService:
             try:
                 # 分析标题 + 摘要
                 text = f"{topic.title} {topic.content_summary or ''}"
-                result = self._mock_analyze(text)
+                result = self.analyze_text(text)
                 
                 # 保存结果
                 sentiment = SentimentResult(
                     topic_id=topic.id,
-                    sentiment_label=result["label"],
+                    sentiment_label=result["sentiment_label"],
                     confidence=result["confidence"],
                     positive_score=result["scores"]["positive"],
                     negative_score=result["scores"]["negative"],
                     neutral_score=result["scores"]["neutral"],
-                    model_version="mock-v1",
+                    model_version="sklearn-v1",
                     analyzed_at=datetime.now(),
                 )
                 
@@ -100,9 +121,7 @@ class SentimentService:
     
     def _mock_analyze(self, text: str) -> Dict:
         """
-        模拟情感分析
-        
-        TODO: 替换为 BERT 模型推理
+        模拟情感分析（备用）
         """
         import random
         
