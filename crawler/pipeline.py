@@ -13,8 +13,13 @@
 """
 
 import logging
+import sys
+import os
 from datetime import datetime
 from typing import List, Dict, Optional
+
+# 将项目根目录加入路径
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from sqlalchemy.orm import Session
 
@@ -67,9 +72,18 @@ class CrawlPipeline:
         self.db.commit()
         
         try:
-            # TODO: 调用实际爬虫模块
-            # 当前使用模拟数据，后续接入实际爬虫
-            raw_data = self._mock_crawl(platform_name)
+            # 调用实际爬虫模块
+            if platform_name == "weibo":
+                from crawler.spiders.weibo import fetch_weibo_hot
+                raw_data = fetch_weibo_hot()
+                # 如果真实爬取失败，使用模拟数据
+                if not raw_data:
+                    logger.warning("Real crawl failed, using mock data")
+                    from crawler.spiders.weibo import fetch_weibo_hot_mock
+                    raw_data = fetch_weibo_hot_mock()
+            else:
+                # 其他平台使用模拟数据
+                raw_data = self._mock_crawl(platform_name)
             
             # 数据清洗和标准化
             cleaned_data = self._clean_data(raw_data, platform.id)
