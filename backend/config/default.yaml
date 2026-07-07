@@ -1,0 +1,38 @@
+# 默认配置文件
+# 本地覆盖请创建 local.yaml（已加入 .gitignore）
+
+app:
+  name: "公众情绪智能分析系统"
+  version: "1.0.0"
+  debug: true
+  host: "0.0.0.0"
+  port: 8000
+
+database:
+  url: "sqlite:///./data/sentiment.db"
+  echo: false  # SQLAlchemy 打印 SQL，调试用
+
+crawler:
+  interval_minutes: 60
+  timeout_seconds: 30
+  max_retries: 3
+  platforms:
+    - weibo
+    - douyin
+    - toutiao
+    - baidu
+    - bilibili
+    - zhihu
+
+sentiment:
+  model: "bert-base-chinese"
+  batch_size: 32
+  confidence_threshold: 0.6
+
+logging:
+  level: "INFO"
+  file: "./logs/app.log"
+  format: "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+
+data_retention:
+  days: 30
