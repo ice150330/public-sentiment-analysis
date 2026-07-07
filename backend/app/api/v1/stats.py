@@ -75,7 +75,7 @@ async def get_sentiment_distribution(
             Platform.name,
             SentimentResult.sentiment_label,
             func.count(SentimentResult.id).label("count"),
-        ).join(HotTopic).join(Platform).filter(and_(
+        ).select_from(SentimentResult).join(HotTopic).join(Platform).filter(and_(
             SentimentResult.analyzed_at >= start_time,
             SentimentResult.analyzed_at <= end_time,
         )).group_by(Platform.name, SentimentResult.sentiment_label).all()

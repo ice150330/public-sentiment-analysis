@@ -45,7 +45,7 @@ class HotTopicResponse(HotTopicBase):
 class HotTopicListResponse(BaseModel):
     """热榜列表响应模型"""
     items: List[HotTopicResponse]
-    total: int
+    pagination: dict
 
 
 class HotTopicQueryParams(BaseModel):
