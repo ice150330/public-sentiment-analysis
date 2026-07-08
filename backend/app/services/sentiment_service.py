@@ -10,6 +10,7 @@
 
 import logging
 import os
+import random
 from datetime import datetime
 from typing import List, Dict, Optional
 
@@ -17,8 +18,11 @@ from sqlalchemy.orm import Session
 
 from app.models import HotTopic, SentimentResult
 
+logger = logging.getLogger(__name__)
+
 # 尝试加载 Sklearn 模型（如果存在）
 _model = None
+
 
 def _get_model():
     """懒加载模型"""
@@ -28,12 +32,10 @@ def _get_model():
         if os.path.exists(model_path):
             from app.ml.sklearn_model import SklearnSentimentModel
             _model = SklearnSentimentModel(model_path)
-            logging.info(f"Loaded sentiment model from {model_path}")
+            logger.info(f"Loaded sentiment model from {model_path}")
         else:
-            logging.warning("Sentiment model not found, using mock predictions")
+            logger.warning("Sentiment model not found, using mock predictions")
     return _model
-
-logger = logging.getLogger(__name__)
 
 
 class SentimentService:
@@ -124,19 +126,20 @@ class SentimentService:
         模拟情感分析（备用）
         """
         import random
-        
+
         labels = ["positive", "negative", "neutral"]
         label = random.choice(labels)
-        
+
         if label == "positive":
             scores = {"positive": 0.85, "negative": 0.05, "neutral": 0.10}
         elif label == "negative":
             scores = {"positive": 0.10, "negative": 0.80, "neutral": 0.10}
         else:
             scores = {"positive": 0.20, "negative": 0.15, "neutral": 0.65}
-        
+
         return {
             "label": label,
             "confidence": max(scores.values()),
             "scores": scores,
+            "model_version": "mock-v1",
         }

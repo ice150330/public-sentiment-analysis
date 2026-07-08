@@ -9,5 +9,6 @@ from app.models.platform import Platform
 from app.models.hot_topic import HotTopic
 from app.models.sentiment import SentimentResult
 from app.models.crawl_log import CrawlLog
+from app.models.system_config import SystemConfig
 
-__all__ = ["Platform", "HotTopic", "SentimentResult", "CrawlLog"]
+__all__ = ["Platform", "HotTopic", "SentimentResult", "CrawlLog", "SystemConfig"]
