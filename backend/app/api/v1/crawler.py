@@ -19,6 +19,7 @@ from app.schemas import (
     CrawlerTriggerResponse,
     CrawlLogResponse,
     CrawlerScheduleConfig,
+    PaginatedResponse,
     UnifiedResponse,
 )
 from app.services.crawler_service import CrawlerService
@@ -174,7 +175,7 @@ async def get_crawler_status(
     }
 
 
-@router.get("/logs", response_model=UnifiedResponse[List[CrawlLogResponse]])
+@router.get("/logs", response_model=UnifiedResponse[PaginatedResponse[CrawlLogResponse]])
 async def list_crawl_logs(
     platform: str = None,
     status: str = None,
