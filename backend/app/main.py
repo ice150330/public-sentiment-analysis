@@ -15,7 +15,12 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 
-from app.api.v1 import platforms, topics, sentiment, stats, crawler
+from app.core.database import engine, Base
+from app.api.v1 import platforms, topics, sentiment, stats, crawler, alerts, data_quality, system, topic_ext, model
+
+
+# 应用启动时创建所有表（包括新增表）
+Base.metadata.create_all(bind=engine)
 
 
 # 应用元信息
@@ -156,6 +161,36 @@ app.include_router(
     crawler.router,
     prefix="/api/v1/crawler",
     tags=["爬虫控制"],
+)
+
+app.include_router(
+    alerts.router,
+    prefix="/api/v1/alerts",
+    tags=["预警中心"],
+)
+
+app.include_router(
+    data_quality.router,
+    prefix="/api/v1/data-quality",
+    tags=["数据质量"],
+)
+
+app.include_router(
+    system.router,
+    prefix="/api/v1/system",
+    tags=["系统管理"],
+)
+
+app.include_router(
+    topic_ext.router,
+    prefix="/api/v1/topic-ext",
+    tags=["话题扩展"],
+)
+
+app.include_router(
+    model.router,
+    prefix="/api/v1/model",
+    tags=["模型管理"],
 )
 
 
