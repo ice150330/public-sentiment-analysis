@@ -56,9 +56,12 @@ class SentimentService:
             Dict: 分析结果
         """
         if self.model:
-            return self.model.predict([text])[0]
-        else:
-            return self._mock_analyze(text)
+            try:
+                return self._normalize_result(self.model.predict([text])[0])
+            except Exception as e:
+                logger.warning(f"Sentiment model prediction failed, using mock fallback: {e}")
+
+        return self._normalize_result(self._mock_analyze(text))
     
     def analyze_batch(self, texts: List[str]) -> List[Dict]:
         """
@@ -71,9 +74,12 @@ class SentimentService:
             List[Dict]: 分析结果列表
         """
         if self.model:
-            return self.model.predict(texts)
-        else:
-            return [self._mock_analyze(text) for text in texts]
+            try:
+                return [self._normalize_result(item) for item in self.model.predict(texts)]
+            except Exception as e:
+                logger.warning(f"Sentiment batch prediction failed, using mock fallback: {e}")
+
+        return [self._normalize_result(self._mock_analyze(text)) for text in texts]
     
     def analyze_unprocessed_topics(self, limit: int = 100) -> int:
         """
@@ -100,9 +106,10 @@ class SentimentService:
                 result = self.analyze_text(text)
                 
                 # 保存结果
+                label = result.get("sentiment_label") or result.get("label")
                 sentiment = SentimentResult(
                     topic_id=topic.id,
-                    sentiment_label=result["sentiment_label"],
+                    sentiment_label=label,
                     confidence=result["confidence"],
                     positive_score=result["scores"]["positive"],
                     negative_score=result["scores"]["negative"],
@@ -120,6 +127,14 @@ class SentimentService:
         
         self.db.commit()
         return count
+
+    def _normalize_result(self, result: Dict) -> Dict:
+        """Keep model and fallback outputs compatible with API and DB callers."""
+        if "label" not in result and "sentiment_label" in result:
+            result["label"] = result["sentiment_label"]
+        if "sentiment_label" not in result and "label" in result:
+            result["sentiment_label"] = result["label"]
+        return result
     
     def _mock_analyze(self, text: str) -> Dict:
         """

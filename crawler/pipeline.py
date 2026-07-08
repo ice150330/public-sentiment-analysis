@@ -240,7 +240,10 @@ class CrawlPipeline:
         Returns:
             List[Dict]: 标准化后的数据
         """
+        import hashlib
+
         cleaned = []
+        seen_topic_ids = set()
 
         for item in raw_data:
             try:
@@ -251,9 +254,13 @@ class CrawlPipeline:
 
                 # 生成唯一 topic_id(如果为空)
                 topic_id = str(item.get("id", item.get("rank", ""))).strip()
-                if not topic_id:
+                if not topic_id or topic_id in {"0", "None", "null"}:
                     # 使用标题哈希作为 topic_id
-                    topic_id = str(hash(title) % 1000000)
+                    topic_id = hashlib.sha1(title.encode("utf-8")).hexdigest()[:16]
+
+                if topic_id in seen_topic_ids:
+                    topic_id = hashlib.sha1(f"{title}:{len(seen_topic_ids)}".encode("utf-8")).hexdigest()[:16]
+                seen_topic_ids.add(topic_id)
 
                 # 清洗文本
                 cleaned_item = {
