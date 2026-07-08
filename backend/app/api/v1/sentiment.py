@@ -80,7 +80,7 @@ async def analyze_batch(
     }
 
 
-@router.get("/results", response_model=UnifiedResponse[List[SentimentResultResponse]])
+@router.get("/results", response_model=UnifiedResponse[dict])
 async def list_sentiment_results(
     label: str = None,
     platform: str = None,
@@ -91,7 +91,7 @@ async def list_sentiment_results(
     page_size: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """查询情感分析结果列表"""
+    """查询情感分析结果列表（支持分页）"""
     query = db.query(SentimentResult).join(HotTopic).join(Platform)
 
     if label:
@@ -109,8 +109,28 @@ async def list_sentiment_results(
     results = query.order_by(desc(SentimentResult.analyzed_at))
     results = results.offset((page - 1) * page_size).limit(page_size).all()
 
+    # 组装响应数据
+    items = []
+    for result in results:
+        item = SentimentResultResponse.from_orm(result).dict()
+        item["topic_title"] = result.hot_topic.title if result.hot_topic else None
+        item["platform_name"] = result.hot_topic.platform.display_name if result.hot_topic and result.hot_topic.platform else None
+        items.append(item)
+
+    total_pages = (total + page_size - 1) // page_size
+
     return {
         "code": 200,
-        "data": results,
+        "data": {
+            "items": items,
+            "pagination": {
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "total_pages": total_pages,
+                "has_next": page < total_pages,
+                "has_prev": page > 1,
+            },
+        },
         "message": "success",
     }

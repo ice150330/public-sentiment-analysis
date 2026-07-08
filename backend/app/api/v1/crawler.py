@@ -2,18 +2,18 @@
 爬虫控制 API 路由
 
 模块名称: crawler.py
-模块职责: 手动触发采集、查询状态、查看日志、配置定时任务
+模块职责: 手动触发采集、查询状态、查看日志、配置定时任务、同步状态
 """
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from typing import List
 
 from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import desc
+from sqlalchemy import desc, func
 
 from app.core.database import get_db
-from app.models import CrawlLog, Platform, SystemConfig
+from app.models import CrawlLog, Platform, SystemConfig, HotTopic, SentimentResult
 from app.schemas import (
     CrawlerTriggerRequest,
     CrawlerTriggerResponse,
@@ -81,7 +81,11 @@ async def trigger_crawler(
 async def get_crawler_status(
     db: Session = Depends(get_db),
 ):
-    """查询当前爬虫运行状态"""
+    """
+    查询当前爬虫运行状态
+    
+    扩展：返回各平台最近采集状态、进度、队列信息
+    """
     # 查询最新采集日志
     last_log = db.query(CrawlLog).order_by(desc(CrawlLog.started_at)).first()
     
@@ -98,12 +102,73 @@ async def get_crawler_status(
             "elapsed_seconds": (datetime.now() - last_log.started_at).seconds if last_log.started_at else 0,
         }
     
+    # 各平台最近采集状态
+    platform_status = []
+    platforms = db.query(Platform).filter(Platform.is_active == True).all()
+    
+    for platform in platforms:
+        last_platform_log = db.query(CrawlLog).filter(
+            CrawlLog.platform_id == platform.id
+        ).order_by(desc(CrawlLog.started_at)).first()
+        
+        if last_platform_log:
+            # 计算距上次采集的分钟数
+            minutes_ago = int((datetime.now() - last_platform_log.completed_at).total_seconds() / 60) if last_platform_log.completed_at else None
+            
+            platform_status.append({
+                "platform_id": platform.id,
+                "platform_name": platform.name,
+                "display_name": platform.display_name,
+                "last_crawl": last_platform_log.completed_at.isoformat() if last_platform_log.completed_at else None,
+                "minutes_ago": minutes_ago,
+                "status": last_platform_log.status,
+                "records_count": last_platform_log.records_count,
+                "is_healthy": last_platform_log.status == "success" and (minutes_ago is None or minutes_ago < 120),
+            })
+        else:
+            platform_status.append({
+                "platform_id": platform.id,
+                "platform_name": platform.name,
+                "display_name": platform.display_name,
+                "last_crawl": None,
+                "minutes_ago": None,
+                "status": "never",
+                "records_count": 0,
+                "is_healthy": False,
+            })
+    
+    # 今日采集统计
+    today = datetime.now().date()
+    today_logs = db.query(CrawlLog).filter(
+        func.date(CrawlLog.started_at) == today
+    ).all()
+    
+    today_total = len(today_logs)
+    today_success = sum(1 for log in today_logs if log.status == "success")
+    today_failed = sum(1 for log in today_logs if log.status == "failed")
+    
+    # 下次采集时间
+    next_crawl = None
+    schedule = db.query(SystemConfig).filter(SystemConfig.config_key == "crawler_interval_minutes").first()
+    if schedule and last_log and last_log.completed_at:
+        interval = int(schedule.config_value)
+        next_crawl_time = last_log.completed_at + timedelta(minutes=interval)
+        next_crawl = next_crawl_time.isoformat()
+    
     return {
         "code": 200,
         "data": {
             "is_running": is_running,
             "current_task": current_task,
             "queue_length": 0,  # TODO: 接入任务队列
+            "platform_status": platform_status,
+            "today_summary": {
+                "total": today_total,
+                "success": today_success,
+                "failed": today_failed,
+                "success_rate": round(today_success * 100 / today_total, 2) if today_total > 0 else 0,
+            },
+            "next_crawl": next_crawl,
         },
         "message": "success",
     }
@@ -119,7 +184,7 @@ async def list_crawl_logs(
     page_size: int = Query(20, ge=1, le=100),
     db: Session = Depends(get_db),
 ):
-    """查询采集日志列表"""
+    """查询采集日志列表（支持分页）"""
     query = db.query(CrawlLog).join(Platform)
     
     if platform:
@@ -147,9 +212,21 @@ async def list_crawl_logs(
         )
         items.append(log_data)
     
+    total_pages = (total + page_size - 1) // page_size
+    
     return {
         "code": 200,
-        "data": items,
+        "data": {
+            "items": items,
+            "pagination": {
+                "page": page,
+                "page_size": page_size,
+                "total": total,
+                "total_pages": total_pages,
+                "has_next": page < total_pages,
+                "has_prev": page > 1,
+            },
+        },
         "message": "success",
     }
 
@@ -198,4 +275,60 @@ async def update_schedule_config(
         "code": 200,
         "data": config,
         "message": "Schedule updated successfully",
+    }
+
+
+# ========== 新增：同步状态接口 ==========
+
+@router.get("/sync/status", response_model=UnifiedResponse[dict])
+async def get_sync_status(
+    db: Session = Depends(get_db),
+):
+    """
+    获取系统同步状态（顶栏显示用）
+    
+    返回各模块最新数据更新时间
+    """
+    # 最新热榜采集时间
+    last_hot_topic = db.query(HotTopic).order_by(desc(HotTopic.crawl_time)).first()
+    last_hot_topic_time = last_hot_topic.crawl_time.isoformat() if last_hot_topic else None
+    
+    # 最新情感分析时间
+    last_sentiment = db.query(SentimentResult).order_by(desc(SentimentResult.analyzed_at)).first()
+    last_sentiment_time = last_sentiment.analyzed_at.isoformat() if last_sentiment else None
+    
+    # 最新采集日志时间
+    last_crawl = db.query(CrawlLog).order_by(desc(CrawlLog.completed_at)).first()
+    last_crawl_time = last_crawl.completed_at.isoformat() if last_crawl and last_crawl.completed_at else None
+    
+    # 计算同步延迟（秒）
+    sync_delay = None
+    if last_crawl_time:
+        last_crawl_dt = datetime.fromisoformat(last_crawl_time.replace('Z', '+00:00'))
+        sync_delay = int((datetime.now() - last_crawl_dt.replace(tzinfo=None)).total_seconds())
+    
+    return {
+        "code": 200,
+        "data": {
+            "last_updated": last_crawl_time,
+            "sync_delay_seconds": sync_delay,
+            "modules": {
+                "hot_topics": {
+                    "last_updated": last_hot_topic_time,
+                    "count": db.query(HotTopic).count(),
+                },
+                "sentiment": {
+                    "last_updated": last_sentiment_time,
+                    "count": db.query(SentimentResult).count(),
+                },
+                "crawler": {
+                    "last_updated": last_crawl_time,
+                    "today_count": db.query(CrawlLog).filter(
+                        func.date(CrawlLog.started_at) == datetime.now().date()
+                    ).count(),
+                },
+            },
+            "is_syncing": False,  # TODO: 接入真实同步状态
+        },
+        "message": "success",
     }
