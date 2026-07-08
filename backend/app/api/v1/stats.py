@@ -370,20 +370,29 @@ async def get_platform_distribution(
         func.count(HotTopic.id).label("topic_count"),
         func.avg(HotTopic.heat_score).label("avg_heat"),
         func.max(HotTopic.heat_score).label("max_heat"),
-    ).join(HotTopic).filter(
+    ).select_from(Platform).join(
+        HotTopic,
+        HotTopic.platform_id == Platform.id,
+    ).filter(
         HotTopic.crawl_time >= start_time
-    ).group_by(Platform.id).all()
+    ).group_by(Platform.id, Platform.name, Platform.display_name).all()
     
     # 各平台负面占比
     negative_stats = db.query(
         Platform.name,
         func.count(SentimentResult.id).label("negative_count"),
-    ).join(HotTopic).join(SentimentResult).filter(
+    ).select_from(Platform).join(
+        HotTopic,
+        HotTopic.platform_id == Platform.id,
+    ).join(
+        SentimentResult,
+        SentimentResult.topic_id == HotTopic.id,
+    ).filter(
         and_(
             HotTopic.crawl_time >= start_time,
             SentimentResult.sentiment_label == "negative",
         )
-    ).group_by(Platform.id).all()
+    ).group_by(Platform.id, Platform.name).all()
     
     negative_dict = {p.name: p.negative_count for p in negative_stats}
     
