@@ -16,6 +16,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 
 from app.core.database import engine, Base
+from app.core.scheduler import get_scheduler
 from app.api.v1 import platforms, topics, sentiment, stats, crawler, alerts, data_quality, system, topic_ext, model
 
 
@@ -25,7 +26,7 @@ Base.metadata.create_all(bind=engine)
 
 # 应用元信息
 APP_NAME = "PublicSentimentAnalysis"
-APP_VERSION = "1.0.0"
+APP_VERSION = "1.1.0"
 
 # 创建 FastAPI 应用
 app = FastAPI(
@@ -100,6 +101,23 @@ async def global_exception_handler(request: Request, exc: Exception):
             "timestamp": datetime.now().isoformat(),
         },
     )
+
+
+# 生命周期事件
+@app.on_event("startup")
+async def startup_event():
+    """应用启动时初始化"""
+    # 启动后台任务调度器
+    scheduler = get_scheduler()
+    await scheduler.start()
+
+
+@app.on_event("shutdown")
+async def shutdown_event():
+    """应用关闭时清理"""
+    # 停止后台任务调度器
+    scheduler = get_scheduler()
+    await scheduler.stop()
 
 
 # 健康检查

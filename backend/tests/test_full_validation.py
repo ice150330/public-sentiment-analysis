@@ -115,6 +115,44 @@ def test_model_status():
     assert response.status_code == 200
     print("✅ Low confidence results passed")
 
+def test_alert_engine():
+    """测试预警引擎"""
+    # 先创建一个规则
+    rule_data = {
+        "name": "热度测试规则",
+        "description": "测试热度预警",
+        "condition_type": "heat_spike",
+        "condition_expr": '{"threshold": 0, "time_window_hours": 24}',
+        "severity": "P3",
+        "platform_scope": "all",
+        "cooldown_minutes": 1,
+        "is_active": True,
+    }
+    response = client.post("/api/v1/alerts/rules", json=rule_data)
+    assert response.status_code == 201
+    
+    # 触发评估
+    response = client.post("/api/v1/alerts/evaluate")
+    assert response.status_code == 200
+    data = response.json()
+    assert "triggered" in data["data"]
+    print("✅ Alert engine evaluation passed")
+    
+    # 查询待处理预警摘要
+    response = client.get("/api/v1/alerts/pending-summary")
+    assert response.status_code == 200
+    print("✅ Alert pending summary passed")
+
+
+def test_data_quality_check():
+    """测试数据质量检查"""
+    response = client.post("/api/v1/data-quality/check", params={"run_type": "manual"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["data"]["status"] in ["completed", "failed"]
+    print("✅ Data quality check passed")
+
+
 if __name__ == "__main__":
     print("🚀 Starting full API validation tests...\n")
     
@@ -125,6 +163,8 @@ if __name__ == "__main__":
         test_data_quality()
         test_system()
         test_model_status()
+        test_alert_engine()
+        test_data_quality_check()
         
         print("\n✅ All tests passed!")
     except Exception as e:

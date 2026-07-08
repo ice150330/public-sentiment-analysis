@@ -15,6 +15,7 @@ from sqlalchemy import desc, func, and_
 from app.core.database import get_db
 from app.models import HotTopic, SentimentResult, CrawlLog, DataQualityRun, DataQualityIssue, Platform
 from app.schemas import UnifiedResponse
+from app.services.data_quality_service import DataQualityService
 
 router = APIRouter()
 
@@ -284,4 +285,25 @@ async def get_quality_summary(
             ],
         },
         "message": "success",
+    }
+
+
+@router.post("/check", response_model=UnifiedResponse[dict])
+async def run_quality_check(
+    run_type: str = "manual",
+    db: Session = Depends(get_db),
+):
+    """
+    手动触发数据质量检查
+    
+    Args:
+        run_type: 检查类型 (daily/weekly/manual)
+    """
+    service = DataQualityService(db)
+    result = service.run_quality_check(run_type)
+    
+    return {
+        "code": 200,
+        "data": result,
+        "message": f"Quality check {result['status']}: {result.get('issues_found', 0)} issues found",
     }

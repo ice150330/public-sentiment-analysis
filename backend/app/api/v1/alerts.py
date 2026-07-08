@@ -15,6 +15,7 @@ from sqlalchemy import desc, func, and_
 from app.core.database import get_db
 from app.models import AlertRule, AlertEvent, AlertAction, HotTopic
 from app.schemas import UnifiedResponse
+from app.services.alert_engine import AlertEngine
 
 router = APIRouter()
 
@@ -453,5 +454,43 @@ async def get_alert_summary(
                 "triggered_at": latest_alert.triggered_at.isoformat() if latest_alert else None,
             } if latest_alert else None,
         },
+        "message": "success",
+    }
+
+
+# ========== 预警引擎触发 ==========
+
+@router.post("/evaluate", response_model=UnifiedResponse[dict])
+async def evaluate_alert_rules(
+    rule_ids: list = None,
+    db: Session = Depends(get_db),
+):
+    """
+    手动触发预警规则评估
+    
+    Args:
+        rule_ids: 指定要评估的规则 ID 列表，None 则评估所有启用规则
+    """
+    engine = AlertEngine(db)
+    result = engine.evaluate_all_rules()
+    
+    return {
+        "code": 200,
+        "data": result,
+        "message": f"Evaluation completed: {result['triggered']} triggered, {result['skipped']} skipped, {result['errors']} errors",
+    }
+
+
+@router.get("/pending-summary", response_model=UnifiedResponse[dict])
+async def get_pending_alert_summary(
+    db: Session = Depends(get_db),
+):
+    """获取待处理预警详细摘要"""
+    engine = AlertEngine(db)
+    summary = engine.get_pending_alerts_summary()
+    
+    return {
+        "code": 200,
+        "data": summary,
         "message": "success",
     }
