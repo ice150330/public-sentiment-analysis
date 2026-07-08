@@ -62,7 +62,7 @@ const Sentiment: React.FC = () => {
         getSentimentResults({ page: 1, page_size: 12 }),
         getHeatTrend({ days: 14, aggregation: 'daily' }),
       ]);
-      setStoredResults(resultsRes.data || []);
+      setStoredResults(resultsRes.data?.items || []);
       setHeatTrend(trendRes.data);
       setLastUpdated(new Date().toISOString());
       setError(null);

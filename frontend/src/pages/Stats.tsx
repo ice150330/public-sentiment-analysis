@@ -57,7 +57,7 @@ const Stats: React.FC = () => {
       ]);
       setPlatforms(platformRes.data || []);
       setStatus(statusRes.data);
-      setLogs(logsRes.data || []);
+      setLogs(logsRes.data?.items || []);
       setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {

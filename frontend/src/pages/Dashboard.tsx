@@ -73,7 +73,7 @@ const Dashboard: React.FC = () => {
       setHeatTrend(trendRes.data);
       setCrawlRate(crawlRateRes.data);
       setPlatforms(platformsRes.data || []);
-      setLogs(logsRes.data || []);
+      setLogs(logsRes.data?.items || []);
       setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {

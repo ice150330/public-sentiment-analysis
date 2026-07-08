@@ -363,7 +363,7 @@ export const getSentimentResults = (params?: {
   end_time?: string;
   page?: number;
   page_size?: number;
-}) => api.get<unknown, UnifiedResponse<SentimentResult[]>>('/sentiment/results', { params });
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<SentimentResult>>>('/sentiment/results', { params });
 
 export const getOverview = () =>
   api.get<unknown, UnifiedResponse<Overview>>('/stats/overview');
@@ -396,7 +396,7 @@ export const getCrawlLogs = (params?: {
   end_time?: string;
   page?: number;
   page_size?: number;
-}) => api.get<unknown, UnifiedResponse<CrawlLog[]>>('/crawler/logs', { params });
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<CrawlLog>>>('/crawler/logs', { params });
 
 export const getCrawlerSchedule = () =>
   api.get<unknown, UnifiedResponse<CrawlerScheduleConfig>>('/crawler/schedule');
