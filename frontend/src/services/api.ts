@@ -90,6 +90,146 @@ export interface SentimentResult {
   created_at: string;
 }
 
+export interface AlertRule {
+  id: number;
+  name: string;
+  description?: string | null;
+  condition_type: string;
+  condition_expr: string;
+  severity: 'P1' | 'P2' | 'P3' | 'P4';
+  platform_scope: string;
+  cooldown_minutes: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface AlertEvent {
+  id: number;
+  rule_id: number;
+  rule_name?: string | null;
+  topic_id?: number | null;
+  topic_title?: string | null;
+  severity: string;
+  status: 'pending' | 'acknowledged' | 'resolved' | 'ignored';
+  trigger_payload?: string | null;
+  triggered_at: string;
+  acknowledged_at?: string | null;
+  resolved_at?: string | null;
+}
+
+export interface AlertSummary {
+  pending_count: number;
+  severity_distribution: Record<string, number>;
+  max_severity?: string | null;
+  today_count: number;
+  latest_alert?: {
+    id: number;
+    severity: string;
+    triggered_at: string;
+  } | null;
+}
+
+export interface PlatformMonitoringMatrix {
+  matrix: Array<{
+    platform_id: number;
+    platform_name: string;
+    display_name: string;
+    topic_count: number;
+    avg_heat: number;
+    negative_ratio: number;
+    delay_minutes?: number | null;
+    last_crawl?: string | null;
+    status: string;
+    is_healthy: boolean;
+  }>;
+  total_platforms: number;
+  healthy_count: number;
+}
+
+export interface DataQualityFunnel {
+  date: string;
+  funnel: Array<{
+    stage: string;
+    count: number;
+    loss: number;
+    loss_rate: number;
+  }>;
+  retention_rate: number;
+}
+
+export interface DataQualityCheck {
+  name: string;
+  pass_rate?: number;
+  count?: number;
+  threshold: number;
+  status: 'pass' | 'warning' | 'fail';
+}
+
+export interface SystemHealth {
+  overall_status: string;
+  components: Record<string, { status: string; message: string }>;
+  checked_at: string;
+}
+
+export interface ModelStatus {
+  model: {
+    version?: string | null;
+    model_name?: string | null;
+    device: string;
+    is_loaded: boolean;
+  };
+  recent_analyzed: number;
+  avg_confidence: number;
+  confidence_distribution: {
+    high: number;
+    medium: number;
+    low: number;
+  };
+  pending_review: number;
+  status: string;
+}
+
+export interface ModelVersion {
+  id: number;
+  version: string;
+  model_name: string;
+  task_type?: string | null;
+  device?: string | null;
+  metrics_json?: string | null;
+  config_json?: string | null;
+  is_active: boolean;
+  description?: string | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface PaginatedResponse<T> {
+  items: T[];
+  pagination: Pagination;
+}
+
+export interface TopicSample {
+  id: number;
+  platform_name?: string | null;
+  sample_type?: string | null;
+  content: string;
+  sentiment_label?: string | null;
+  confidence?: number | null;
+  source_url?: string | null;
+  author?: string | null;
+  created_at: string;
+}
+
+export interface TopicRelation {
+  id: number;
+  target_topic_id: number;
+  target_title?: string | null;
+  relation_type?: string | null;
+  score?: number | null;
+  description?: string | null;
+}
+
 export interface SentimentDistributionItem {
   label: string;
   count: number;
@@ -263,6 +403,133 @@ export const getCrawlerSchedule = () =>
 
 export const updateCrawlerSchedule = (config: CrawlerScheduleConfig) =>
   api.put<unknown, UnifiedResponse<CrawlerScheduleConfig>>('/crawler/schedule', config);
+
+// ========== 预警中心 ==========
+
+export const getAlertRules = (params?: {
+  is_active?: boolean;
+  severity?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<AlertRule>>>('/alerts/rules', { params });
+
+export const getAlertRule = (id: number) =>
+  api.get<unknown, UnifiedResponse<AlertRule>>(`/alerts/rules/${id}`);
+
+export const createAlertRule = (data: Partial<AlertRule>) =>
+  api.post<unknown, UnifiedResponse<{ id: number; name: string }>>('/alerts/rules', data);
+
+export const updateAlertRule = (id: number, data: Partial<AlertRule>) =>
+  api.put<unknown, UnifiedResponse<{ id: number; name: string }>>(`/alerts/rules/${id}`, data);
+
+export const patchAlertRule = (id: number, data: Partial<AlertRule>) =>
+  api.patch<unknown, UnifiedResponse<{ id: number; is_active: boolean }>>(`/alerts/rules/${id}`, data);
+
+export const deleteAlertRule = (id: number) =>
+  api.delete<unknown, UnifiedResponse<{ id: number }>>(`/alerts/rules/${id}`);
+
+export const getAlertEvents = (params?: {
+  status?: string;
+  severity?: string;
+  rule_id?: number;
+  start_time?: string;
+  end_time?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<AlertEvent>>>('/alerts/events', { params });
+
+export const getAlertEvent = (id: number) =>
+  api.get<unknown, UnifiedResponse<AlertEvent>>(`/alerts/events/${id}`);
+
+export const getAlertSummary = () =>
+  api.get<unknown, UnifiedResponse<AlertSummary>>('/alerts/summary');
+
+export const acknowledgeAlert = (id: number, note?: string) =>
+  api.post<unknown, UnifiedResponse<{ id: number; status: string }>>(`/alerts/events/${id}/ack`, { note });
+
+export const resolveAlert = (id: number, note?: string) =>
+  api.post<unknown, UnifiedResponse<{ id: number; status: string }>>(`/alerts/events/${id}/resolve`, { note });
+
+export const ignoreAlert = (id: number, note?: string) =>
+  api.post<unknown, UnifiedResponse<{ id: number; status: string }>>(`/alerts/events/${id}/ignore`, { note });
+
+// ========== 平台监测 ==========
+
+export const getPlatformMonitoringMatrix = () =>
+  api.get<unknown, UnifiedResponse<PlatformMonitoringMatrix>>('/platforms/monitoring/matrix');
+
+export const getDataFreshness = () =>
+  api.get<unknown, UnifiedResponse<Record<string, unknown>>>('/platforms/monitoring/freshness');
+
+// ========== 数据质量 ==========
+
+export const getDataQualityFunnel = (date?: string) =>
+  api.get<unknown, UnifiedResponse<DataQualityFunnel>>('/data-quality/funnel', { params: { date } });
+
+export const getDataQualityChecks = () =>
+  api.get<unknown, UnifiedResponse<{ checks: DataQualityCheck[]; overall_score: number }>>('/data-quality/checks');
+
+export const getDataQualityIssues = (params?: {
+  issue_type?: string;
+  severity?: string;
+  status?: string;
+  platform?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/data-quality/issues', { params });
+
+export const getDataQualitySummary = () =>
+  api.get<unknown, UnifiedResponse<Record<string, unknown>>>('/data-quality/summary');
+
+// ========== 系统管理 ==========
+
+export const getSystemHealth = () =>
+  api.get<unknown, UnifiedResponse<SystemHealth>>('/system/health');
+
+export const getSystemLogs = (params?: {
+  level?: string;
+  module?: string;
+  start_time?: string;
+  end_time?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/system/logs', { params });
+
+export const getAuditLogs = (params?: {
+  operator?: string;
+  action?: string;
+  target_type?: string;
+  start_time?: string;
+  end_time?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/system/audit-logs', { params });
+
+// ========== 模型管理 ==========
+
+export const getModelStatus = () =>
+  api.get<unknown, UnifiedResponse<ModelStatus>>('/model/status');
+
+export const getModelVersions = (params?: { is_active?: boolean }) =>
+  api.get<unknown, UnifiedResponse<{ items: ModelVersion[]; total: number }>>('/model/versions', { params });
+
+export const getLowConfidenceResults = (params?: {
+  threshold?: number;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/model/low-confidence', { params });
+
+// ========== 话题扩展 ==========
+
+export const getTopicSamples = (topicId: number, params?: {
+  platform?: string;
+  sample_type?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<{ topic_id: number; topic_title: string; items: TopicSample[]; pagination: Pagination }>>(`/topic-ext/${topicId}/samples`, { params });
+
+export const getRelatedTopics = (topicId: number, params?: { relation_type?: string }) =>
+  api.get<unknown, UnifiedResponse<{ topic_id: number; topic_title: string; relations: TopicRelation[] }>>(`/topic-ext/${topicId}/related`, { params });
 
 export const getErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
