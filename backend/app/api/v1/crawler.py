@@ -8,12 +8,12 @@
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
 from app.core.database import get_db
-from app.models import CrawlLog, Platform
+from app.models import CrawlLog, Platform, SystemConfig
 from app.schemas import (
     CrawlerTriggerRequest,
     CrawlerTriggerResponse,
@@ -159,9 +159,6 @@ async def get_schedule_config(
     db: Session = Depends(get_db),
 ):
     """查询定时采集配置"""
-    # 从系统配置表读取
-    from app.models import SystemConfig  # 避免循环导入
-    
     interval = db.query(SystemConfig).filter(SystemConfig.config_key == "crawler_interval_minutes").first()
     enabled = db.query(SystemConfig).filter(SystemConfig.config_key == "crawler_enabled").first()
     
@@ -181,9 +178,6 @@ async def update_schedule_config(
     db: Session = Depends(get_db),
 ):
     """修改定时采集配置"""
-    # 更新系统配置表
-    from app.models import SystemConfig  # 避免循环导入
-    
     interval = db.query(SystemConfig).filter(SystemConfig.config_key == "crawler_interval_minutes").first()
     if interval:
         interval.config_value = str(config.interval_minutes)

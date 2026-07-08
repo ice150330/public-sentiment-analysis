@@ -3,16 +3,14 @@
 
 模块名称: sentiment.py
 模块职责: 情感分析、结果查询接口
-
-注意: 当前为占位实现，情感分析模型加载后需替换实际分析逻辑
 """
 
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, func
+from sqlalchemy import desc
 
 from app.core.database import get_db
 from app.models import HotTopic, SentimentResult, Platform
@@ -24,33 +22,9 @@ from app.schemas import (
     SentimentQueryParams,
     UnifiedResponse,
 )
+from app.services.sentiment_service import SentimentService
 
 router = APIRouter()
-
-
-# 模拟情感分析（实际实现需加载 BERT 模型）
-def mock_analyze(text: str) -> dict:
-    """
-    模拟情感分析，返回随机结果
-    
-    TODO: 替换为实际 BERT 模型推理
-    """
-    import random
-    labels = ["positive", "negative", "neutral"]
-    label = random.choice(labels)
-    
-    if label == "positive":
-        scores = {"positive": 0.85, "negative": 0.05, "neutral": 0.10}
-    elif label == "negative":
-        scores = {"positive": 0.10, "negative": 0.80, "neutral": 0.10}
-    else:
-        scores = {"positive": 0.20, "negative": 0.15, "neutral": 0.65}
-    
-    return {
-        "label": label,
-        "confidence": max(scores.values()),
-        "scores": scores,
-    }
 
 
 @router.post("/analyze", response_model=UnifiedResponse[SentimentAnalyzeResponse])
@@ -59,12 +33,13 @@ async def analyze_text(
 ):
     """
     分析单条文本的情感倾向
-    
+
     Args:
         request: 包含待分析文本
     """
-    result = mock_analyze(request.text)
-    
+    service = SentimentService(db=None)  # 纯文本分析不需要数据库
+    result = service.analyze_text(request.text)
+
     return {
         "code": 200,
         "data": {
@@ -72,7 +47,7 @@ async def analyze_text(
             "sentiment_label": result["label"],
             "confidence": result["confidence"],
             "scores": result["scores"],
-            "model_version": "mock-v1",
+            "model_version": result.get("model_version", "mock-v1"),
             "analyzed_at": datetime.now(),
         },
         "message": "success",
@@ -84,21 +59,23 @@ async def analyze_batch(
     request: SentimentAnalyzeBatchRequest,
 ):
     """批量分析文本情感"""
-    results = []
-    for text in request.texts:
-        result = mock_analyze(text)
-        results.append({
+    service = SentimentService(db=None)
+    results = service.analyze_batch(request.texts)
+
+    data = []
+    for text, result in zip(request.texts, results):
+        data.append({
             "text": text,
             "sentiment_label": result["label"],
             "confidence": result["confidence"],
             "scores": result["scores"],
-            "model_version": "mock-v1",
+            "model_version": result.get("model_version", "mock-v1"),
             "analyzed_at": datetime.now(),
         })
-    
+
     return {
         "code": 200,
-        "data": results,
+        "data": data,
         "message": "success",
     }
 
@@ -116,7 +93,7 @@ async def list_sentiment_results(
 ):
     """查询情感分析结果列表"""
     query = db.query(SentimentResult).join(HotTopic).join(Platform)
-    
+
     if label:
         query = query.filter(SentimentResult.sentiment_label == label)
     if platform:
@@ -127,11 +104,11 @@ async def list_sentiment_results(
         query = query.filter(SentimentResult.analyzed_at >= start_time)
     if end_time:
         query = query.filter(SentimentResult.analyzed_at <= end_time)
-    
+
     total = query.count()
     results = query.order_by(desc(SentimentResult.analyzed_at))
     results = results.offset((page - 1) * page_size).limit(page_size).all()
-    
+
     return {
         "code": 200,
         "data": results,

@@ -9,10 +9,10 @@ import logging
 from datetime import datetime, timedelta
 from typing import Dict, List, Optional
 
-from sqlalchemy.orm import Session
 from sqlalchemy import func, desc, and_
+from sqlalchemy.orm import Session
 
-from app.models import HotTopic, SentimentResult, CrawlLog, Platform
+from app.models import CrawlLog, HotTopic, Platform, SentimentResult
 
 logger = logging.getLogger(__name__)
 
