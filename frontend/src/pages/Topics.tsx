@@ -1,164 +1,454 @@
-import React, { useState, useEffect } from 'react';
-import { Card, Table, Tag, Input, DatePicker, Select, Spin, Alert } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
-import dayjs from 'dayjs';
-import { getTopics, getPlatforms, searchTopics } from '../services/api';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Button, Input, Pagination, Select } from 'antd';
+import {
+  BranchesOutlined,
+  FireOutlined,
+  PartitionOutlined,
+  ProfileOutlined,
+  ReloadOutlined,
+} from '@ant-design/icons';
+import ReactECharts from 'echarts-for-react';
+import {
+  getErrorMessage,
+  getPlatforms,
+  getTopics,
+  HotTopic,
+  Pagination as PageInfo,
+  Platform,
+} from '../services/api';
+import {
+  DataState,
+  formatDateTime,
+  formatNumber,
+  ModuleFrame,
+  Panel,
+  PlatformBadge,
+  SectionNotice,
+  SubView,
+} from '../components/DesignSystem';
 
-const { RangePicker } = DatePicker;
-
-interface Topic {
-  id: number;
-  title: string;
-  content_summary: string;
-  heat_score: number;
-  platform: string;
-  category: string;
-  crawl_time: string;
-}
-
-interface Platform {
-  id: number;
-  name: string;
-  display_name: string;
-}
+const views: SubView[] = [
+  { key: 'list', label: '热榜列表', icon: <FireOutlined /> },
+  { key: 'clusters', label: '聚类主题', icon: <PartitionOutlined /> },
+  { key: 'spread', label: '传播路径', icon: <BranchesOutlined /> },
+  { key: 'detail', label: '话题详情', icon: <ProfileOutlined /> },
+];
 
 const Topics: React.FC = () => {
-  const [topics, setTopics] = useState<Topic[]>([]);
+  const [activeView, setActiveView] = useState('list');
+  const [topics, setTopics] = useState<HotTopic[]>([]);
   const [platforms, setPlatforms] = useState<Platform[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [pagination, setPagination] = useState<PageInfo | null>(null);
+  const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
+  const [keyword, setKeyword] = useState('');
+  const [platform, setPlatform] = useState<string | undefined>();
+  const [sortBy, setSortBy] = useState('heat_score');
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [searchKeyword, setSearchKeyword] = useState('');
-  const [selectedPlatform, setSelectedPlatform] = useState<number | undefined>();
-  const [dateRange, setDateRange] = useState<[dayjs.Dayjs, dayjs.Dayjs] | null>(null);
+  const [lastUpdated, setLastUpdated] = useState<string | null>(null);
+
+  const selectedTopic = topics.find((topic) => topic.id === selectedTopicId) || null;
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [platformRes, topicRes] = await Promise.all([
+        getPlatforms(),
+        getTopics({
+          keyword: keyword.trim() || undefined,
+          platform,
+          sort_by: sortBy,
+          sort_order: 'desc',
+          page,
+          page_size: 12,
+        }),
+      ]);
+
+      const items = topicRes.data.items || [];
+      setPlatforms(platformRes.data || []);
+      setTopics(items);
+      setPagination(topicRes.data.pagination);
+      setSelectedTopicId((current) => {
+        if (current && items.some((item) => item.id === current)) return current;
+        return items[0]?.id ?? null;
+      });
+      setLastUpdated(new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, [keyword, page, platform, sortBy]);
 
   useEffect(() => {
-    fetchPlatforms();
-    fetchTopics();
-  }, []);
+    fetchData();
+  }, [fetchData]);
 
-  const fetchPlatforms = async () => {
-    try {
-      const res = await getPlatforms();
-      setPlatforms(res.data || []);
-    } catch (err) {
-      console.error('Failed to fetch platforms:', err);
-    }
+  const clusters = useMemo(() => {
+    const map = new Map<string, { name: string; count: number; heat: number }>();
+    topics.forEach((topic) => {
+      const key = topic.category || '未分类';
+      const current = map.get(key) || { name: key, count: 0, heat: 0 };
+      current.count += 1;
+      current.heat += topic.heat_score || 0;
+      map.set(key, current);
+    });
+    return Array.from(map.values()).sort((a, b) => b.heat - a.heat);
+  }, [topics]);
+
+  const platformStats = useMemo(() => {
+    const map = new Map<string, { name: string; count: number; heat: number }>();
+    topics.forEach((topic) => {
+      const key = topic.platform_name || String(topic.platform_id);
+      const current = map.get(key) || { name: key, count: 0, heat: 0 };
+      current.count += 1;
+      current.heat += topic.heat_score || 0;
+      map.set(key, current);
+    });
+    return Array.from(map.values()).sort((a, b) => b.heat - a.heat);
+  }, [topics]);
+
+  const clusterChart = useMemo(() => {
+    if (clusters.length === 0) return null;
+    return {
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+      grid: { left: 92, right: 18, top: 16, bottom: 28 },
+      xAxis: { type: 'value', splitLine: { lineStyle: { color: '#E7EEF7' } } },
+      yAxis: { type: 'category', data: clusters.map((item) => item.name), axisLabel: { color: '#64748B' } },
+      series: [
+        {
+          type: 'bar',
+          barWidth: 12,
+          itemStyle: { color: '#2563EB', borderRadius: 999 },
+          data: clusters.map((item) => item.heat),
+        },
+      ],
+    };
+  }, [clusters]);
+
+  const spreadChart = useMemo(() => {
+    if (platformStats.length === 0) return null;
+    return {
+      tooltip: { trigger: 'item' },
+      color: ['#F43F5E', '#111827', '#EF4444', '#2563EB', '#0EA5E9', '#3B82F6'],
+      series: [
+        {
+          type: 'pie',
+          radius: ['44%', '72%'],
+          itemStyle: { borderRadius: 8, borderColor: '#fff', borderWidth: 2 },
+          data: platformStats.map((item) => ({ name: item.name, value: item.count })),
+        },
+      ],
+    };
+  }, [platformStats]);
+
+  const resetFilters = () => {
+    setKeyword('');
+    setPlatform(undefined);
+    setSortBy('heat_score');
+    setPage(1);
   };
 
-  const fetchTopics = async () => {
-    try {
-      setLoading(true);
-      const params: any = {};
-      if (selectedPlatform) params.platform_id = selectedPlatform;
-      if (dateRange) {
-        params.start_time = dateRange[0].format('YYYY-MM-DD HH:mm:ss');
-        params.end_time = dateRange[1].format('YYYY-MM-DD HH:mm:ss');
-      }
-      params.limit = 50;
-
-      const res = await getTopics(params);
-      setTopics(res.data || []);
-      setError(null);
-    } catch (err: any) {
-      console.error('Failed to fetch topics:', err);
-      setError('加载热榜数据失败');
-    } finally {
-      setLoading(false);
+  const renderContent = () => {
+    if (activeView === 'clusters') {
+      return (
+        <DataState loading={loading} error={error} empty={topics.length === 0} emptyTitle="暂无可聚类话题">
+          <div className="psa-grid two-one">
+            <Panel title="聚类主题" eyebrow="按真实分类字段聚合">
+              <DataState empty={!clusterChart} emptyTitle="暂无分类聚合">
+                <ReactECharts option={clusterChart || {}} className="psa-chart large" />
+              </DataState>
+            </Panel>
+            <Panel title="主题簇列表">
+              <div className="psa-list">
+                {clusters.map((cluster) => (
+                  <div className="psa-row" key={cluster.name}>
+                    <div>
+                      <p className="psa-row-title">{cluster.name}</p>
+                      <div className="psa-row-meta">
+                        <span>{cluster.count} 个话题</span>
+                        <span>热度 {formatNumber(cluster.heat)}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </div>
+        </DataState>
+      );
     }
+
+    if (activeView === 'spread') {
+      return (
+        <DataState loading={loading} error={error} empty={topics.length === 0} emptyTitle="暂无传播数据">
+          <div className="psa-grid two-one">
+            <Panel title="平台传播占比">
+              <DataState empty={!spreadChart} emptyTitle="暂无平台占比">
+                <ReactECharts option={spreadChart || {}} className="psa-chart large" />
+              </DataState>
+            </Panel>
+            <Panel title="传播来源">
+              <div className="psa-list">
+                {platformStats.map((item) => (
+                  <div className="psa-row" key={item.name}>
+                    <div>
+                      <p className="psa-row-title">{item.name}</p>
+                      <div className="psa-row-meta">
+                        <span>{item.count} 条话题</span>
+                        <span>累计热度 {formatNumber(item.heat)}</span>
+                      </div>
+                    </div>
+                    <PlatformBadge name={item.name} />
+                  </div>
+                ))}
+              </div>
+            </Panel>
+          </div>
+        </DataState>
+      );
+    }
+
+    if (activeView === 'detail') {
+      return <TopicDetail topic={selectedTopic} loading={loading} error={error} />;
+    }
+
+    return (
+      <>
+        <FilterBar
+          keyword={keyword}
+          platform={platform}
+          sortBy={sortBy}
+          platforms={platforms}
+          onKeyword={setKeyword}
+          onPlatform={(value) => {
+            setPlatform(value);
+            setPage(1);
+          }}
+          onSort={(value) => {
+            setSortBy(value);
+            setPage(1);
+          }}
+          onReset={resetFilters}
+          onRefresh={fetchData}
+          loading={loading}
+        />
+        <DataState loading={loading} error={error} empty={topics.length === 0} emptyTitle="暂无热榜数据">
+          <div className="psa-grid main-side" style={{ marginTop: 16 }}>
+            <Panel title="热榜列表">
+              <div className="psa-list">
+                {topics.map((topic, index) => (
+                  <button
+                    type="button"
+                    className="psa-row"
+                    key={topic.id}
+                    onClick={() => {
+                      setSelectedTopicId(topic.id);
+                      setActiveView('detail');
+                    }}
+                  >
+                    <div>
+                      <span className="psa-heat-rank">#{(pagination?.page || 1) * 12 - 11 + index}</span>
+                      <p className="psa-row-title">{topic.title}</p>
+                      <div className="psa-row-meta">
+                        <PlatformBadge name={topic.platform_name} />
+                        <span>{topic.category || '未分类'}</span>
+                        <span>{formatDateTime(topic.crawl_time)}</span>
+                      </div>
+                    </div>
+                    <strong>{formatNumber(topic.heat_score)}</strong>
+                  </button>
+                ))}
+              </div>
+              {pagination && (
+                <Pagination
+                  size="small"
+                  current={pagination.page}
+                  pageSize={pagination.page_size}
+                  total={pagination.total}
+                  onChange={setPage}
+                  style={{ marginTop: 14 }}
+                />
+              )}
+            </Panel>
+            <div className="psa-grid">
+              <Panel title="平台洞察">
+                <DataState empty={platformStats.length === 0} emptyTitle="暂无平台洞察">
+                  <div className="psa-list">
+                    {platformStats.slice(0, 6).map((item) => (
+                      <div className="psa-score-line" key={item.name}>
+                        <span>{item.name}</span>
+                        <div className="psa-bar-track">
+                          <div
+                            className="psa-bar-fill"
+                            style={{
+                              width: `${Math.min(100, Math.round((item.count / Math.max(1, topics.length)) * 100))}%`,
+                            }}
+                          />
+                        </div>
+                        <strong>{item.count}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </DataState>
+              </Panel>
+              <Panel title="当前话题">
+                <TopicDetailCompact topic={selectedTopic} />
+              </Panel>
+            </div>
+          </div>
+        </DataState>
+      </>
+    );
   };
-
-  const handleSearch = async () => {
-    if (!searchKeyword.trim()) {
-      fetchTopics();
-      return;
-    }
-    try {
-      setLoading(true);
-      const res = await searchTopics(searchKeyword);
-      setTopics(res.data || []);
-    } catch (err) {
-      console.error('Search failed:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const columns = [
-    {
-      title: '标题',
-      dataIndex: 'title',
-      key: 'title',
-      render: (text: string) => <strong>{text}</strong>,
-    },
-    {
-      title: '平台',
-      dataIndex: 'platform',
-      key: 'platform',
-      render: (platform: string) => <Tag color="blue">{platform}</Tag>,
-    },
-    {
-      title: '分类',
-      dataIndex: 'category',
-      key: 'category',
-    },
-    {
-      title: '热度',
-      dataIndex: 'heat_score',
-      key: 'heat_score',
-      render: (score: number) => <Tag color="red">{score}</Tag>,
-    },
-    {
-      title: '采集时间',
-      dataIndex: 'crawl_time',
-      key: 'crawl_time',
-    },
-  ];
 
   return (
-    <div>
-      <h1 style={{ marginBottom: 24 }}>热榜数据</h1>
+    <ModuleFrame
+      moduleLabel="热点"
+      activeView={activeView}
+      views={views}
+      onViewChange={setActiveView}
+      searchValue={keyword}
+      onSearchChange={(value) => {
+        setKeyword(value);
+        setPage(1);
+      }}
+      onRefresh={fetchData}
+      refreshing={loading}
+      lastUpdated={lastUpdated}
+    >
+      {renderContent()}
+    </ModuleFrame>
+  );
+};
 
-      <Card style={{ marginBottom: 24 }}>
-        <div style={{ display: 'flex', gap: 16 }}>
-          <Input
-            placeholder="搜索关键词"
-            value={searchKeyword}
-            onChange={(e) => setSearchKeyword(e.target.value)}
-            onPressEnter={handleSearch}
-            prefix={<SearchOutlined />}
-            style={{ width: 300 }}
-          />
-          <Select
-            placeholder="选择平台"
-            allowClear
-            style={{ width: 200 }}
-            value={selectedPlatform}
-            onChange={(value) => setSelectedPlatform(value)}
-            options={platforms.map((p) => ({
-              value: p.id,
-              label: p.display_name,
-            }))}
-          />
-          <RangePicker
-            showTime
-            value={dateRange}
-            onChange={(dates) => setDateRange(dates as [dayjs.Dayjs, dayjs.Dayjs])}
-          />
-          <button onClick={fetchTopics}>刷新</button>
+const FilterBar: React.FC<{
+  keyword: string;
+  platform?: string;
+  sortBy: string;
+  platforms: Platform[];
+  loading: boolean;
+  onKeyword: (value: string) => void;
+  onPlatform: (value?: string) => void;
+  onSort: (value: string) => void;
+  onReset: () => void;
+  onRefresh: () => void;
+}> = ({ keyword, platform, sortBy, platforms, loading, onKeyword, onPlatform, onSort, onReset, onRefresh }) => (
+  <div className="psa-filter-bar">
+    <Input
+      allowClear
+      value={keyword}
+      onChange={(event) => onKeyword(event.target.value)}
+      placeholder="搜索话题标题"
+      style={{ width: 240 }}
+    />
+    <Select
+      allowClear
+      value={platform}
+      onChange={onPlatform}
+      placeholder="全部平台"
+      style={{ width: 160 }}
+      options={platforms.map((item) => ({ value: item.name, label: item.display_name }))}
+    />
+    <Select
+      value={sortBy}
+      onChange={onSort}
+      style={{ width: 160 }}
+      options={[
+        { value: 'heat_score', label: '按热度' },
+        { value: 'crawl_time', label: '按采集时间' },
+        { value: 'created_at', label: '按入库时间' },
+      ]}
+    />
+    <Button onClick={onReset}>重置</Button>
+    <Button icon={<ReloadOutlined />} onClick={onRefresh} loading={loading}>
+      刷新
+    </Button>
+  </div>
+);
+
+const TopicDetailCompact: React.FC<{ topic: HotTopic | null }> = ({ topic }) => {
+  if (!topic) {
+    return (
+      <DataState empty emptyTitle="未选择话题" emptyDescription="从左侧真实热榜列表选择话题后显示详情。">
+        <div />
+      </DataState>
+    );
+  }
+
+  return (
+    <div className="psa-detail-list">
+      <div>
+        <p className="psa-row-title">{topic.title}</p>
+        <div className="psa-row-meta">
+          <PlatformBadge name={topic.platform_name} />
+          <span>{topic.category || '未分类'}</span>
         </div>
-      </Card>
-
-      {error && <Alert message={error} type="error" showIcon style={{ marginBottom: 16 }} />}
-
-      <Table
-        columns={columns}
-        dataSource={topics}
-        rowKey="id"
-        loading={loading}
-        pagination={{ pageSize: 10 }}
-      />
+      </div>
+      <div className="psa-detail-item">
+        <span>热度</span>
+        <strong>{formatNumber(topic.heat_score)}</strong>
+      </div>
+      <div className="psa-detail-item">
+        <span>采集时间</span>
+        <strong>{formatDateTime(topic.crawl_time)}</strong>
+      </div>
     </div>
   );
 };
+
+const TopicDetail: React.FC<{ topic: HotTopic | null; loading: boolean; error: string | null }> = ({
+  topic,
+  loading,
+  error,
+}) => (
+  <DataState loading={loading} error={error} empty={!topic} emptyTitle="暂无话题详情">
+    <div className="psa-grid one-two">
+      <Panel title="话题详情" className="tall">
+        {topic && (
+          <div className="psa-detail-list">
+            <h2 style={{ margin: 0 }}>{topic.title}</h2>
+            <div className="psa-row-meta">
+              <PlatformBadge name={topic.platform_name} />
+              <span>{topic.category || '未分类'}</span>
+              <span>{formatDateTime(topic.crawl_time)}</span>
+            </div>
+            <div className="psa-detail-item">
+              <span>平台话题 ID</span>
+              <strong>{topic.topic_id}</strong>
+            </div>
+            <div className="psa-detail-item">
+              <span>热度</span>
+              <strong>{formatNumber(topic.heat_score)}</strong>
+            </div>
+            <div className="psa-detail-item">
+              <span>链接</span>
+              <strong>{topic.url || '暂无'}</strong>
+            </div>
+            <div className="psa-detail-item">
+              <span>摘要</span>
+              <strong>{topic.content_summary || '暂无摘要'}</strong>
+            </div>
+          </div>
+        )}
+      </Panel>
+      <Panel title="扩展信息">
+        <SectionNotice
+          title="详情来源说明"
+          description="当前详情完全来自 /topics 接口返回字段；评论、扩散链路和关键词接口尚未在后端提供。"
+        />
+        <DataState
+          empty={!topic?.raw_data || Object.keys(topic.raw_data).length === 0}
+          emptyTitle="暂无原始扩展字段"
+          emptyDescription="后端返回 raw_data 后会在此展示可用字段。"
+        >
+          <pre className="psa-page-note">{JSON.stringify(topic?.raw_data, null, 2)}</pre>
+        </DataState>
+      </Panel>
+    </div>
+  </DataState>
+);
 
 export default Topics;
