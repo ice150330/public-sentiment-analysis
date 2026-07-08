@@ -153,6 +153,86 @@ def test_data_quality_check():
     print("✅ Data quality check passed")
 
 
+def test_topic_clusters():
+    """测试主题聚类"""
+    response = client.post("/api/v1/topic-clusters/run", params={"algorithm": "kmeans", "n_clusters": 3, "time_window_hours": 24})
+    assert response.status_code == 200
+    data = response.json()
+    assert "clusters" in data["data"]
+    print("✅ Topic clustering passed")
+    
+    # 查询聚类列表
+    response = client.get("/api/v1/topic-clusters")
+    assert response.status_code == 200
+    print("✅ Topic clusters list passed")
+
+
+def test_propagation_paths():
+    """测试传播路径分析"""
+    # 先获取一个话题ID
+    response = client.get("/api/v1/topics")
+    assert response.status_code == 200
+    data = response.json()
+    
+    if data["data"]["items"]:
+        topic_id = data["data"]["items"][0]["id"]
+        
+        # 分析传播路径
+        response = client.post(f"/api/v1/propagation-paths/analyze/{topic_id}")
+        assert response.status_code == 200
+        print("✅ Propagation analysis passed")
+        
+        # 查询传播路径列表
+        response = client.get("/api/v1/propagation-paths")
+        assert response.status_code == 200
+        print("✅ Propagation paths list passed")
+    else:
+        print("⚠️ Skipping propagation test (no topics available)")
+
+
+def test_trend_predictions():
+    """测试趋势预测"""
+    response = client.post("/api/v1/trend-predictions/predict", params={"target_type": "sentiment", "model_type": "ema", "horizon_hours": 24})
+    assert response.status_code == 200
+    data = response.json()
+    
+    # 可能因为没有历史数据返回 400
+    if data["code"] == 400:
+        print("⚠️ Skipping trend prediction test (no historical data)")
+        return
+    
+    assert "prediction_id" in data["data"]
+    print("✅ Trend prediction creation passed")
+    
+    # 查询预测列表
+    response = client.get("/api/v1/trend-predictions")
+    assert response.status_code == 200
+    print("✅ Trend predictions list passed")
+
+
+def test_model_explanations():
+    """测试模型解释"""
+    # 先获取一个情感分析结果
+    response = client.get("/api/v1/sentiment/results")
+    assert response.status_code == 200
+    data = response.json()
+    
+    if data["data"]["items"]:
+        sentiment_id = data["data"]["items"][0]["id"]
+        
+        # 生成解释
+        response = client.post(f"/api/v1/model-explanations/explain/{sentiment_id}", params={"method": "attention"})
+        assert response.status_code == 200
+        print("✅ Model explanation generation passed")
+        
+        # 查询解释列表
+        response = client.get("/api/v1/model-explanations")
+        assert response.status_code == 200
+        print("✅ Model explanations list passed")
+    else:
+        print("⚠️ Skipping explanation test (no sentiment results available)")
+
+
 if __name__ == "__main__":
     print("🚀 Starting full API validation tests...\n")
     
@@ -165,6 +245,10 @@ if __name__ == "__main__":
         test_model_status()
         test_alert_engine()
         test_data_quality_check()
+        test_topic_clusters()
+        test_propagation_paths()
+        test_trend_predictions()
+        test_model_explanations()
         
         print("\n✅ All tests passed!")
     except Exception as e:

@@ -18,6 +18,7 @@ from fastapi.exceptions import RequestValidationError
 from app.core.database import engine, Base
 from app.core.scheduler import get_scheduler
 from app.api.v1 import platforms, topics, sentiment, stats, crawler, alerts, data_quality, system, topic_ext, model
+from app.api.v1 import topic_clusters, propagation_paths, trend_predictions, model_explanations
 
 
 # 应用启动时创建所有表（包括新增表）
@@ -209,6 +210,30 @@ app.include_router(
     model.router,
     prefix="/api/v1/model",
     tags=["模型管理"],
+)
+
+app.include_router(
+    topic_clusters.router,
+    prefix="/api/v1/topic-clusters",
+    tags=["主题聚类"],
+)
+
+app.include_router(
+    propagation_paths.router,
+    prefix="/api/v1/propagation-paths",
+    tags=["传播路径"],
+)
+
+app.include_router(
+    trend_predictions.router,
+    prefix="/api/v1/trend-predictions",
+    tags=["趋势预测"],
+)
+
+app.include_router(
+    model_explanations.router,
+    prefix="/api/v1/model-explanations",
+    tags=["模型解释"],
 )
 
 

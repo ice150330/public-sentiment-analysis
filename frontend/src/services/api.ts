@@ -531,6 +531,77 @@ export const getTopicSamples = (topicId: number, params?: {
 export const getRelatedTopics = (topicId: number, params?: { relation_type?: string }) =>
   api.get<unknown, UnifiedResponse<{ topic_id: number; topic_title: string; relations: TopicRelation[] }>>(`/topic-ext/${topicId}/related`, { params });
 
+// ========== 主题聚类 ==========
+
+export const getTopicClusters = (params?: {
+  start_time?: string;
+  end_time?: string;
+  algorithm?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/topic-clusters', { params });
+
+export const getTopicCluster = (id: number, params?: { page?: number; page_size?: number }) =>
+  api.get<unknown, UnifiedResponse<Record<string, unknown>>>(`/topic-clusters/${id}`, { params });
+
+export const runClustering = (params?: {
+  algorithm?: string;
+  n_clusters?: number;
+  time_window_hours?: number;
+}) => api.post<unknown, UnifiedResponse<Record<string, unknown>>>('/topic-clusters/run', { params });
+
+// ========== 传播路径 ==========
+
+export const getPropagationPaths = (params?: {
+  root_topic_id?: number;
+  platform?: string;
+  start_time?: string;
+  end_time?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/propagation-paths', { params });
+
+export const getPropagationPath = (id: number) =>
+  api.get<unknown, UnifiedResponse<Record<string, unknown>>>(`/propagation-paths/${id}`);
+
+export const analyzePropagation = (topicId: number, params?: { time_window_hours?: number }) =>
+  api.post<unknown, UnifiedResponse<Record<string, unknown>>>(`/propagation-paths/analyze/${topicId}`, { params });
+
+// ========== 趋势预测 ==========
+
+export const getTrendPredictions = (params?: {
+  target_type?: string;
+  target_id?: number;
+  model_type?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/trend-predictions', { params });
+
+export const getTrendPrediction = (id: number) =>
+  api.get<unknown, UnifiedResponse<Record<string, unknown>>>(`/trend-predictions/${id}`);
+
+export const createPrediction = (params?: {
+  target_type?: string;
+  target_id?: number;
+  model_type?: string;
+  horizon_hours?: number;
+}) => api.post<unknown, UnifiedResponse<Record<string, unknown>>>('/trend-predictions/predict', { params });
+
+// ========== 模型解释 ==========
+
+export const getModelExplanations = (params?: {
+  sentiment_result_id?: number;
+  method?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/model-explanations', { params });
+
+export const getModelExplanation = (id: number) =>
+  api.get<unknown, UnifiedResponse<Record<string, unknown>>>(`/model-explanations/${id}`);
+
+export const explainSentiment = (sentimentResultId: number, params?: { method?: string }) =>
+  api.post<unknown, UnifiedResponse<Record<string, unknown>>>(`/model-explanations/explain/${sentimentResultId}`, { params });
+
 export const getErrorMessage = (error: unknown) => {
   if (axios.isAxiosError(error)) {
     const detail = error.response?.data as { message?: string; detail?: string } | undefined;

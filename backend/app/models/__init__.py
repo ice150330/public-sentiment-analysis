@@ -17,6 +17,10 @@ from app.models.data_quality import DataQualityRun, DataQualityIssue
 from app.models.system_log import SystemLog, AuditLog
 from app.models.topic_sample import TopicSample, TopicRelation
 from app.models.model_version import ModelVersion
+from app.models.topic_cluster import TopicCluster, ClusterMember
+from app.models.propagation_path import PropagationPath, PropagationNode
+from app.models.trend_prediction import TrendPrediction, PredictionFeature
+from app.models.model_explanation import ModelExplanation, FeatureContribution
 
 __all__ = [
     "Platform", "HotTopic", "SentimentResult", "CrawlLog", "SystemConfig",
@@ -25,4 +29,8 @@ __all__ = [
     "SystemLog", "AuditLog",
     "TopicSample", "TopicRelation",
     "ModelVersion",
+    "TopicCluster", "ClusterMember",
+    "PropagationPath", "PropagationNode",
+    "TrendPrediction", "PredictionFeature",
+    "ModelExplanation", "FeatureContribution",
 ]
