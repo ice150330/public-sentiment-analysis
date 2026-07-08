@@ -10,15 +10,25 @@ import {
 } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
 import {
+  AlertEvent,
+  AlertSummary,
   CrawlLog,
   CrawlSuccessRate,
+  DataQualityCheck,
+  DataQualityFunnel,
+  DataQualityIssue,
+  getAlertEvents,
+  getAlertSummary,
   getCrawlLogs,
   getCrawlSuccessRate,
+  getDataQualityChecks,
+  getDataQualityFunnel,
   getErrorMessage,
   getHeatTrend,
   getOverview,
   getPlatforms,
   getSentimentDistribution,
+  getTypedDataQualityIssues,
   HeatTrend,
   Overview,
   Platform,
@@ -32,7 +42,6 @@ import {
   ModuleFrame,
   Panel,
   PlatformBadge,
-  SectionNotice,
   StatusBadge,
   SubView,
 } from '../components/DesignSystem';
@@ -312,64 +321,227 @@ const PlatformMonitor: React.FC<{
   );
 };
 
-const AlertCenter: React.FC = () => (
-  <div className="psa-grid two-one">
-    <Panel title="预警中心" className="tall">
-      <SectionNotice
-        title="后端尚未提供预警列表接口"
-        description="UI.pen 中包含预警中心页面，但当前 FastAPI 只有统计、热榜、情感和爬虫控制接口；这里保留页面结构，不填充虚构预警。"
-      />
-      <DataState empty emptyTitle="暂无预警数据" emptyDescription="接入真实预警接口后，此处展示按级别排序的事件列表。">
-        <div />
-      </DataState>
-    </Panel>
-    <Panel title="处置记录">
-      <DataState empty emptyTitle="暂无处置记录" emptyDescription="当前没有可查询的预警处置 API。">
-        <div />
-      </DataState>
-    </Panel>
-  </div>
-);
+const AlertCenter: React.FC = () => {
+  const [summary, setSummary] = useState<AlertSummary | null>(null);
+  const [events, setEvents] = useState<AlertEvent[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchAlerts = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [summaryRes, eventsRes] = await Promise.all([
+        getAlertSummary(),
+        getAlertEvents({ page: 1, page_size: 8 }),
+      ]);
+      setSummary(summaryRes.data);
+      setEvents(eventsRes.data?.items || []);
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchAlerts();
+  }, [fetchAlerts]);
+
+  const severityRows = Object.entries(summary?.severity_distribution || {});
+
+  return (
+    <DataState loading={loading} error={error} empty={!summary} emptyTitle="暂无预警摘要">
+      <div className="psa-grid two-one">
+        <Panel title="预警队列" className="tall" eyebrow={`待处理 ${formatNumber(summary?.pending_count)}`}>
+          <DataState empty={events.length === 0} emptyTitle="暂无预警事件" emptyDescription="当前没有待展示的预警事件。">
+            <div className="psa-list">
+              {events.map((event) => (
+                <div className="psa-row" key={event.id}>
+                  <div>
+                    <p className="psa-row-title">{event.topic_title || event.rule_name || `预警 #${event.id}`}</p>
+                    <div className="psa-row-meta">
+                      <span>{event.rule_name || `规则 ${event.rule_id}`}</span>
+                      <span>{formatDateTime(event.triggered_at)}</span>
+                    </div>
+                  </div>
+                  <StatusBadge status={`${event.severity} ${event.status}`} />
+                </div>
+              ))}
+            </div>
+          </DataState>
+        </Panel>
+        <div className="psa-grid">
+          <Panel title="级别分布" eyebrow={summary?.max_severity ? `最高 ${summary.max_severity}` : undefined}>
+            <DataState empty={severityRows.length === 0} emptyTitle="暂无级别分布">
+              <div className="psa-list">
+                {severityRows.map(([severity, count]) => (
+                  <div className="psa-score-line" key={severity}>
+                    <span>{severity}</span>
+                    <Progress
+                      percent={Math.round((count / Math.max(1, summary?.pending_count || count)) * 100)}
+                      showInfo={false}
+                      strokeColor="#E11D48"
+                    />
+                    <strong>{formatNumber(count)}</strong>
+                  </div>
+                ))}
+              </div>
+            </DataState>
+          </Panel>
+          <Panel title="最近预警">
+            <DataState empty={!summary?.latest_alert} emptyTitle="暂无最近预警">
+              {summary?.latest_alert && (
+                <div className="psa-detail-list">
+                  <div className="psa-detail-item">
+                    <span>事件 ID</span>
+                    <strong>#{summary.latest_alert.id}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>级别</span>
+                    <strong>{summary.latest_alert.severity}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>触发时间</span>
+                    <strong>{formatDateTime(summary.latest_alert.triggered_at)}</strong>
+                  </div>
+                </div>
+              )}
+            </DataState>
+          </Panel>
+        </div>
+      </div>
+    </DataState>
+  );
+};
 
 const DataQuality: React.FC<{
   crawlRate: CrawlSuccessRate | null;
   logs: CrawlLog[];
   loading: boolean;
   error: string | null;
-}> = ({ crawlRate, logs, loading, error }) => (
-  <DataState loading={loading} error={error} empty={!crawlRate} emptyTitle="数据质量不可用">
-    <div className="psa-grid one-two">
-      <Panel title="采集成功率" eyebrow={crawlRate?.period}>
-        <DataState empty={!crawlRate || crawlRate.total === 0} emptyTitle="暂无采集质量统计">
-          <div className="psa-list">
-            {crawlRate?.rates.map((rate) => (
-              <div className="psa-score-line" key={rate.status}>
-                <span>{rate.status}</span>
-                <Progress percent={rate.percentage} showInfo={false} strokeColor="#2563EB" />
-                <strong>{rate.percentage}%</strong>
+}> = ({ crawlRate, logs, loading, error }) => {
+  const [funnel, setFunnel] = useState<DataQualityFunnel | null>(null);
+  const [checks, setChecks] = useState<DataQualityCheck[]>([]);
+  const [issues, setIssues] = useState<DataQualityIssue[]>([]);
+  const [qualityLoading, setQualityLoading] = useState(true);
+  const [qualityError, setQualityError] = useState<string | null>(null);
+
+  const fetchQuality = useCallback(async () => {
+    try {
+      setQualityLoading(true);
+      const [funnelRes, checksRes, issuesRes] = await Promise.all([
+        getDataQualityFunnel(),
+        getDataQualityChecks(),
+        getTypedDataQualityIssues({ page: 1, page_size: 6 }),
+      ]);
+      setFunnel(funnelRes.data);
+      setChecks(checksRes.data?.checks || []);
+      setIssues(issuesRes.data?.items || []);
+      setQualityError(null);
+    } catch (err) {
+      setQualityError(getErrorMessage(err));
+    } finally {
+      setQualityLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchQuality();
+  }, [fetchQuality]);
+
+  return (
+    <DataState loading={loading || qualityLoading} error={error || qualityError} empty={!crawlRate && !funnel} emptyTitle="数据质量不可用">
+      <div className="psa-grid two-one">
+        <div className="psa-grid">
+          <Panel title="处理漏斗" eyebrow={funnel ? `${funnel.date} 留存 ${funnel.retention_rate}%` : undefined}>
+            <DataState empty={!funnel || funnel.funnel.length === 0} emptyTitle="暂无处理漏斗">
+              <div className="psa-list">
+                {funnel?.funnel.map((stage) => (
+                  <div className="psa-score-line" key={stage.stage}>
+                    <span>{stage.stage}</span>
+                    <Progress
+                      percent={Math.min(100, Math.round((stage.count / Math.max(1, funnel.funnel[0]?.count || stage.count)) * 100))}
+                      showInfo={false}
+                      strokeColor="#2563EB"
+                    />
+                    <strong>{formatNumber(stage.count)}</strong>
+                  </div>
+                ))}
               </div>
-            ))}
-          </div>
-        </DataState>
-      </Panel>
-      <Panel title="采集日志校验">
-        <Table<CrawlLog>
-          className="psa-table"
-          size="small"
-          rowKey="id"
-          pagination={false}
-          dataSource={logs}
-          locale={{ emptyText: '暂无采集日志' }}
-          columns={[
-            { title: '平台', render: (_, record) => record.platform_name || `平台 ${record.platform_id}` },
-            { title: '状态', render: (_, record) => <StatusBadge status={record.status} /> },
-            { title: '记录数', dataIndex: 'records_count', render: (value) => formatNumber(value) },
-            { title: '开始时间', dataIndex: 'started_at', render: (value) => formatDateTime(value) },
-          ]}
-        />
-      </Panel>
-    </div>
-  </DataState>
-);
+            </DataState>
+          </Panel>
+          <Panel title="质量检查">
+            <DataState empty={checks.length === 0} emptyTitle="暂无质量检查项">
+              <div className="psa-list">
+                {checks.map((check) => (
+                  <div className="psa-row" key={check.name}>
+                    <div>
+                      <p className="psa-row-title">{check.name}</p>
+                      <div className="psa-row-meta">
+                        <span>阈值 {formatNumber(check.threshold)}</span>
+                        <span>{check.pass_rate !== undefined ? `${check.pass_rate}%` : `${formatNumber(check.count)} 项`}</span>
+                      </div>
+                    </div>
+                    <StatusBadge status={check.status} />
+                  </div>
+                ))}
+              </div>
+            </DataState>
+          </Panel>
+        </div>
+        <Panel title="待处理问题" className="tall">
+          <DataState empty={issues.length === 0} emptyTitle="暂无数据质量问题">
+            <Table<DataQualityIssue>
+              className="psa-table"
+              size="small"
+              rowKey="id"
+              pagination={false}
+              dataSource={issues}
+              columns={[
+                { title: '类型', dataIndex: 'issue_type' },
+                { title: '平台', render: (_, record) => record.platform_name || '全部' },
+                { title: '级别', render: (_, record) => <StatusBadge status={record.severity} /> },
+                { title: '状态', render: (_, record) => <StatusBadge status={record.status} /> },
+                { title: '时间', dataIndex: 'created_at', render: (value) => formatDateTime(value) },
+              ]}
+            />
+          </DataState>
+        </Panel>
+      </div>
+      <div className="psa-grid two" style={{ marginTop: 16 }}>
+        <Panel title="采集成功率" eyebrow={crawlRate?.period}>
+          <DataState empty={!crawlRate || crawlRate.total === 0} emptyTitle="暂无采集质量统计">
+            <div className="psa-list">
+              {crawlRate?.rates.map((rate) => (
+                <div className="psa-score-line" key={rate.status}>
+                  <span>{rate.status}</span>
+                  <Progress percent={rate.percentage} showInfo={false} strokeColor="#2563EB" />
+                  <strong>{rate.percentage}%</strong>
+                </div>
+              ))}
+            </div>
+          </DataState>
+        </Panel>
+        <Panel title="采集日志校验">
+          <Table<CrawlLog>
+            className="psa-table"
+            size="small"
+            rowKey="id"
+            pagination={false}
+            dataSource={logs}
+            locale={{ emptyText: '暂无采集日志' }}
+            columns={[
+              { title: '平台', render: (_, record) => record.platform_name || `平台 ${record.platform_id}` },
+              { title: '状态', render: (_, record) => <StatusBadge status={record.status} /> },
+              { title: '记录数', dataIndex: 'records_count', render: (value) => formatNumber(value) },
+              { title: '开始时间', dataIndex: 'started_at', render: (value) => formatDateTime(value) },
+            ]}
+          />
+        </Panel>
+      </div>
+    </DataState>
+  );
+};
 
 export default Dashboard;

@@ -170,9 +170,8 @@ class CrawlPipeline:
             self.db.commit()
             logger.info(f"Successfully saved {count} topics")
 
-            # 更新日志
-            status = "success" if count > 0 else "partial"
-            self._update_log_status(status, records_count=count)
+            # 抓取成功但当天已去重时，记录数可能为 0；这不是采集失败。
+            self._update_log_status("success", records_count=count)
 
             return count
 

@@ -14,6 +14,8 @@ from typing import List, Dict
 
 import requests
 
+from crawler.http_client import get as crawler_get
+
 logger = logging.getLogger(__name__)
 
 DOUYIN_HOT_API = (
@@ -39,7 +41,7 @@ def fetch_douyin_hot() -> List[Dict]:
         List[Dict]: 热榜数据列表
     """
     try:
-        resp = requests.get(DOUYIN_HOT_API, headers=HEADERS, timeout=10)
+        resp = crawler_get(DOUYIN_HOT_API, headers=HEADERS, timeout=10)
         resp.raise_for_status()
         data = resp.json()
 

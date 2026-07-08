@@ -8,13 +8,19 @@ import {
   SyncOutlined,
 } from '@ant-design/icons';
 import {
+  AlertRule,
+  AuditLogRecord,
   CrawlLog,
   CrawlStatus,
+  getAlertRules,
   getCrawlLogs,
   getCrawlStatus,
   getErrorMessage,
   getPlatforms,
+  getTypedAuditLogs,
+  getTypedSystemLogs,
   Platform,
+  SystemLogRecord,
   triggerCrawler,
   updatePlatform,
 } from '../services/api';
@@ -25,7 +31,6 @@ import {
   ModuleFrame,
   Panel,
   PlatformBadge,
-  SectionNotice,
   StatusBadge,
   SubView,
 } from '../components/DesignSystem';
@@ -267,42 +272,143 @@ const CrawlerLogTable: React.FC<{ logs: CrawlLog[] }> = ({ logs }) => (
   />
 );
 
-const AlertRules: React.FC = () => (
-  <div className="psa-grid two-one">
-    <Panel title="预警规则" className="tall">
-      <SectionNotice
-        title="后端尚未提供预警规则接口"
-        description="UI.pen 中包含规则配置页面；当前接口集中在平台、热榜、情感、统计和爬虫控制，不能填充虚构规则。"
-      />
-      <DataState empty emptyTitle="暂无预警规则" emptyDescription="接入真实规则 API 后，此处提供规则列表、阈值与启停控制。">
-        <div />
-      </DataState>
-    </Panel>
-    <Panel title="规则运行状态">
-      <DataState empty emptyTitle="暂无规则运行数据" emptyDescription="当前没有规则执行日志接口。">
-        <div />
-      </DataState>
-    </Panel>
-  </div>
-);
+const AlertRules: React.FC = () => {
+  const [rules, setRules] = useState<AlertRule[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-const SystemLogs: React.FC = () => (
-  <div className="psa-grid two-one">
-    <Panel title="系统日志" className="tall">
-      <SectionNotice
-        title="后端尚未提供系统日志接口"
-        description="当前可查询的是采集日志；系统级日志、审计日志和操作记录尚未在 API 中暴露。"
-      />
-      <DataState empty emptyTitle="暂无系统日志" emptyDescription="接入真实日志 API 后，此处展示日志级别、来源模块和时间线。">
-        <div />
-      </DataState>
-    </Panel>
-    <Panel title="日志筛选">
-      <DataState empty emptyTitle="暂无筛选项" emptyDescription="筛选条件需要与真实日志字段保持一致。">
-        <div />
-      </DataState>
-    </Panel>
-  </div>
-);
+  const fetchRules = useCallback(async () => {
+    try {
+      setLoading(true);
+      const res = await getAlertRules({ page: 1, page_size: 20 });
+      setRules(res.data?.items || []);
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchRules();
+  }, [fetchRules]);
+
+  const activeCount = rules.filter((rule) => rule.is_active).length;
+  const severityCounts = rules.reduce<Record<string, number>>((acc, rule) => {
+    acc[rule.severity] = (acc[rule.severity] || 0) + 1;
+    return acc;
+  }, {});
+
+  return (
+    <DataState loading={loading} error={error} empty={rules.length === 0} emptyTitle="暂无预警规则">
+      <div className="psa-grid two-one">
+        <Panel title="预警规则" className="tall" eyebrow={`${formatNumber(activeCount)} 条启用`}>
+          <Table<AlertRule>
+            className="psa-table"
+            size="small"
+            rowKey="id"
+            pagination={{ pageSize: 8, size: 'small' }}
+            dataSource={rules}
+            columns={[
+              { title: '规则', dataIndex: 'name', ellipsis: true },
+              { title: '等级', dataIndex: 'severity', render: (value) => <StatusBadge status={value} /> },
+              { title: '类型', dataIndex: 'condition_type' },
+              { title: '状态', render: (_, record) => <StatusBadge status={record.is_active} /> },
+              { title: '冷却', dataIndex: 'cooldown_minutes', render: (value) => `${value}m` },
+            ]}
+          />
+        </Panel>
+        <Panel title="规则运行状态">
+          <div className="psa-detail-list">
+            <div className="psa-detail-item">
+              <span>规则总数</span>
+              <strong>{formatNumber(rules.length)}</strong>
+            </div>
+            <div className="psa-detail-item">
+              <span>启用规则</span>
+              <strong>{formatNumber(activeCount)}</strong>
+            </div>
+            {Object.entries(severityCounts).map(([severity, count]) => (
+              <div className="psa-detail-item" key={severity}>
+                <span>{severity}</span>
+                <strong>{formatNumber(count)}</strong>
+              </div>
+            ))}
+          </div>
+        </Panel>
+      </div>
+    </DataState>
+  );
+};
+
+const SystemLogs: React.FC = () => {
+  const [logs, setLogs] = useState<SystemLogRecord[]>([]);
+  const [auditLogs, setAuditLogs] = useState<AuditLogRecord[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchLogs = useCallback(async () => {
+    try {
+      setLoading(true);
+      const [systemRes, auditRes] = await Promise.all([
+        getTypedSystemLogs({ page: 1, page_size: 20 }),
+        getTypedAuditLogs({ page: 1, page_size: 12 }),
+      ]);
+      setLogs(systemRes.data?.items || []);
+      setAuditLogs(auditRes.data?.items || []);
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchLogs();
+  }, [fetchLogs]);
+
+  return (
+    <DataState loading={loading} error={error} empty={logs.length === 0 && auditLogs.length === 0} emptyTitle="暂无系统日志">
+      <div className="psa-grid two-one">
+        <Panel title="系统日志" className="tall">
+          <Table<SystemLogRecord>
+            className="psa-table"
+            size="small"
+            rowKey="id"
+            pagination={{ pageSize: 8, size: 'small' }}
+            dataSource={logs}
+            locale={{ emptyText: '暂无系统日志' }}
+            columns={[
+              { title: '级别', dataIndex: 'level', render: (value) => <StatusBadge status={value} /> },
+              { title: '模块', dataIndex: 'module', render: (value) => value || 'system' },
+              { title: '事件', dataIndex: 'event', render: (value) => value || '未标注' },
+              { title: '时间', dataIndex: 'created_at', render: (value) => formatDateTime(value) },
+            ]}
+          />
+        </Panel>
+        <Panel title="审计记录">
+          <DataState empty={auditLogs.length === 0} emptyTitle="暂无审计记录">
+            <div className="psa-list">
+              {auditLogs.map((item) => (
+                <div className="psa-row" key={item.id}>
+                  <div>
+                    <p className="psa-row-title">{item.action || '操作记录'}</p>
+                    <div className="psa-row-meta">
+                      <span>{item.operator}</span>
+                      <span>{item.target_type || 'system'} {item.target_id || ''}</span>
+                      <span>{formatDateTime(item.created_at)}</span>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </DataState>
+        </Panel>
+      </div>
+    </DataState>
+  );
+};
 
 export default Stats;

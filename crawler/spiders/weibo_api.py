@@ -21,6 +21,8 @@ from typing import List, Dict
 
 import requests
 
+from crawler.http_client import get as crawler_get
+
 logger = logging.getLogger(__name__)
 
 WEIBO_HOT_API = "https://weibo.com/ajax/side/hotSearch"
@@ -43,7 +45,7 @@ def fetch_weibo_hot() -> List[Dict]:
         List[Dict]: 热搜数据列表
     """
     try:
-        resp = requests.get(WEIBO_HOT_API, headers=HEADERS, timeout=10)
+        resp = crawler_get(WEIBO_HOT_API, headers=HEADERS, timeout=10)
         resp.raise_for_status()
         data = resp.json()
 
@@ -53,16 +55,18 @@ def fetch_weibo_hot() -> List[Dict]:
 
         results = []
         for item in data["data"]["realtime"]:
+            word = item.get("word", "")
+            word_scheme = item.get("word_scheme", word)
             results.append({
-                "id": str(item.get("realpos", 0)),
-                "title": item.get("word", ""),
+                "id": str(word_scheme or word or item.get("realpos", 0)),
+                "title": word,
                 "url": (
                     f"https://s.weibo.com/weibo?q="
-                    f"{requests.utils.quote(item.get('word_scheme', item.get('word', '')))}"
+                    f"{requests.utils.quote(word_scheme or word)}"
                 ),
                 "heat": str(item.get("num", 0)),
                 "category": item.get("flag_desc", "热"),
-                "summary": item.get("word", ""),
+                "summary": word,
                 "source": "weibo",
                 "crawl_time": datetime.now().isoformat(),
             })

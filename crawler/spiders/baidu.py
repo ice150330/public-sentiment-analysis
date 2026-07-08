@@ -18,6 +18,8 @@ from typing import List, Dict
 
 import requests
 
+from crawler.http_client import get as crawler_get
+
 logger = logging.getLogger(__name__)
 
 BAIDU_HOT_URL = "https://top.baidu.com/board?tab=realtime"
@@ -40,7 +42,7 @@ def fetch_baidu_hot() -> List[Dict]:
         List[Dict]: 热搜数据列表
     """
     try:
-        resp = requests.get(BAIDU_HOT_URL, headers=HEADERS, timeout=10)
+        resp = crawler_get(BAIDU_HOT_URL, headers=HEADERS, timeout=10)
         resp.raise_for_status()
         html = resp.text
 
@@ -57,9 +59,10 @@ def fetch_baidu_hot() -> List[Dict]:
 
         results = []
         for item in sdata["data"]["cards"][0].get("content", []):
+            word = item.get("word", "").strip()
             results.append({
-                "id": str(item.get("index", 0)),
-                "title": item.get("word", "").strip(),
+                "id": word or str(item.get("index", 0)),
+                "title": word,
                 "url": item.get("rawUrl", ""),
                 "heat": str(item.get("hotScore", "")),
                 "category": "热" if item.get("isTop") else "新",

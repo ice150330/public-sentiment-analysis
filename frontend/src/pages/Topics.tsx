@@ -11,10 +11,16 @@ import ReactECharts from 'echarts-for-react';
 import {
   getErrorMessage,
   getPlatforms,
+  getRelatedTopics,
+  getTopicPropagation,
+  getTopicSamples,
   getTopics,
   HotTopic,
   Pagination as PageInfo,
   Platform,
+  TopicPropagation,
+  TopicRelation,
+  TopicSample,
 } from '../services/api';
 import {
   DataState,
@@ -23,7 +29,6 @@ import {
   ModuleFrame,
   Panel,
   PlatformBadge,
-  SectionNotice,
   SubView,
 } from '../components/DesignSystem';
 
@@ -403,52 +408,142 @@ const TopicDetail: React.FC<{ topic: HotTopic | null; loading: boolean; error: s
   topic,
   loading,
   error,
-}) => (
-  <DataState loading={loading} error={error} empty={!topic} emptyTitle="暂无话题详情">
-    <div className="psa-grid one-two">
-      <Panel title="话题详情" className="tall">
-        {topic && (
-          <div className="psa-detail-list">
-            <h2 style={{ margin: 0 }}>{topic.title}</h2>
-            <div className="psa-row-meta">
-              <PlatformBadge name={topic.platform_name} />
-              <span>{topic.category || '未分类'}</span>
-              <span>{formatDateTime(topic.crawl_time)}</span>
+}) => {
+  const [samples, setSamples] = useState<TopicSample[]>([]);
+  const [relations, setRelations] = useState<TopicRelation[]>([]);
+  const [propagation, setPropagation] = useState<TopicPropagation | null>(null);
+  const [detailLoading, setDetailLoading] = useState(false);
+  const [detailError, setDetailError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!topic) {
+      setSamples([]);
+      setRelations([]);
+      setPropagation(null);
+      return;
+    }
+
+    let mounted = true;
+    setDetailLoading(true);
+    Promise.all([
+      getTopicSamples(topic.id, { page: 1, page_size: 5 }),
+      getRelatedTopics(topic.id),
+      getTopicPropagation(topic.id),
+    ])
+      .then(([sampleRes, relationRes, propagationRes]) => {
+        if (!mounted) return;
+        setSamples(sampleRes.data?.items || []);
+        setRelations(relationRes.data?.relations || []);
+        setPropagation(propagationRes.data);
+        setDetailError(null);
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        setDetailError(getErrorMessage(err));
+      })
+      .finally(() => {
+        if (mounted) setDetailLoading(false);
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [topic]);
+
+  return (
+    <DataState loading={loading} error={error} empty={!topic} emptyTitle="暂无话题详情">
+      <div className="psa-grid one-two">
+        <Panel title="话题详情" className="tall">
+          {topic && (
+            <div className="psa-detail-list">
+              <h2 style={{ margin: 0 }}>{topic.title}</h2>
+              <div className="psa-row-meta">
+                <PlatformBadge name={topic.platform_name} />
+                <span>{topic.category || '未分类'}</span>
+                <span>{formatDateTime(topic.crawl_time)}</span>
+              </div>
+              <div className="psa-detail-item">
+                <span>平台话题 ID</span>
+                <strong>{topic.topic_id}</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>热度</span>
+                <strong>{formatNumber(topic.heat_score)}</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>链接</span>
+                <strong>{topic.url || '暂无'}</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>摘要</span>
+                <strong>{topic.content_summary || '暂无摘要'}</strong>
+              </div>
             </div>
-            <div className="psa-detail-item">
-              <span>平台话题 ID</span>
-              <strong>{topic.topic_id}</strong>
+          )}
+        </Panel>
+        <Panel title="扩展信息">
+          <DataState
+            loading={detailLoading}
+            error={detailError}
+            empty={samples.length === 0 && relations.length === 0 && !propagation}
+            emptyTitle="暂无扩展信息"
+          >
+            <div className="psa-detail-list">
+              <div className="psa-detail-item">
+                <span>传播深度</span>
+                <strong>{formatNumber(propagation?.path.depth)}</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>传播节点</span>
+                <strong>{formatNumber(propagation?.path.total_nodes)}</strong>
+              </div>
+              <div>
+                <p className="psa-row-title">证据样本</p>
+                <div className="psa-list">
+                  {samples.slice(0, 3).map((sample) => (
+                    <div className="psa-row" key={sample.id}>
+                      <div>
+                        <p className="psa-row-title">{sample.content}</p>
+                        <div className="psa-row-meta">
+                          <span>{sample.platform_name || '未知平台'}</span>
+                          <span>{sample.sample_type || '样本'}</span>
+                          <span>{formatDateTime(sample.created_at)}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {samples.length === 0 && <p className="psa-page-note">暂无样本</p>}
+                </div>
+              </div>
+              <div>
+                <p className="psa-row-title">关联话题</p>
+                <div className="psa-list">
+                  {relations.slice(0, 4).map((relation) => (
+                    <div className="psa-row" key={relation.id}>
+                      <div>
+                        <p className="psa-row-title">{relation.target_title || `话题 #${relation.target_topic_id}`}</p>
+                        <div className="psa-row-meta">
+                          <span>{relation.relation_type || '关联'}</span>
+                          <span>强度 {relation.score ?? 0}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {relations.length === 0 && <p className="psa-page-note">暂无关联话题</p>}
+                </div>
+              </div>
+              <DataState
+                empty={!topic?.raw_data || Object.keys(topic.raw_data).length === 0}
+                emptyTitle="暂无原始扩展字段"
+              >
+                <pre className="psa-page-note">{JSON.stringify(topic?.raw_data, null, 2)}</pre>
+              </DataState>
             </div>
-            <div className="psa-detail-item">
-              <span>热度</span>
-              <strong>{formatNumber(topic.heat_score)}</strong>
-            </div>
-            <div className="psa-detail-item">
-              <span>链接</span>
-              <strong>{topic.url || '暂无'}</strong>
-            </div>
-            <div className="psa-detail-item">
-              <span>摘要</span>
-              <strong>{topic.content_summary || '暂无摘要'}</strong>
-            </div>
-          </div>
-        )}
-      </Panel>
-      <Panel title="扩展信息">
-        <SectionNotice
-          title="详情来源说明"
-          description="当前详情完全来自 /topics 接口返回字段；评论、扩散链路和关键词接口尚未在后端提供。"
-        />
-        <DataState
-          empty={!topic?.raw_data || Object.keys(topic.raw_data).length === 0}
-          emptyTitle="暂无原始扩展字段"
-          emptyDescription="后端返回 raw_data 后会在此展示可用字段。"
-        >
-          <pre className="psa-page-note">{JSON.stringify(topic?.raw_data, null, 2)}</pre>
-        </DataState>
-      </Panel>
-    </div>
-  </DataState>
-);
+          </DataState>
+        </Panel>
+      </div>
+    </DataState>
+  );
+};
 
 export default Topics;

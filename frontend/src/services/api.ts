@@ -166,10 +166,46 @@ export interface DataQualityCheck {
   status: 'pass' | 'warning' | 'fail';
 }
 
+export interface DataQualityIssue {
+  id: number;
+  issue_type: string;
+  platform_name?: string | null;
+  topic_title?: string | null;
+  severity: string;
+  status: string;
+  description?: string | null;
+  suggestion?: string | null;
+  created_at?: string | null;
+  resolved_at?: string | null;
+}
+
 export interface SystemHealth {
   overall_status: string;
   components: Record<string, { status: string; message: string }>;
   checked_at: string;
+}
+
+export interface SystemLogRecord {
+  id: number;
+  level: string;
+  module?: string | null;
+  event?: string | null;
+  message?: string | null;
+  payload_json?: string | null;
+  request_id?: string | null;
+  created_at?: string | null;
+}
+
+export interface AuditLogRecord {
+  id: number;
+  operator: string;
+  action?: string | null;
+  target_type?: string | null;
+  target_id?: string | null;
+  before_json?: string | null;
+  after_json?: string | null;
+  note?: string | null;
+  created_at?: string | null;
 }
 
 export interface ModelStatus {
@@ -228,6 +264,53 @@ export interface TopicRelation {
   relation_type?: string | null;
   score?: number | null;
   description?: string | null;
+}
+
+export interface PropagationNode {
+  id: number | string;
+  topic_id: number;
+  topic_title?: string | null;
+  platform_name?: string | null;
+  level: number;
+  parent_node_id?: number | string | null;
+  discovered_at?: string | null;
+}
+
+export interface TopicPropagation {
+  path: {
+    id?: number | null;
+    root_topic_id: number;
+    root_topic_title?: string | null;
+    depth: number;
+    total_nodes: number;
+    platforms_involved?: unknown;
+  };
+  nodes: PropagationNode[];
+  edges: Array<Record<string, unknown>>;
+}
+
+export interface SentimentSummary {
+  today_analyzed: number;
+  total_analyzed: number;
+  success_rate: number;
+  low_confidence: number;
+  negative_samples: number;
+  avg_confidence: number;
+  avg_latency_ms: number;
+}
+
+export interface ForecastHeatPoint {
+  date: string;
+  predicted_heat: number;
+  confidence_lower: number;
+  confidence_upper: number;
+}
+
+export interface ForecastHeat {
+  topic_id?: number | null;
+  current_heat: number;
+  forecast: ForecastHeatPoint[];
+  model: string;
 }
 
 export interface SentimentDistributionItem {
@@ -478,6 +561,15 @@ export const getDataQualityIssues = (params?: {
   page_size?: number;
 }) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/data-quality/issues', { params });
 
+export const getTypedDataQualityIssues = (params?: {
+  issue_type?: string;
+  severity?: string;
+  status?: string;
+  platform?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<DataQualityIssue>>>('/data-quality/issues', { params });
+
 export const getDataQualitySummary = () =>
   api.get<unknown, UnifiedResponse<Record<string, unknown>>>('/data-quality/summary');
 
@@ -495,6 +587,15 @@ export const getSystemLogs = (params?: {
   page_size?: number;
 }) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/system/logs', { params });
 
+export const getTypedSystemLogs = (params?: {
+  level?: string;
+  module?: string;
+  start_time?: string;
+  end_time?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<SystemLogRecord>>>('/system/logs', { params });
+
 export const getAuditLogs = (params?: {
   operator?: string;
   action?: string;
@@ -504,6 +605,16 @@ export const getAuditLogs = (params?: {
   page?: number;
   page_size?: number;
 }) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/system/audit-logs', { params });
+
+export const getTypedAuditLogs = (params?: {
+  operator?: string;
+  action?: string;
+  target_type?: string;
+  start_time?: string;
+  end_time?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<AuditLogRecord>>>('/system/audit-logs', { params });
 
 // ========== 模型管理 ==========
 
@@ -530,6 +641,9 @@ export const getTopicSamples = (topicId: number, params?: {
 
 export const getRelatedTopics = (topicId: number, params?: { relation_type?: string }) =>
   api.get<unknown, UnifiedResponse<{ topic_id: number; topic_title: string; relations: TopicRelation[] }>>(`/topic-ext/${topicId}/related`, { params });
+
+export const getTopicPropagation = (topicId: number) =>
+  api.get<unknown, UnifiedResponse<TopicPropagation>>(`/topics/${topicId}/propagation`);
 
 // ========== 主题聚类 ==========
 
@@ -586,6 +700,12 @@ export const createPrediction = (params?: {
   model_type?: string;
   horizon_hours?: number;
 }) => api.post<unknown, UnifiedResponse<Record<string, unknown>>>('/trend-predictions/predict', { params });
+
+export const getSentimentSummary = () =>
+  api.get<unknown, UnifiedResponse<SentimentSummary>>('/sentiment/summary');
+
+export const forecastHeat = (payload: { topic_id?: number; horizon_days?: number }) =>
+  api.post<unknown, UnifiedResponse<ForecastHeat>>('/forecast/heat', payload);
 
 // ========== 模型解释 ==========
 

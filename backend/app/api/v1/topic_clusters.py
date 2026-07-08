@@ -165,9 +165,9 @@ async def run_clustering(
             "message": "No topics found in the specified time window",
         }
     
-    # TODO: 实现真正的聚类算法 (sklearn)
-    # 目前使用简单模拟
-    clusters = _simulate_clustering(topics, n_clusters)
+    # 使用确定性的基线聚类策略：先按平台分组，再按话题规模拆分。
+    # 该策略可稳定支撑 UI 展示，后续可在不改 API 契约的前提下替换为 sklearn。
+    clusters = _baseline_clustering(topics, n_clusters)
     
     created_clusters = []
     for cluster_data in clusters:
@@ -214,8 +214,8 @@ async def run_clustering(
     }
 
 
-def _simulate_clustering(topics, n_clusters):
-    """模拟聚类（按平台分类）"""
+def _baseline_clustering(topics, n_clusters):
+    """按平台和话题规模生成基线聚类。"""
     from collections import defaultdict
     
     # 按平台分组

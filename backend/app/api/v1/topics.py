@@ -111,7 +111,7 @@ async def list_topics(
     }
 
 
-@router.get("/{topic_id}", response_model=UnifiedResponse[HotTopicResponse])
+@router.get("/{topic_id:int}", response_model=UnifiedResponse[HotTopicResponse])
 async def get_topic(
     topic_id: int,
     db: Session = Depends(get_db),

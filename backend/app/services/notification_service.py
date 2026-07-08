@@ -11,7 +11,7 @@ from typing import Dict, Any
 
 from sqlalchemy.orm import Session
 
-from app.models import AlertEvent, AlertRule
+from app.models import AlertEvent, SystemConfig
 
 logger = logging.getLogger(__name__)
 
@@ -28,8 +28,8 @@ class NotificationService:
         
         目前支持:
         - 站内通知（记录到系统日志）
-        - Webhook 回调（TODO）
-        - 邮件通知（TODO）
+        - Webhook 回调（通过 system_configs 启用）
+        - 邮件通知配置状态（未配置 SMTP 时保持禁用）
         
         Returns:
             {"sent": bool, "channels": list, "error": str}
@@ -42,13 +42,12 @@ class NotificationService:
             self._send_internal_notification(event)
             channels.append("internal")
             
-            # 2. Webhook 通知（TODO: 从配置中读取 webhook URL）
-            # self._send_webhook_notification(event)
-            # channels.append("webhook")
-            
-            # 3. 邮件通知（TODO）
-            # self._send_email_notification(event)
-            # channels.append("email")
+            config = self.get_notification_config()
+            if config["webhook_enabled"] and config["webhook_url"]:
+                self._send_webhook_notification(event, config["webhook_url"])
+                channels.append("webhook")
+            if config["email_enabled"]:
+                logger.warning("Email notification is enabled but SMTP delivery is not configured")
             
             logger.info(f"Alert notification sent for event {event.id}, channels: {channels}")
             
@@ -91,7 +90,7 @@ class NotificationService:
         self.db.commit()
     
     def _send_webhook_notification(self, event: AlertEvent, webhook_url: str):
-        """发送 Webhook 通知（TODO: 实现 HTTP 调用）"""
+        """发送 Webhook 通知。"""
         import requests
         
         payload = {
@@ -113,11 +112,21 @@ class NotificationService:
             raise
     
     def get_notification_config(self) -> Dict[str, Any]:
-        """获取通知配置（TODO: 从数据库或配置文件读取）"""
+        """获取通知配置。"""
+        rows = self.db.query(SystemConfig).filter(
+            SystemConfig.config_key.in_([
+                "notification_webhook_enabled",
+                "notification_webhook_url",
+                "notification_email_enabled",
+                "notification_email_recipients",
+            ])
+        ).all()
+        config = {row.config_key: row.config_value for row in rows}
+        email_recipients = config.get("notification_email_recipients") or ""
         return {
-            "webhook_enabled": False,
-            "webhook_url": None,
-            "email_enabled": False,
-            "email_recipients": [],
+            "webhook_enabled": config.get("notification_webhook_enabled", "false").lower() == "true",
+            "webhook_url": config.get("notification_webhook_url"),
+            "email_enabled": config.get("notification_email_enabled", "false").lower() == "true",
+            "email_recipients": [item.strip() for item in email_recipients.split(",") if item.strip()],
             "internal_enabled": True,
         }

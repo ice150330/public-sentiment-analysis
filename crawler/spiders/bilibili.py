@@ -12,6 +12,8 @@ from typing import List, Dict
 
 import requests
 
+from crawler.http_client import get as crawler_get
+
 logger = logging.getLogger(__name__)
 
 BILIBILI_HOT_API = "https://s.search.bilibili.com/main/hotword?limit=30"
@@ -35,7 +37,7 @@ def fetch_bilibili_hot() -> List[Dict]:
         List[Dict]: 热搜数据列表
     """
     try:
-        resp = requests.get(BILIBILI_HOT_API, headers=HEADERS, timeout=10)
+        resp = crawler_get(BILIBILI_HOT_API, headers=HEADERS, timeout=10)
         resp.raise_for_status()
         data = resp.json()
 
@@ -84,7 +86,7 @@ def fetch_bilibili_videos(pages: int = 3, per_page: int = 20) -> List[Dict]:
     results = []
     for pn in range(1, pages + 1):
         try:
-            resp = requests.get(
+            resp = crawler_get(
                 BILIBILI_POPULAR_API,
                 headers=HEADERS,
                 params={"pn": pn, "ps": per_page},

@@ -15,16 +15,20 @@
 """
 
 import pytest
-from httpx import AsyncClient
+import pytest_asyncio
+from httpx import ASGITransport, AsyncClient
 from fastapi import status
 
 from app.main import app
 
+pytestmark = pytest.mark.asyncio
 
-@pytest.fixture
+
+@pytest_asyncio.fixture
 async def async_client():
     """创建异步测试客户端"""
-    async with AsyncClient(app=app, base_url="http://test") as client:
+    transport = ASGITransport(app=app)
+    async with AsyncClient(transport=transport, base_url="http://test") as client:
         yield client
 
 
@@ -214,6 +218,9 @@ class TestCrawlerEndpoints:
             json={"platforms": ["weibo"], "is_async": True}
         )
         assert response.status_code == status.HTTP_202_ACCEPTED
+        task_id = response.json()["data"]["task_id"]
+        cancel_response = await async_client.post(f"/api/v1/crawler/tasks/{task_id}/cancel")
+        assert cancel_response.status_code == status.HTTP_200_OK
     
     async def test_list_crawl_logs(self, async_client):
         """测试查询采集日志"""

@@ -1,8 +1,8 @@
 # API 接口设计文档
 
 > 基于 FastAPI + SQLite 方案A（极简版）  
-> 版本: v1.0  
-> 日期: 2026-07-07
+> 版本: v1.1
+> 日期: 2026-07-08
 
 ---
 
@@ -20,7 +20,9 @@
 
 ## 2. 接口总览
 
-### 2.1 接口清单
+### 2.1 基础接口清单
+
+> 下表为项目初始基础接口。UI.pen 对应的增量接口已在 v1.1 补齐，详见第 5 节。当前 FastAPI OpenAPI 共注册 122 个 method operation。
 
 | 模块 | 接口 | 方法 | 路径 | 说明 |
 |------|------|------|------|------|
@@ -561,7 +563,167 @@ PUT /api/v1/crawler/schedule
 
 ---
 
-## 5. 状态码说明
+## 5. UI.pen 增量接口（v1.1）
+
+### 5.1 增量接口分组
+
+| 模块 | 方法 | 路径 | 说明 |
+|------|------|------|------|
+| 通用 | GET | `/api/v1/sync/status` | 顶栏同步状态，包含最新数据时间、队列长度、活动任务 |
+| 通用 | GET | `/api/v1/search` | 全局搜索，支持 `q/scope/page/page_size` |
+| 总览 | GET | `/api/v1/dashboard/overview` | UI 看板聚合 KPI、昨日对比、采集和情感摘要 |
+| 统计 | GET | `/api/v1/stats/kpi-deltas` | KPI 环比 |
+| 统计 | GET | `/api/v1/stats/platform-distribution` | 平台话题量、情感量、热度占比 |
+| 统计 | GET | `/api/v1/stats/platform-matrix` | 平台监测矩阵 |
+| 平台 | GET | `/api/v1/platforms/monitoring` | 平台采集健康状态 |
+| 平台 | GET | `/api/v1/platforms/monitoring/matrix` | 前端平台监测矩阵别名 |
+| 平台 | GET | `/api/v1/platforms/monitoring/freshness` | 前端数据新鲜度别名 |
+| 平台 | GET/PATCH | `/api/v1/platforms/{id}/config` | 平台请求配置、开关、抓取配置 |
+| 预警 | GET | `/api/v1/alerts` | 预警事件队列别名 |
+| 预警 | GET | `/api/v1/alerts/summary` | 未处理预警、级别分布、最近预警 |
+| 预警 | GET/POST | `/api/v1/alerts/events` | 预警事件列表 |
+| 预警 | GET/POST/PUT/PATCH/DELETE | `/api/v1/alerts/rules` | 前端预警规则管理路径 |
+| 预警 | GET/POST/PUT/PATCH/DELETE | `/api/v1/alert-rules` | UI.pen 预警规则管理路径 |
+| 数据质量 | GET | `/api/v1/data-quality/funnel` | 原始、清洗、去重、分析、展示漏斗 |
+| 数据质量 | GET | `/api/v1/data-quality/checks` | 字段完整率、重复、异常热度、失败日志等检查项 |
+| 数据质量 | GET | `/api/v1/data-quality/issues` | 数据质量问题列表 |
+| 数据质量 | GET | `/api/v1/data-quality/summary` | 覆盖率、保留率、模型版本摘要 |
+| 数据质量 | POST | `/api/v1/data-quality/run` | 手动执行质量检查 |
+| 数据质量 | POST | `/api/v1/data/archive` | 非破坏式归档，生成 JSON 归档文件并写审计 |
+| 热点 | GET | `/api/v1/topics/facets` | 分类、平台、情感筛选面板 |
+| 热点 | GET | `/api/v1/topics/keywords/cloud` | 关键词云 |
+| 热点 | GET | `/api/v1/topics/{id}/samples` | 话题样本 |
+| 热点 | GET | `/api/v1/topics/{id}/related` | 关联话题 |
+| 热点 | GET | `/api/v1/topics/{id}/propagation` | 传播节点和边 |
+| 热点 | GET | `/api/v1/topics/propagation/strength` | 平台传播强度 |
+| 热点 | GET | `/api/v1/topic-ext/{id}/samples` | 当前前端话题样本路径 |
+| 热点 | GET | `/api/v1/topic-ext/{id}/related` | 当前前端关联话题路径 |
+| 聚类 | GET/POST | `/api/v1/topic-clusters` | 主题聚类列表和运行入口 |
+| 聚类 | GET | `/api/v1/topics/clusters` | UI.pen 主题簇地图 |
+| 传播 | GET/POST | `/api/v1/propagation-paths` | 传播路径列表、详情、分析 |
+| 分析 | GET | `/api/v1/sentiment/summary` | 今日分析、成功率、低置信、负向样本 |
+| 分析 | GET/POST | `/api/v1/sentiment/jobs` | 情感分析任务队列 |
+| 分析 | POST | `/api/v1/sentiment/jobs/{id}/retry` | 情感任务重试 |
+| 分析 | GET | `/api/v1/sentiment/low-confidence` | 低置信复核列表 |
+| 分析 | GET | `/api/v1/sentiment/trend` | 情感时间序列 |
+| 分析 | POST | `/api/v1/sentiment/explain` | 文本解释性分析 |
+| 预测 | POST | `/api/v1/forecast/heat` | 热度预测和置信区间 |
+| 预测 | GET | `/api/v1/forecast/signals` | 热度、负面、跨平台扩散信号 |
+| 预测 | GET | `/api/v1/forecast/scenarios` | 基准、风险、缓和情景 |
+| 模型 | GET | `/api/v1/models/current` | 当前模型信息 |
+| 模型 | GET | `/api/v1/models/{version}/metrics` | 模型评估指标和混淆矩阵 |
+| 模型 | GET | `/api/v1/model/status` | 当前前端模型状态路径 |
+| 模型 | GET | `/api/v1/model/versions` | 模型版本列表 |
+| 模型解释 | GET/POST | `/api/v1/model-explanations` | 解释列表、详情、生成解释 |
+| 采集任务 | GET | `/api/v1/crawler/tasks/summary` | 运行中、队列、完成、失败、平均耗时 |
+| 采集任务 | GET | `/api/v1/crawler/tasks/{id}` | 任务详情和事件 |
+| 采集任务 | POST | `/api/v1/crawler/tasks/{id}/retry` | 重试任务 |
+| 采集任务 | POST | `/api/v1/crawler/tasks/{id}/pause` | 暂停任务 |
+| 采集任务 | POST | `/api/v1/crawler/tasks/{id}/resume` | 恢复任务 |
+| 采集任务 | POST | `/api/v1/crawler/tasks/{id}/cancel` | 取消任务 |
+| 采集任务 | GET | `/api/v1/crawler/timeline` | 历史任务和采集日志时间线 |
+| 系统 | GET | `/api/v1/system/health` | API、数据库、调度器、模型、爬虫健康 |
+| 系统 | GET/POST | `/api/v1/system/logs` | 系统日志 |
+| 系统 | GET/POST | `/api/v1/system/audit-logs` | 当前前端审计日志路径 |
+| 系统 | GET | `/api/v1/audit-logs` | UI.pen 审计日志路径 |
+| 系统 | GET | `/api/v1/system/errors/{id}` | 错误详情和重试建议 |
+
+### 5.2 代表性请求/响应示例
+
+**同步状态**
+
+```
+GET /api/v1/sync/status
+```
+
+```json
+{
+  "code": 200,
+  "data": {
+    "last_updated": "2026-07-08T15:30:04.084070",
+    "sync_delay_seconds": 18,
+    "is_syncing": false,
+    "queue_length": 0,
+    "active_task": null,
+    "modules": {
+      "hot_topics": { "last_updated": "2026-07-08T16:03:23.864941", "count": 419 },
+      "sentiment": { "last_updated": "2026-07-08T16:04:28.237470", "count": 419 },
+      "crawler": { "last_updated": "2026-07-08T15:30:04.084070", "today_count": 14 }
+    }
+  },
+  "message": "success"
+}
+```
+
+**采集任务详情**
+
+```
+GET /api/v1/crawler/tasks/current
+```
+
+```json
+{
+  "code": 200,
+  "data": {
+    "task_id": "current",
+    "status": "idle",
+    "progress": 0,
+    "events": []
+  },
+  "message": "success"
+}
+```
+
+**情感任务**
+
+```
+POST /api/v1/sentiment/jobs
+Content-Type: application/json
+
+{ "texts": ["这个话题值得关注", "风险需要持续跟踪"] }
+```
+
+```json
+{
+  "code": 200,
+  "data": {
+    "job_id": "sentiment_20260708153000000000",
+    "status": "completed",
+    "total_count": 2,
+    "success_count": 2,
+    "failed_count": 0,
+    "avg_latency_ms": 0
+  },
+  "message": "Job completed"
+}
+```
+
+**数据归档**
+
+```
+POST /api/v1/data/archive
+Content-Type: application/json
+
+{ "retention_days": 3650 }
+```
+
+```json
+{
+  "code": 200,
+  "data": {
+    "archive_id": "archive_20260708153000000000",
+    "status": "completed",
+    "archived_count": 0,
+    "retention_days": 3650,
+    "archive_path": "backend/data/archives/archive_20260708153000000000.json"
+  },
+  "message": "Archive completed"
+}
+```
+
+---
+
+## 6. 状态码说明
 
 | 状态码 | 含义 | 使用场景 |
 |--------|------|---------|
@@ -575,7 +737,7 @@ PUT /api/v1/crawler/schedule
 
 ---
 
-## 6. 接口路径汇总
+## 7. 接口路径汇总
 
 ```
 # 平台管理
@@ -606,14 +768,15 @@ GET    /api/v1/crawler/schedule
 PUT    /api/v1/crawler/schedule
 ```
 
-**总计: 18 个接口**
+**总计:** 基础接口 18 个；当前 OpenAPI 注册 122 个 method operation，包含 UI.pen 增量能力。
 
 ---
 
-## 7. 变更记录
+## 8. 变更记录
 
 | 版本 | 日期 | 作者 | 变更内容 |
 |------|------|------|---------|
+| v1.1 | 2026-07-08 | Codex | 补充 UI.pen 增量接口分组、任务/质量/预警/模型/系统等接口示例 |
 | v1.0 | 2026-07-07 | 码钉 | 初始版本，18个接口完整定义 |
 
 ---

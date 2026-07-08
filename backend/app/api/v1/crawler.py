@@ -5,6 +5,7 @@
 模块职责: 手动触发采集、查询状态、查看日志、配置定时任务、同步状态
 """
 
+import json
 from datetime import datetime, timedelta
 from typing import List
 
@@ -13,7 +14,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 
 from app.core.database import get_db
-from app.models import CrawlLog, Platform, SystemConfig, HotTopic, SentimentResult
+from app.models import CrawlLog, Platform, SystemConfig, HotTopic, SentimentResult, CrawlerTask, CrawlerTaskEvent
 from app.schemas import (
     CrawlerTriggerRequest,
     CrawlerTriggerResponse,
@@ -23,6 +24,7 @@ from app.schemas import (
     UnifiedResponse,
 )
 from app.services.crawler_service import CrawlerService
+from app.services.task_state_service import expire_stale_crawler_tasks
 
 router = APIRouter()
 
@@ -47,31 +49,71 @@ async def trigger_crawler(
         platforms = [p.name for p in db.query(Platform).filter(Platform.is_active == True).all()]
     
     # 启动采集（异步或同步）
-    task_id = f"task_{datetime.now().strftime('%Y%m%d%H%M%S')}"
+    now = datetime.now()
+    task_id = f"task_{now.strftime('%Y%m%d%H%M%S%f')}"
+    task = CrawlerTask(
+        task_id=task_id,
+        status="queued" if request.is_async else "running",
+        progress=0 if request.is_async else 10,
+        platforms_json=json.dumps(platforms, ensure_ascii=False),
+        started_at=now,
+    )
+    db.add(task)
+    db.commit()
+    db.refresh(task)
+    db.add(CrawlerTaskEvent(
+        task_ref_id=task.id,
+        event_type="queued" if request.is_async else "started",
+        message="Crawler task created",
+        payload_json=json.dumps({"platforms": platforms, "is_async": request.is_async}, ensure_ascii=False),
+    ))
+    db.commit()
     
     if request.is_async:
-        # 异步执行：后台启动（实际实现需接入 APScheduler 或线程）
-        # TODO: 接入后台任务队列
         return {
             "code": 202,
             "data": {
                 "task_id": task_id,
-                "status": "running",
+                "status": task.status,
                 "platforms": platforms,
-                "started_at": datetime.now(),
+                "started_at": task.started_at,
             },
-            "message": "Crawler task started in background",
+            "message": "Crawler task queued",
         }
     else:
         # 同步执行：等待完成
-        results = service.run_crawl(platforms)
+        try:
+            results = service.run_crawl(platforms)
+            task.status = "completed"
+            task.progress = 100
+            task.result_json = json.dumps(results, ensure_ascii=False, default=str)
+            task.completed_at = datetime.now()
+            db.add(CrawlerTaskEvent(
+                task_ref_id=task.id,
+                event_type="completed",
+                message="Crawler task completed",
+                payload_json=task.result_json,
+            ))
+            db.commit()
+        except Exception as exc:
+            task.status = "failed"
+            task.progress = 100
+            task.error_message = str(exc)
+            task.completed_at = datetime.now()
+            db.add(CrawlerTaskEvent(
+                task_ref_id=task.id,
+                event_type="failed",
+                message=str(exc),
+            ))
+            db.commit()
+            raise
         return {
             "code": 200,
             "data": {
                 "task_id": task_id,
-                "status": "completed",
+                "status": task.status,
                 "platforms": platforms,
-                "started_at": datetime.now(),
+                "started_at": task.started_at,
                 "results": results,
             },
             "message": "Crawler task completed",
@@ -87,13 +129,33 @@ async def get_crawler_status(
     
     扩展：返回各平台最近采集状态、进度、队列信息
     """
+    expire_stale_crawler_tasks(db)
+
     # 查询最新采集日志
     last_log = db.query(CrawlLog).order_by(desc(CrawlLog.started_at)).first()
+    active_task = db.query(CrawlerTask).filter(
+        CrawlerTask.status.in_(["queued", "running", "paused", "retry_queued"])
+    ).order_by(desc(CrawlerTask.created_at)).first()
+    queue_length = db.query(CrawlerTask).filter(
+        CrawlerTask.status.in_(["queued", "retry_queued"])
+    ).count()
     
     is_running = False
     current_task = None
     
-    if last_log and last_log.completed_at is None:
+    if active_task:
+        is_running = active_task.status == "running"
+        platforms = json.loads(active_task.platforms_json or "[]")
+        started_at = active_task.started_at or active_task.created_at
+        current_task = {
+            "task_id": active_task.task_id,
+            "platforms": platforms,
+            "status": active_task.status,
+            "progress": active_task.progress,
+            "started_at": started_at.isoformat() if started_at else None,
+            "elapsed_seconds": (datetime.now() - started_at).seconds if started_at else 0,
+        }
+    elif last_log and last_log.completed_at is None:
         # 有未完成的日志，认为正在运行
         is_running = True
         current_task = {
@@ -161,7 +223,7 @@ async def get_crawler_status(
         "data": {
             "is_running": is_running,
             "current_task": current_task,
-            "queue_length": 0,  # TODO: 接入任务队列
+            "queue_length": queue_length,
             "platform_status": platform_status,
             "today_summary": {
                 "total": today_total,
@@ -270,12 +332,10 @@ async def update_schedule_config(
     
     db.commit()
     
-    # TODO: 重启定时任务
-    
     return {
         "code": 200,
         "data": config,
-        "message": "Schedule updated successfully",
+        "message": "Schedule config persisted successfully",
     }
 
 
@@ -290,6 +350,8 @@ async def get_sync_status(
     
     返回各模块最新数据更新时间
     """
+    expire_stale_crawler_tasks(db)
+
     # 最新热榜采集时间
     last_hot_topic = db.query(HotTopic).order_by(desc(HotTopic.crawl_time)).first()
     last_hot_topic_time = last_hot_topic.crawl_time.isoformat() if last_hot_topic else None
@@ -301,6 +363,12 @@ async def get_sync_status(
     # 最新采集日志时间
     last_crawl = db.query(CrawlLog).order_by(desc(CrawlLog.completed_at)).first()
     last_crawl_time = last_crawl.completed_at.isoformat() if last_crawl and last_crawl.completed_at else None
+    active_task = db.query(CrawlerTask).filter(
+        CrawlerTask.status.in_(["queued", "running", "paused", "retry_queued"])
+    ).order_by(desc(CrawlerTask.created_at)).first()
+    queue_length = db.query(CrawlerTask).filter(
+        CrawlerTask.status.in_(["queued", "retry_queued"])
+    ).count()
     
     # 计算同步延迟（秒）
     sync_delay = None
@@ -329,7 +397,16 @@ async def get_sync_status(
                     ).count(),
                 },
             },
-            "is_syncing": False,  # TODO: 接入真实同步状态
+            "is_syncing": bool(active_task and active_task.status in {"queued", "running", "retry_queued"}),
+            "queue_length": queue_length,
+            "active_task": {
+                "task_id": active_task.task_id,
+                "status": active_task.status,
+                "progress": active_task.progress,
+                "platforms": json.loads(active_task.platforms_json or "[]"),
+                "started_at": (active_task.started_at or active_task.created_at).isoformat()
+                if (active_task.started_at or active_task.created_at) else None,
+            } if active_task else None,
         },
         "message": "success",
     }

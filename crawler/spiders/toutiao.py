@@ -12,6 +12,8 @@ from typing import List, Dict
 
 import requests
 
+from crawler.http_client import get as crawler_get
+
 logger = logging.getLogger(__name__)
 
 TOUTIAO_HOT_API = "https://www.toutiao.com/hot-event/hot-board/?origin=toutiao_pc"
@@ -34,7 +36,7 @@ def fetch_toutiao_hot() -> List[Dict]:
         List[Dict]: 热榜数据列表
     """
     try:
-        resp = requests.get(TOUTIAO_HOT_API, headers=HEADERS, timeout=10)
+        resp = crawler_get(TOUTIAO_HOT_API, headers=HEADERS, timeout=10)
         resp.raise_for_status()
         data = resp.json()
 

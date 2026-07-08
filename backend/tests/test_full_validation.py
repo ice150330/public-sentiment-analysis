@@ -13,20 +13,47 @@
     python test_full_validation.py --module=analytics  # 高级分析
 """
 
+import asyncio
 import sys
 import argparse
-sys.path.insert(0, '/root/.openclaw/workspace/sentiment-analysis')
-sys.path.insert(0, '/root/.openclaw/workspace/sentiment-analysis/backend')
+from pathlib import Path
 
-from fastapi.testclient import TestClient
+import httpx
+
+repo_root = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(repo_root))
+sys.path.insert(0, str(repo_root / "backend"))
+
 from app.main import app
 
-client = TestClient(app)
+
+class ASGITestClient:
+    """Small sync wrapper around httpx ASGITransport for httpx>=0.28."""
+
+    async def _request(self, method: str, path: str, **kwargs):
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+            return await client.request(method, path, **kwargs)
+
+    def get(self, path: str, **kwargs):
+        return asyncio.run(self._request("GET", path, **kwargs))
+
+    def post(self, path: str, **kwargs):
+        return asyncio.run(self._request("POST", path, **kwargs))
+
+    def patch(self, path: str, **kwargs):
+        return asyncio.run(self._request("PATCH", path, **kwargs))
+
+    def delete(self, path: str, **kwargs):
+        return asyncio.run(self._request("DELETE", path, **kwargs))
+
+
+client = ASGITestClient()
 
 # 解析命令行参数
 parser = argparse.ArgumentParser(description='API validation tests')
 parser.add_argument('--module', default='', help='Test module: core, alerts, analytics')
-args = parser.parse_args()
+args, _ = parser.parse_known_args()
 MODULE = args.module
 
 def test_health():

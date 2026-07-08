@@ -43,7 +43,7 @@ async def list_platforms(
     }
 
 
-@router.get("/{platform_id}", response_model=UnifiedResponse[PlatformResponse])
+@router.get("/{platform_id:int}", response_model=UnifiedResponse[PlatformResponse])
 async def get_platform(
     platform_id: int,
     db: Session = Depends(get_db),
@@ -60,7 +60,7 @@ async def get_platform(
     }
 
 
-@router.patch("/{platform_id}", response_model=UnifiedResponse[PlatformResponse])
+@router.patch("/{platform_id:int}", response_model=UnifiedResponse[PlatformResponse])
 async def update_platform(
     platform_id: int,
     update: PlatformUpdate,

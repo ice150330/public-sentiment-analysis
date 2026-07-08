@@ -28,6 +28,7 @@ if TYPE_CHECKING:
     from app.models.propagation_path import PropagationPath, PropagationNode
     from app.models.trend_prediction import TrendPrediction, PredictionFeature
     from app.models.model_explanation import ModelExplanation, FeatureContribution
+    from app.models.task_state import CrawlerTask, CrawlerTaskEvent, SentimentJob, DataArchiveRun
 
 
 class LazyModule:
@@ -63,6 +64,7 @@ _topic_cluster = LazyModule("app.models.topic_cluster", ["TopicCluster", "Cluste
 _propagation = LazyModule("app.models.propagation_path", ["PropagationPath", "PropagationNode"])
 _trend = LazyModule("app.models.trend_prediction", ["TrendPrediction", "PredictionFeature"])
 _explanation = LazyModule("app.models.model_explanation", ["ModelExplanation", "FeatureContribution"])
+_task_state = LazyModule("app.models.task_state", ["CrawlerTask", "CrawlerTaskEvent", "SentimentJob", "DataArchiveRun"])
 
 # 保持兼容：直接访问时触发加载
 SystemConfig = _system_config.SystemConfig
@@ -84,6 +86,10 @@ TrendPrediction = _trend.TrendPrediction
 PredictionFeature = _trend.PredictionFeature
 ModelExplanation = _explanation.ModelExplanation
 FeatureContribution = _explanation.FeatureContribution
+CrawlerTask = _task_state.CrawlerTask
+CrawlerTaskEvent = _task_state.CrawlerTaskEvent
+SentimentJob = _task_state.SentimentJob
+DataArchiveRun = _task_state.DataArchiveRun
 
 __all__ = [
     "Platform", "HotTopic", "SentimentResult", "CrawlLog",
@@ -96,4 +102,5 @@ __all__ = [
     "PropagationPath", "PropagationNode",
     "TrendPrediction", "PredictionFeature",
     "ModelExplanation", "FeatureContribution",
+    "CrawlerTask", "CrawlerTaskEvent", "SentimentJob", "DataArchiveRun",
 ]

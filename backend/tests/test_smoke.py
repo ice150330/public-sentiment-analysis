@@ -5,15 +5,32 @@
 模块职责: 5个核心接口快速验证，避免长任务被SIGKILL
 """
 
+import asyncio
 import sys
-sys.path.insert(0, '/root/.openclaw/workspace/sentiment-analysis')
-sys.path.insert(0, '/root/.openclaw/workspace/sentiment-analysis/backend')
+from pathlib import Path
 
-from fastapi.testclient import TestClient
+import httpx
+
+repo_root = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(repo_root))
+sys.path.insert(0, str(repo_root / "backend"))
 
 from app.main import app
 
-client = TestClient(app)
+
+class ASGITestClient:
+    """Small sync wrapper around httpx ASGITransport for httpx>=0.28."""
+
+    async def _request(self, method: str, path: str, **kwargs):
+        transport = httpx.ASGITransport(app=app)
+        async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+            return await client.request(method, path, **kwargs)
+
+    def get(self, path: str, **kwargs):
+        return asyncio.run(self._request("GET", path, **kwargs))
+
+
+client = ASGITestClient()
 
 
 def test_health():

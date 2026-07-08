@@ -56,12 +56,13 @@ class CrawlerService:
                 topics = self.pipeline.crawl_platform(platform_name, use_mock=False)
                 saved_count = self.pipeline.save_results(topics)
 
-                if saved_count > 0:
+                if topics:
                     results["total"] += saved_count
                     results["success"] += 1
                     results["details"].append({
                         "platform": platform_name,
-                        "status": "success",
+                        "status": "success" if saved_count > 0 else "no_new_data",
+                        "fetched": len(topics),
                         "records": saved_count,
                     })
                 else:

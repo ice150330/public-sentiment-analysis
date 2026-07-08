@@ -11,19 +11,22 @@ import ReactECharts from 'echarts-for-react';
 import {
   analyzeBatch,
   analyzeText,
+  forecastHeat,
+  ForecastHeat,
   getErrorMessage,
   getHeatTrend,
+  getSentimentSummary,
   getSentimentResults,
   HeatTrend,
   SentimentAnalyzeResult,
   SentimentResult,
+  SentimentSummary,
 } from '../services/api';
 import {
   DataState,
   formatDateTime,
   ModuleFrame,
   Panel,
-  SectionNotice,
   SentimentBadge,
   sentimentText,
   SubView,
@@ -50,6 +53,8 @@ const Sentiment: React.FC = () => {
   const [batchResults, setBatchResults] = useState<SentimentAnalyzeResult[]>([]);
   const [storedResults, setStoredResults] = useState<SentimentResult[]>([]);
   const [heatTrend, setHeatTrend] = useState<HeatTrend | null>(null);
+  const [forecast, setForecast] = useState<ForecastHeat | null>(null);
+  const [summary, setSummary] = useState<SentimentSummary | null>(null);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -58,12 +63,16 @@ const Sentiment: React.FC = () => {
   const fetchExisting = useCallback(async () => {
     try {
       setPageLoading(true);
-      const [resultsRes, trendRes] = await Promise.all([
+      const [resultsRes, trendRes, forecastRes, summaryRes] = await Promise.all([
         getSentimentResults({ page: 1, page_size: 12 }),
         getHeatTrend({ days: 14, aggregation: 'daily' }),
+        forecastHeat({ horizon_days: 7 }),
+        getSentimentSummary(),
       ]);
       setStoredResults(resultsRes.data?.items || []);
       setHeatTrend(trendRes.data);
+      setForecast(forecastRes.data);
+      setSummary(summaryRes.data);
       setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {
@@ -111,6 +120,39 @@ const Sentiment: React.FC = () => {
   };
 
   const forecastChart = useMemo(() => {
+    if (forecast?.forecast?.length) {
+      return {
+        tooltip: { trigger: 'axis' },
+        grid: { left: 48, right: 18, top: 30, bottom: 28 },
+        xAxis: { type: 'category', data: forecast.forecast.map((point) => point.date), axisLabel: { color: '#64748B' } },
+        yAxis: { type: 'value', splitLine: { lineStyle: { color: '#E7EEF7' } } },
+        series: [
+          {
+            name: '预测热度',
+            type: 'line',
+            smooth: true,
+            data: forecast.forecast.map((point) => point.predicted_heat),
+          },
+          {
+            name: '置信上界',
+            type: 'line',
+            smooth: true,
+            symbol: 'none',
+            lineStyle: { type: 'dashed' },
+            data: forecast.forecast.map((point) => point.confidence_upper),
+          },
+          {
+            name: '置信下界',
+            type: 'line',
+            smooth: true,
+            symbol: 'none',
+            lineStyle: { type: 'dashed' },
+            data: forecast.forecast.map((point) => point.confidence_lower),
+          },
+        ],
+      };
+    }
+
     const series = heatTrend?.series?.filter((item) => item.data.length > 0) || [];
     if (series.length === 0) return null;
     const dates = Array.from(new Set(series.flatMap((item) => item.data.map((point) => point.date))));
@@ -127,7 +169,7 @@ const Sentiment: React.FC = () => {
         data: dates.map((date) => item.data.find((point) => point.date === date)?.avg_heat ?? null),
       })),
     };
-  }, [heatTrend]);
+  }, [forecast, heatTrend]);
 
   const resultChart = useMemo(() => {
     if (!latestResult) return null;
@@ -203,33 +245,53 @@ const Sentiment: React.FC = () => {
     if (activeView === 'forecast') {
       return (
         <div className="psa-grid two-one">
-          <Panel title="趋势预测" eyebrow={heatTrend?.period}>
-            <SectionNotice
-              title="当前展示历史趋势"
-              description="后端尚未提供预测模型接口；这里仅展示 /stats/heat-trend 返回的真实历史热度趋势。"
-            />
+          <Panel title="趋势预测" eyebrow={forecast ? forecast.model : heatTrend?.period}>
             <DataState loading={pageLoading} error={error} empty={!forecastChart} emptyTitle="暂无趋势数据">
               <ReactECharts option={forecastChart || {}} className="psa-chart large" />
             </DataState>
           </Panel>
-          <Panel title="已入库情感结果">
-            <DataState loading={pageLoading} error={error} empty={storedResults.length === 0} emptyTitle="暂无入库情感结果">
-              <div className="psa-list">
-                {storedResults.slice(0, 8).map((item) => (
-                  <div className="psa-row" key={item.id}>
-                    <div>
-                      <p className="psa-row-title">Topic #{item.topic_id}</p>
-                      <div className="psa-row-meta">
-                        <span>{formatDateTime(item.analyzed_at)}</span>
-                        <span>{item.model_version || '未标注模型'}</span>
-                      </div>
-                    </div>
-                    <SentimentBadge label={item.sentiment_label} confidence={item.confidence} />
+          <div className="psa-grid">
+            <Panel title="分析摘要">
+              <DataState loading={pageLoading} error={error} empty={!summary} emptyTitle="暂无分析摘要">
+                <div className="psa-detail-list">
+                  <div className="psa-detail-item">
+                    <span>今日分析</span>
+                    <strong>{summary?.today_analyzed ?? 0}</strong>
                   </div>
-                ))}
-              </div>
-            </DataState>
-          </Panel>
+                  <div className="psa-detail-item">
+                    <span>低置信</span>
+                    <strong>{summary?.low_confidence ?? 0}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>负向样本</span>
+                    <strong>{summary?.negative_samples ?? 0}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>平均置信</span>
+                    <strong>{((summary?.avg_confidence || 0) * 100).toFixed(1)}%</strong>
+                  </div>
+                </div>
+              </DataState>
+            </Panel>
+            <Panel title="已入库情感结果">
+              <DataState loading={pageLoading} error={error} empty={storedResults.length === 0} emptyTitle="暂无入库情感结果">
+                <div className="psa-list">
+                  {storedResults.slice(0, 6).map((item) => (
+                    <div className="psa-row" key={item.id}>
+                      <div>
+                        <p className="psa-row-title">Topic #{item.topic_id}</p>
+                        <div className="psa-row-meta">
+                          <span>{formatDateTime(item.analyzed_at)}</span>
+                          <span>{item.model_version || '未标注模型'}</span>
+                        </div>
+                      </div>
+                      <SentimentBadge label={item.sentiment_label} confidence={item.confidence} />
+                    </div>
+                  ))}
+                </div>
+              </DataState>
+            </Panel>
+          </div>
         </div>
       );
     }
