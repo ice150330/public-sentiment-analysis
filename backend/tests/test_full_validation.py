@@ -1,13 +1,20 @@
 """
-全量接口验证测试
+全量接口验证测试（支持按模块分批执行）
 
 测试内容:
 1. 所有新增模块的接口连通性
 2. 数据库表创建验证
 3. 关键业务逻辑验证
+
+用法:
+    python test_full_validation.py              # 全量测试
+    python test_full_validation.py --module=core    # 核心模块
+    python test_full_validation.py --module=alerts  # 预警模块
+    python test_full_validation.py --module=analytics  # 高级分析
 """
 
 import sys
+import argparse
 sys.path.insert(0, '/root/.openclaw/workspace/sentiment-analysis')
 sys.path.insert(0, '/root/.openclaw/workspace/sentiment-analysis/backend')
 
@@ -15,6 +22,12 @@ from fastapi.testclient import TestClient
 from app.main import app
 
 client = TestClient(app)
+
+# 解析命令行参数
+parser = argparse.ArgumentParser(description='API validation tests')
+parser.add_argument('--module', default='', help='Test module: core, alerts, analytics')
+args = parser.parse_args()
+MODULE = args.module
 
 def test_health():
     """测试健康检查"""
@@ -234,21 +247,33 @@ def test_model_explanations():
 
 
 if __name__ == "__main__":
-    print("🚀 Starting full API validation tests...\n")
+    print("🚀 Starting API validation tests...\n")
+    
+    if MODULE:
+        print(f"📦 Module filter: {MODULE}\n")
     
     try:
+        # 核心模块（所有测试都运行）
         test_health()
-        test_alert_rules()
-        test_platform_monitoring()
-        test_data_quality()
-        test_system()
-        test_model_status()
-        test_alert_engine()
-        test_data_quality_check()
-        test_topic_clusters()
-        test_propagation_paths()
-        test_trend_predictions()
-        test_model_explanations()
+        
+        if not MODULE or MODULE == "alerts":
+            test_alert_rules()
+        
+        if not MODULE or MODULE == "core":
+            test_platform_monitoring()
+            test_data_quality()
+            test_system()
+            test_model_status()
+        
+        if not MODULE or MODULE == "alerts":
+            test_alert_engine()
+            test_data_quality_check()
+        
+        if not MODULE or MODULE == "analytics":
+            test_topic_clusters()
+            test_propagation_paths()
+            test_trend_predictions()
+            test_model_explanations()
         
         print("\n✅ All tests passed!")
     except Exception as e:
