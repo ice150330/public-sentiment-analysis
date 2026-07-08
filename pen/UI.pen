@@ -392,7 +392,8 @@
                       "content": "用于标题、表格、筛选、按钮与页面说明。",
                       "lineHeight": 1.28,
                       "fontFamily": "$font-cn",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -422,7 +423,8 @@
                       "content": "用于数值、时间、模型版本和接口状态。",
                       "lineHeight": 1.28,
                       "fontFamily": "$font-cn",
-                      "fontSize": 13
+                      "fontSize": 13,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
@@ -594,7 +596,8 @@
                       "content": "输入关键词",
                       "lineHeight": 1.28,
                       "fontFamily": "$font-cn",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     }
                   ]
                 },
@@ -634,7 +637,8 @@
                       "content": "搜索话题、平台或模型",
                       "lineHeight": 1.28,
                       "fontFamily": "$font-cn",
-                      "fontSize": 14
+                      "fontSize": 14,
+                      "fontWeight": "normal"
                     }
                   ]
                 }
