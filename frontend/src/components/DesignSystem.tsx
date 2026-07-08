@@ -1,19 +1,23 @@
 import React from 'react';
 import { Button, Empty, Result, Skeleton, Tag } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { gsap } from 'gsap';
+import { useGSAP } from '@gsap/react';
 import {
   AppstoreOutlined,
-  BarChartOutlined,
   CheckCircleFilled,
   DashboardOutlined,
   DatabaseOutlined,
   ExclamationCircleOutlined,
   FireOutlined,
+  RadarChartOutlined,
   ReloadOutlined,
   SearchOutlined,
   SettingOutlined,
   SmileOutlined,
 } from '@ant-design/icons';
+
+gsap.registerPlugin(useGSAP);
 
 export interface SubView {
   key: string;
@@ -88,8 +92,109 @@ export const ModuleFrame: React.FC<ModuleFrameProps> = ({
   lastUpdated,
   children,
 }) => {
+  const location = useLocation();
+  const motionScope = React.useRef<HTMLElement | null>(null);
+  const previousPathRef = React.useRef<string | null>(null);
+
+  useGSAP(() => {
+    if (!motionScope.current) return undefined;
+
+    const isRouteEntry = previousPathRef.current !== location.pathname;
+    previousPathRef.current = location.pathname;
+
+    const mm = gsap.matchMedia();
+    mm.add(
+      {
+        isDesktop: '(min-width: 800px)',
+        reduceMotion: '(prefers-reduced-motion: reduce)',
+      },
+      (context) => {
+        const conditions = context.conditions as { isDesktop: boolean; reduceMotion: boolean };
+        const shellTargets = [
+          '.psa-topbar',
+          '.psa-view-tab',
+          '.psa-top-actions > *',
+          '.psa-motion-card',
+          '.psa-motion-state',
+          '.psa-filter-bar',
+          '.psa-floating-dock',
+        ];
+
+        if (conditions.reduceMotion) {
+          gsap.set(shellTargets, { clearProps: 'all' });
+          return undefined;
+        }
+
+        const contentTargets = gsap.utils.toArray<HTMLElement>(
+          '.psa-motion-card, .psa-motion-state, .psa-filter-bar',
+          motionScope.current,
+        );
+        const travel = conditions.isDesktop ? 10 : 6;
+        const timeline = gsap.timeline({
+          defaults: {
+            ease: 'power2.out',
+            overwrite: 'auto',
+          },
+        });
+
+        if (isRouteEntry) {
+          timeline
+            .from('.psa-topbar', {
+              autoAlpha: 0,
+              y: -8,
+              duration: 0.3,
+              clearProps: 'transform,opacity,visibility',
+            })
+            .from('.psa-view-tab', {
+              autoAlpha: 0,
+              y: -4,
+              duration: 0.18,
+              stagger: 0.025,
+              clearProps: 'transform,opacity,visibility',
+            }, '-=0.16')
+            .from('.psa-top-actions > *', {
+              autoAlpha: 0,
+              x: 6,
+              duration: 0.22,
+              stagger: 0.03,
+              clearProps: 'transform,opacity,visibility',
+            }, '-=0.14');
+        }
+
+        timeline.from(contentTargets, {
+          autoAlpha: 0,
+          y: travel,
+          duration: 0.32,
+          stagger: {
+            each: 0.03,
+            from: 'start',
+          },
+          clearProps: 'transform,opacity,visibility',
+        }, isRouteEntry ? '-=0.06' : 0);
+
+        if (isRouteEntry) {
+          timeline.from('.psa-floating-dock', {
+            autoAlpha: 0,
+            y: 12,
+            duration: 0.26,
+            clearProps: 'transform,opacity,visibility',
+          }, '-=0.18');
+        }
+
+        return undefined;
+      },
+      motionScope.current,
+    );
+
+    return () => mm.revert();
+  }, {
+    dependencies: [location.pathname, activeView],
+    scope: motionScope,
+    revertOnUpdate: true,
+  });
+
   return (
-    <main className="psa-screen">
+    <main className="psa-screen" ref={motionScope}>
       <section className="psa-screen-inner">
         <TopFunctionBar
           moduleLabel={moduleLabel}
@@ -120,15 +225,41 @@ const TopFunctionBar: React.FC<Omit<ModuleFrameProps, 'children'>> = ({
   refreshing,
   lastUpdated,
 }) => {
+  const [localSearch, setLocalSearch] = React.useState('');
+  const [now, setNow] = React.useState(() => Date.now());
+
+  React.useEffect(() => {
+    const timer = window.setInterval(() => setNow(Date.now()), 10000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  const syncLabel = React.useMemo(() => {
+    if (!lastUpdated) return '待同步';
+
+    const updatedAt = new Date(lastUpdated).getTime();
+    if (Number.isNaN(updatedAt)) return `同步 ${lastUpdated}`;
+
+    const seconds = Math.max(0, Math.floor((now - updatedAt) / 1000));
+    if (seconds < 60) return `同步 ${seconds}s`;
+
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return `同步 ${minutes}m`;
+
+    return `同步 ${Math.floor(minutes / 60)}h`;
+  }, [lastUpdated, now]);
+
+  const searchValueToRender = onSearchChange ? (searchValue || '') : localSearch;
+  const activeViewLabel = views.find((view) => view.key === activeView)?.label || moduleLabel;
+
   return (
     <header className="psa-topbar">
       <div className="psa-brand">
         <div className="psa-brand-mark">
-          <BarChartOutlined />
+          <RadarChartOutlined />
         </div>
         <div>
-          <div className="psa-brand-title">公众情绪分析</div>
-          <div className="psa-brand-subtitle">{moduleLabel}</div>
+          <div className="psa-brand-title">公众情绪智能分析系统</div>
+          <div className="psa-brand-subtitle">{activeViewLabel}</div>
         </div>
       </div>
 
@@ -149,18 +280,23 @@ const TopFunctionBar: React.FC<Omit<ModuleFrameProps, 'children'>> = ({
       <div className="psa-top-actions">
         <span className="psa-sync-badge">
           <CheckCircleFilled />
-          {lastUpdated ? `同步 ${lastUpdated}` : '待同步'}
+          {syncLabel}
         </span>
-        {onSearchChange && (
-          <label className="psa-search">
-            <SearchOutlined />
-            <input
-              value={searchValue || ''}
-              onChange={(event) => onSearchChange(event.target.value)}
-              placeholder="搜索关键词"
-            />
-          </label>
-        )}
+        <label className="psa-search">
+          <SearchOutlined />
+          <input
+            value={searchValueToRender}
+            onChange={(event) => {
+              if (onSearchChange) {
+                onSearchChange(event.target.value);
+                return;
+              }
+
+              setLocalSearch(event.target.value);
+            }}
+            placeholder="搜索关键词"
+          />
+        </label>
         {onRefresh && (
           <Button
             className="psa-dark-action"
@@ -168,7 +304,7 @@ const TopFunctionBar: React.FC<Omit<ModuleFrameProps, 'children'>> = ({
             onClick={onRefresh}
             loading={refreshing}
           >
-            刷新
+            刷新数据
           </Button>
         )}
       </div>
@@ -211,7 +347,7 @@ interface PanelProps {
 }
 
 export const Panel: React.FC<PanelProps> = ({ title, eyebrow, extra, className, children }) => (
-  <section className={`psa-panel ${className || ''}`}>
+  <section className={['psa-panel', 'psa-motion-card', className].filter(Boolean).join(' ')}>
     {(title || eyebrow || extra) && (
       <div className="psa-panel-head">
         <div>
@@ -234,7 +370,7 @@ interface MetricCardProps {
 }
 
 export const MetricCard: React.FC<MetricCardProps> = ({ label, value, helper, tone = 'primary', icon }) => (
-  <article className={`psa-metric-card ${tone}`}>
+  <article className={`psa-metric-card psa-motion-card ${tone}`}>
     <div className="psa-metric-icon">{icon || <DatabaseOutlined />}</div>
     <div>
       <div className="psa-metric-label">{label}</div>
@@ -265,7 +401,7 @@ export const DataState: React.FC<DataStateProps> = ({
 }) => {
   if (loading) {
     return (
-      <div className="psa-state" style={{ minHeight }}>
+      <div className="psa-state psa-motion-state loading" style={{ minHeight }}>
         <Skeleton active paragraph={{ rows: 4 }} />
       </div>
     );
@@ -274,7 +410,7 @@ export const DataState: React.FC<DataStateProps> = ({
   if (error) {
     return (
       <Result
-        className="psa-result"
+        className="psa-result psa-motion-state"
         status="warning"
         icon={<ExclamationCircleOutlined />}
         title="数据加载失败"
@@ -285,7 +421,7 @@ export const DataState: React.FC<DataStateProps> = ({
 
   if (empty) {
     return (
-      <div className="psa-state" style={{ minHeight }}>
+      <div className="psa-state psa-motion-state empty" style={{ minHeight }}>
         <Empty description={<span>{emptyTitle}</span>} />
         <p className="psa-empty-copy">{emptyDescription}</p>
       </div>
@@ -325,7 +461,7 @@ export const SentimentBadge: React.FC<{ label?: string; confidence?: number }> =
 };
 
 export const SectionNotice: React.FC<{ title: string; description: string }> = ({ title, description }) => (
-  <div className="psa-section-notice">
+  <div className="psa-section-notice psa-motion-card">
     <AppstoreOutlined />
     <div>
       <strong>{title}</strong>

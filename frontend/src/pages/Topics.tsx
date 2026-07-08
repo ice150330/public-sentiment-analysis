@@ -73,7 +73,7 @@ const Topics: React.FC = () => {
         if (current && items.some((item) => item.id === current)) return current;
         return items[0]?.id ?? null;
       });
-      setLastUpdated(new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
+      setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {
       setError(getErrorMessage(err));

@@ -77,8 +77,8 @@ code {
 
 .psa-topbar {
   display: grid;
-  grid-template-columns: 250px minmax(360px, 1fr) 432px;
-  gap: 16px;
+  grid-template-columns: minmax(210px, 250px) minmax(16px, 1fr) minmax(340px, 416px) minmax(360px, 432px);
+  gap: 8px;
   align-items: center;
   height: 76px;
   padding: 0 16px;
@@ -87,9 +87,11 @@ code {
   background: linear-gradient(180deg, rgba(255,255,255,0.95), rgba(247,250,255,0.95));
   box-shadow: 0 18px 38px -24px rgba(32, 70, 111, 0.24), 0 1px 0 #fff;
   backdrop-filter: blur(18px);
+  will-change: transform, opacity;
 }
 
 .psa-brand {
+  grid-column: 1;
   display: flex;
   align-items: center;
   gap: 12px;
@@ -106,9 +108,26 @@ code {
   border-radius: 14px;
   background: linear-gradient(135deg, #155eef, #0b4b8f);
   box-shadow: 0 8px 18px -8px rgba(21, 94, 239, 0.4);
+  transition: transform 180ms ease, box-shadow 180ms ease;
+}
+
+.psa-brand > div:last-child {
+  min-width: 0;
+}
+
+.psa-brand:hover .psa-brand-mark {
+  transform: translateY(-1px) scale(1.02);
+  box-shadow: 0 12px 22px -10px rgba(21, 94, 239, 0.55);
+}
+
+.psa-brand-mark .anticon {
+  animation: psa-radar-breathe 5.2s ease-in-out infinite;
 }
 
 .psa-brand-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-size: 13px;
   font-weight: 800;
   line-height: 1.25;
@@ -122,14 +141,18 @@ code {
 }
 
 .psa-view-tabs {
+  grid-column: 3;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: min(100%, 416px);
+  justify-self: center;
   min-width: 0;
   padding: 5px;
   border: 1px solid #d8e5f3;
   border-radius: 24px;
   background: #eef4fb;
+  will-change: transform, opacity;
 }
 
 .psa-view-tab {
@@ -148,6 +171,18 @@ code {
   font-size: 12px;
   font-weight: 700;
   white-space: nowrap;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.psa-view-tab:hover {
+  color: var(--primary);
+  background: rgba(255, 255, 255, 0.64);
+  transform: translateY(-1px);
 }
 
 .psa-view-tab.active {
@@ -155,6 +190,10 @@ code {
   border-color: var(--primary);
   background: var(--primary);
   box-shadow: 0 8px 16px -10px rgba(21, 94, 239, 0.4);
+}
+
+.psa-view-tab.active:hover {
+  color: #fff;
 }
 
 .psa-view-tab:focus-visible,
@@ -165,10 +204,13 @@ code {
 }
 
 .psa-top-actions {
+  grid-column: 4;
   display: flex;
   align-items: center;
   justify-content: flex-end;
   gap: 10px;
+  width: min(100%, 432px);
+  justify-self: end;
   min-width: 0;
 }
 
@@ -185,6 +227,7 @@ code {
   font-size: 11px;
   font-weight: 800;
   white-space: nowrap;
+  transition: box-shadow 180ms ease;
 }
 
 .psa-search {
@@ -198,6 +241,16 @@ code {
   border: 1px solid #d9e5f2;
   border-radius: 20px;
   background: #f5f8fc;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.psa-search:focus-within {
+  border-color: #bfdbfe;
+  background: #fff;
+  box-shadow: 0 10px 20px -16px rgba(37, 99, 235, 0.5);
 }
 
 .psa-search input {
@@ -217,18 +270,24 @@ code {
 
 .psa-dark-action.ant-btn {
   height: 40px;
+  padding: 0 14px;
   color: #fff;
   border-color: #12243b;
   border-radius: 20px;
   background: #12243b;
   box-shadow: 0 8px 16px -10px rgba(18, 36, 59, 0.4);
   font-weight: 800;
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .psa-dark-action.ant-btn:hover {
   color: #fff !important;
   border-color: #0f1d30 !important;
   background: #0f1d30 !important;
+  box-shadow: 0 12px 20px -12px rgba(18, 36, 59, 0.52);
 }
 
 .psa-content {
@@ -264,13 +323,22 @@ code {
 .psa-panel {
   min-width: 0;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
   padding: 16px;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
 }
 
 .psa-panel.cool {
   background: var(--bg-surface-cool);
+}
+
+.psa-panel:hover {
+  border-color: #c9d8e8;
+  box-shadow: 0 16px 32px -28px rgba(32, 70, 111, 0.34);
 }
 
 .psa-panel.tall {
@@ -305,11 +373,21 @@ code {
   align-items: center;
   gap: 12px;
   min-width: 0;
-  min-height: 86px;
+  min-height: 89px;
   padding: 14px;
   border: 1px solid var(--border-subtle);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   background: var(--bg-surface);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.psa-metric-card:hover {
+  border-color: #c9d8e8;
+  box-shadow: 0 18px 34px -28px rgba(32, 70, 111, 0.36);
+  transform: translateY(-1px);
 }
 
 .psa-metric-icon {
@@ -322,6 +400,11 @@ code {
   background: var(--primary-soft);
   color: var(--primary);
   font-size: 17px;
+  transition: transform 180ms ease;
+}
+
+.psa-metric-card:hover .psa-metric-icon {
+  transform: scale(1.03);
 }
 
 .psa-metric-card.positive .psa-metric-icon {
@@ -384,6 +467,24 @@ code {
   border: 1px solid #e2eaf4;
   border-radius: var(--radius-sm);
   background: #fff;
+  transition:
+    border-color 160ms ease,
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.psa-row:hover {
+  border-color: #d0deed;
+  background: #fbfdff;
+  box-shadow: 0 12px 24px -22px rgba(15, 35, 60, 0.34);
+}
+
+button.psa-row {
+  width: 100%;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
 }
 
 .psa-row-title {
@@ -420,12 +521,54 @@ code {
   border: 1px solid var(--border-subtle);
   border-radius: var(--radius-lg);
   background: #fff;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.psa-filter-bar:hover {
+  border-color: #c9d8e8;
+  box-shadow: 0 14px 28px -26px rgba(32, 70, 111, 0.3);
 }
 
 .psa-filter-bar .ant-input,
 .psa-filter-bar .ant-select-selector,
 .psa-filter-bar .ant-picker {
+  border-color: #d9e5f2 !important;
   border-radius: 18px !important;
+  background: #f8fbff !important;
+  font-weight: 700;
+}
+
+.psa-filter-bar .ant-btn,
+.psa-actions .ant-btn {
+  height: 40px;
+  border-radius: 20px;
+  font-weight: 800;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    background-color 180ms ease;
+}
+
+.psa-filter-bar .ant-btn:not(:disabled):hover,
+.psa-actions .ant-btn:not(:disabled):hover {
+  box-shadow: 0 10px 18px -14px rgba(37, 99, 235, 0.35);
+}
+
+.ant-btn-primary {
+  background: var(--primary);
+  border-color: var(--primary);
+  box-shadow: 0 8px 16px -10px rgba(37, 99, 235, 0.48);
+}
+
+.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
+  background: #155eef;
+  border-color: #155eef;
+}
+
+.ant-switch.ant-switch-checked {
+  background: var(--primary);
 }
 
 .psa-tag.ant-tag,
@@ -434,6 +577,14 @@ code {
   border-radius: 999px;
   font-size: 11px;
   font-weight: 800;
+  transition:
+    box-shadow 160ms ease,
+    background-color 160ms ease;
+}
+
+.psa-tag.ant-tag:hover,
+.psa-platform.ant-tag:hover {
+  box-shadow: 0 8px 14px -12px rgba(15, 23, 42, 0.32);
 }
 
 .psa-tag.success {
@@ -524,6 +675,8 @@ code {
   height: 100%;
   border-radius: 999px;
   background: var(--primary);
+  transform-origin: left center;
+  animation: psa-bar-grow 560ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .psa-bar-fill.positive {
@@ -539,11 +692,27 @@ code {
 }
 
 .psa-state {
+  position: relative;
+  overflow: hidden;
   display: grid;
   min-height: 180px;
   place-items: center;
   padding: 24px;
   text-align: center;
+}
+
+.psa-state.loading::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: linear-gradient(110deg, transparent 20%, rgba(255, 255, 255, 0.62) 42%, transparent 64%);
+  transform: translateX(-100%);
+  animation: psa-loading-sheen 1.35s ease-in-out infinite;
+}
+
+.psa-state.empty {
+  color: var(--text-secondary);
 }
 
 .psa-empty-copy {
@@ -567,11 +736,19 @@ code {
   border-radius: var(--radius-sm);
   background: #f8fbff;
   color: var(--text-primary);
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
 .psa-section-notice > span {
   color: var(--primary);
   font-size: 18px;
+}
+
+.psa-section-notice:hover {
+  border-color: #bfdbfe;
+  box-shadow: 0 12px 24px -22px rgba(37, 99, 235, 0.3);
 }
 
 .psa-section-notice strong {
@@ -595,6 +772,9 @@ code {
   z-index: 20;
   display: flex;
   align-items: center;
+  justify-content: center;
+  width: 374px;
+  height: 60px;
   gap: 6px;
   padding: 8px;
   border: 1px solid var(--border-subtle);
@@ -603,29 +783,43 @@ code {
   box-shadow: 0 14px 34px rgba(15, 23, 42, 0.15);
   transform: translateX(-50%);
   backdrop-filter: blur(18px);
+  will-change: transform, opacity;
 }
 
 .psa-dock-item {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 58px;
-  height: 36px;
-  gap: 6px;
-  padding: 0 12px;
+  width: 85px;
+  height: 44px;
+  gap: 8px;
+  padding: 0 16px;
   color: var(--text-secondary);
   border: 0;
   border-radius: 999px;
   background: transparent;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 800;
+  transition:
+    background-color 180ms ease,
+    color 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.psa-dock-item:hover {
+  color: var(--primary);
+  background: #eff6ff;
 }
 
 .psa-dock-item.active {
   color: #fff;
   background: var(--primary);
   box-shadow: 0 10px 18px -12px rgba(37, 99, 235, 0.7);
+}
+
+.psa-dock-item.active:hover {
+  color: #fff;
 }
 
 .psa-input-panel {
@@ -695,20 +889,60 @@ code {
   line-height: 1.55;
 }
 
-@media (max-width: 1160px) {
+@keyframes psa-radar-breathe {
+  0%, 100% {
+    transform: scale(1);
+    filter: drop-shadow(0 0 0 rgba(255, 255, 255, 0));
+  }
+  50% {
+    transform: scale(1.03);
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.45));
+  }
+}
+
+@keyframes psa-loading-sheen {
+  0% {
+    transform: translateX(-100%);
+  }
+  55%, 100% {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes psa-bar-grow {
+  from {
+    transform: scaleX(0.08);
+    opacity: 0.4;
+  }
+  to {
+    transform: scaleX(1);
+    opacity: 1;
+  }
+}
+
+@media (max-width: 1240px) {
   .psa-topbar {
     grid-template-columns: 1fr;
+    gap: 12px;
     height: auto;
     padding: 14px;
     border-radius: 24px;
   }
 
+  .psa-brand,
+  .psa-view-tabs,
+  .psa-top-actions {
+    grid-column: auto;
+  }
+
   .psa-view-tabs {
+    width: 100%;
     justify-content: flex-start;
     overflow-x: auto;
   }
 
   .psa-top-actions {
+    width: 100%;
     justify-content: flex-start;
     flex-wrap: wrap;
   }
@@ -724,27 +958,53 @@ code {
 
 @media (max-width: 640px) {
   .psa-screen {
-    padding: 16px 12px 88px;
+    padding: 16px 16px 102px;
+  }
+
+  .psa-topbar {
+    display: flex;
+    height: 58px;
+    padding: 0 12px;
+    border-radius: 22px;
+  }
+
+  .psa-brand-mark {
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
   }
 
   .psa-brand-title {
     font-size: 12px;
   }
 
-  .psa-view-tab {
-    min-width: auto;
+  .psa-brand-subtitle {
+    font-size: 11px;
   }
 
-  .psa-search {
-    width: 100%;
-  }
-
-  .psa-dock-item span {
+  .psa-view-tabs,
+  .psa-top-actions {
     display: none;
   }
 
+  .psa-content {
+    padding-bottom: 106px;
+  }
+
+  .psa-floating-dock {
+    bottom: 12px;
+    width: 304px;
+    height: 52px;
+    padding: 6px;
+    box-shadow: 0 10px 26px rgba(15, 23, 42, 0.13);
+  }
+
   .psa-dock-item {
-    min-width: 42px;
+    width: 70px;
+    height: 40px;
+    gap: 5px;
+    padding: 0 8px;
+    font-size: 12px;
   }
 
   .psa-row {
@@ -753,5 +1013,30 @@ code {
 
   .psa-metric-value {
     font-size: 22px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .psa-panel:hover,
+  .psa-metric-card:hover,
+  .psa-row:hover,
+  .psa-view-tab:hover,
+  .psa-dock-item:hover,
+  .psa-search:focus-within,
+  .psa-dark-action.ant-btn:hover,
+  .psa-filter-bar .ant-btn:not(:disabled):hover,
+  .psa-actions .ant-btn:not(:disabled):hover,
+  .psa-section-notice:hover,
+  .psa-brand:hover .psa-brand-mark {
+    transform: none;
   }
 }

@@ -74,7 +74,7 @@ const Dashboard: React.FC = () => {
       setCrawlRate(crawlRateRes.data);
       setPlatforms(platformsRes.data || []);
       setLogs(logsRes.data || []);
-      setLastUpdated(new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
+      setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {
       setError(getErrorMessage(err));

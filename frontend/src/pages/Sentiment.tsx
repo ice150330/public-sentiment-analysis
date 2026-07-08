@@ -64,7 +64,7 @@ const Sentiment: React.FC = () => {
       ]);
       setStoredResults(resultsRes.data || []);
       setHeatTrend(trendRes.data);
-      setLastUpdated(new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
+      setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -84,7 +84,7 @@ const Sentiment: React.FC = () => {
       const res = await analyzeText(text.trim());
       setLatestResult(res.data);
       setActiveView('explain');
-      setLastUpdated(new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
+      setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {
       setError(getErrorMessage(err));
@@ -101,7 +101,7 @@ const Sentiment: React.FC = () => {
       const res = await analyzeBatch(texts);
       setBatchResults(res.data || []);
       setActiveView('batch');
-      setLastUpdated(new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }));
+      setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {
       setError(getErrorMessage(err));
