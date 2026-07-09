@@ -1,0 +1,118 @@
+{
+  "date": "2026-07-09",
+  "generated_at": "2026-07-09T17:36:24.023950",
+  "summary": {
+    "total_topics": 722,
+    "sentiment_analyzed": 722,
+    "coverage_rate": 100.0
+  },
+  "platform_distribution": [
+    {
+      "platform": "B站",
+      "count": 78
+    },
+    {
+      "platform": "今日头条",
+      "count": 161
+    },
+    {
+      "platform": "微博",
+      "count": 185
+    },
+    {
+      "platform": "抖音",
+      "count": 96
+    },
+    {
+      "platform": "百度",
+      "count": 160
+    },
+    {
+      "platform": "知乎",
+      "count": 42
+    }
+  ],
+  "sentiment_distribution": [
+    {
+      "label": "negative",
+      "count": 38,
+      "percentage": 5.3
+    },
+    {
+      "label": "neutral",
+      "count": 70,
+      "percentage": 9.7
+    },
+    {
+      "label": "positive",
+      "count": 614,
+      "percentage": 85.0
+    }
+  ],
+  "top_10_topics": [
+    {
+      "title": "HLE vs BLG 季中冠军赛",
+      "heat_score": 174217660,
+      "category": "其他",
+      "platform": "B站"
+    },
+    {
+      "title": "旅游强国建设“十五五”规划全知道",
+      "heat_score": 38190715,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "洪灾已致广西39死9失联",
+      "heat_score": 36277342,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "乌克兰利沃夫爆发反征兵骚乱",
+      "heat_score": 34556388,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "男子花一万多给20个窗户装挡风板",
+      "heat_score": 32825097,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "无人机飞手单日自费超千元驰援广西",
+      "heat_score": 29362770,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "花呗致歉",
+      "heat_score": 28690475,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "超强台风“巴威”确认影响杭州",
+      "heat_score": 28404057,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "福建一鞋厂发生火灾 有人员被困",
+      "heat_score": 28292377,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "A股午后大涨 本轮调整已近尾声了吗",
+      "heat_score": 27675171,
+      "category": "hot",
+      "platform": "今日头条"
+    }
+  ],
+  "data_quality": {
+    "issues_found": 18,
+    "status": "completed"
+  }
+}
