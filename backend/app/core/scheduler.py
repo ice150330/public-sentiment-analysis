@@ -2,7 +2,7 @@
 后台任务调度器
 
 模块名称: scheduler.py
-模块职责: 定时执行预警评估、数据质量检查等后台任务
+模块职责: 定时执行预警评估、数据质量检查、爬虫采集、情感分析等后台任务
 """
 
 import asyncio
@@ -14,7 +14,10 @@ from sqlalchemy.orm import Session
 
 from app.core.database import SessionLocal
 from app.services.alert_engine import AlertEngine
+from app.services.crawler_service import CrawlerService
 from app.services.data_quality_service import DataQualityService
+from app.services.sentiment_service import SentimentService
+from app.models import Platform
 
 logger = logging.getLogger(__name__)
 
@@ -40,6 +43,14 @@ class BackgroundScheduler:
         )
         self.tasks["data_quality_check"] = asyncio.create_task(
             self._run_periodic("data_quality_check", self._check_data_quality, interval_minutes=60)
+        )
+        # 新增：定时爬虫采集（每60分钟）
+        self.tasks["crawl_all_platforms"] = asyncio.create_task(
+            self._run_periodic("crawl_all_platforms", self._crawl_all_platforms, interval_minutes=60)
+        )
+        # 新增：定时情感分析（每30分钟）
+        self.tasks["sentiment_analysis"] = asyncio.create_task(
+            self._run_periodic("sentiment_analysis", self._run_sentiment_analysis, interval_minutes=30)
         )
     
     async def stop(self):
@@ -87,6 +98,36 @@ class BackgroundScheduler:
             service = DataQualityService(db)
             result = service.run_quality_check(run_type="daily")
             logger.info(f"Data quality check: {result.get('issues_found', 0)} issues found")
+        finally:
+            db.close()
+    
+    async def _crawl_all_platforms(self):
+        """执行全平台爬虫采集"""
+        db = SessionLocal()
+        try:
+            service = CrawlerService(db)
+            platforms = db.query(Platform).filter(Platform.is_active == True).all()
+            platform_names = [p.name for p in platforms]
+            if platform_names:
+                result = service.run_crawl(platform_names)
+                total_fetched = sum(d.get('fetched', 0) for d in result.get('details', []))
+                logger.info(f"Crawl completed: {total_fetched} topics fetched from {len(platform_names)} platforms")
+            else:
+                logger.warning("No active platforms to crawl")
+        except Exception as e:
+            logger.error(f"Crawl task failed: {e}")
+        finally:
+            db.close()
+    
+    async def _run_sentiment_analysis(self):
+        """执行情感分析"""
+        db = SessionLocal()
+        try:
+            service = SentimentService(db)
+            count = service.analyze_unprocessed_topics(limit=200)
+            logger.info(f"Sentiment analysis completed: {count} topics analyzed")
+        except Exception as e:
+            logger.error(f"Sentiment task failed: {e}")
         finally:
             db.close()
 
