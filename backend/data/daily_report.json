@@ -1,118 +1,118 @@
 {
-  "date": "2026-07-09",
-  "generated_at": "2026-07-09T17:36:24.023950",
+  "date": "2026-07-10",
+  "generated_at": "2026-07-10T10:00:25.753678",
   "summary": {
-    "total_topics": 722,
-    "sentiment_analyzed": 722,
+    "total_topics": 523,
+    "sentiment_analyzed": 523,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 78
+      "count": 52
     },
     {
       "platform": "今日头条",
-      "count": 161
+      "count": 104
     },
     {
       "platform": "微博",
-      "count": 185
+      "count": 136
     },
     {
       "platform": "抖音",
-      "count": 96
+      "count": 84
     },
     {
       "platform": "百度",
-      "count": 160
+      "count": 108
     },
     {
       "platform": "知乎",
-      "count": 42
+      "count": 39
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 38,
-      "percentage": 5.3
+      "count": 34,
+      "percentage": 6.5
     },
     {
       "label": "neutral",
-      "count": 70,
-      "percentage": 9.7
+      "count": 39,
+      "percentage": 7.5
     },
     {
       "label": "positive",
-      "count": 614,
-      "percentage": 85.0
+      "count": 450,
+      "percentage": 86.0
     }
   ],
   "top_10_topics": [
     {
-      "title": "HLE vs BLG 季中冠军赛",
-      "heat_score": 174217660,
+      "title": "法国vs摩洛哥",
+      "heat_score": 49592419,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "福建晋江起火鞋厂负责人已被控制",
+      "heat_score": 47827371,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "台风巴威又改路线了",
+      "heat_score": 45007131,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "BLG 3-1 HLE 赛后数据雷达图",
+      "heat_score": 44978000,
       "category": "其他",
       "platform": "B站"
     },
     {
-      "title": "旅游强国建设“十五五”规划全知道",
-      "heat_score": 38190715,
+      "title": "新华社：国足成绩再不好也不能造谣",
+      "heat_score": 43275995,
+      "category": "",
+      "platform": "今日头条"
+    },
+    {
+      "title": "未来五年，碳达峰工作这样推进",
+      "heat_score": 39157739,
+      "category": "",
+      "platform": "今日头条"
+    },
+    {
+      "title": "法国晋级4强",
+      "heat_score": 36084152,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "洪灾已致广西39死9失联",
-      "heat_score": 36277342,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "乌克兰利沃夫爆发反征兵骚乱",
-      "heat_score": 34556388,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "男子花一万多给20个窗户装挡风板",
-      "heat_score": 32825097,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "无人机飞手单日自费超千元驰援广西",
-      "heat_score": 29362770,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "花呗致歉",
-      "heat_score": 28690475,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "超强台风“巴威”确认影响杭州",
-      "heat_score": 28404057,
+      "title": "直击“巨型”台风巴威",
+      "heat_score": 35431388,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "福建一鞋厂发生火灾 有人员被困",
-      "heat_score": 28292377,
+      "title": "哈兰德谈姆巴佩失点：等太久了",
+      "heat_score": 34779819,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "A股午后大涨 本轮调整已近尾声了吗",
-      "heat_score": 27675171,
-      "category": "hot",
+      "title": "长鑫科技最高估值超4万亿",
+      "heat_score": 32059645,
+      "category": "interpretation",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 18,
+    "issues_found": 28,
     "status": "completed"
   }
 }
