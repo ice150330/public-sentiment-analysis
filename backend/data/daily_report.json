@@ -1,118 +1,118 @@
 {
-  "date": "2026-07-10",
-  "generated_at": "2026-07-10T10:00:25.753678",
+  "date": "2026-07-11",
+  "generated_at": "2026-07-11T10:00:30.484842",
   "summary": {
-    "total_topics": 523,
-    "sentiment_analyzed": 523,
+    "total_topics": 2508,
+    "sentiment_analyzed": 2508,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 52
+      "count": 300
     },
     {
       "platform": "今日头条",
-      "count": 104
+      "count": 500
     },
     {
       "platform": "微博",
-      "count": 136
+      "count": 510
     },
     {
       "platform": "抖音",
-      "count": 84
+      "count": 488
     },
     {
       "platform": "百度",
-      "count": 108
+      "count": 510
     },
     {
       "platform": "知乎",
-      "count": 39
+      "count": 200
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 34,
-      "percentage": 6.5
+      "count": 119,
+      "percentage": 4.7
     },
     {
       "label": "neutral",
-      "count": 39,
-      "percentage": 7.5
+      "count": 407,
+      "percentage": 16.2
     },
     {
       "label": "positive",
-      "count": 450,
-      "percentage": 86.0
+      "count": 1982,
+      "percentage": 79.0
     }
   ],
   "top_10_topics": [
     {
-      "title": "法国vs摩洛哥",
-      "heat_score": 49592419,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "福建晋江起火鞋厂负责人已被控制",
-      "heat_score": 47827371,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "台风巴威又改路线了",
-      "heat_score": 45007131,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "BLG 3-1 HLE 赛后数据雷达图",
-      "heat_score": 44978000,
+      "title": "LYON零封G2 季中冠军赛",
+      "heat_score": 53868232,
       "category": "其他",
       "platform": "B站"
     },
     {
-      "title": "新华社：国足成绩再不好也不能造谣",
-      "heat_score": 43275995,
-      "category": "",
-      "platform": "今日头条"
-    },
-    {
-      "title": "未来五年，碳达峰工作这样推进",
-      "heat_score": 39157739,
-      "category": "",
-      "platform": "今日头条"
-    },
-    {
-      "title": "法国晋级4强",
-      "heat_score": 36084152,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "直击“巨型”台风巴威",
-      "heat_score": 35431388,
+      "title": "梅里诺连场绝杀！西班牙2-1比利时",
+      "heat_score": 48410930,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "哈兰德谈姆巴佩失点：等太久了",
-      "heat_score": 34779819,
+      "title": "梅里诺连场绝杀！西班牙2-1比利时",
+      "heat_score": 46697368,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "梅里诺连场绝杀！西班牙2-1比利时",
+      "heat_score": 45350077,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "亚马尔领衔！西班牙VS比利时",
+      "heat_score": 44549180,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "亚马尔领衔！西班牙VS比利时",
+      "heat_score": 44022986,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "长鑫科技最高估值超4万亿",
-      "heat_score": 32059645,
-      "category": "interpretation",
+      "title": "梅里诺绝杀完葡萄牙又绝杀比利时",
+      "heat_score": 43804021,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "“巴威”实时路径",
+      "heat_score": 43587129,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "“巴威”实时路径",
+      "heat_score": 43080370,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "“巴威”实时路径",
+      "heat_score": 42334373,
+      "category": "hot",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 28,
+    "issues_found": 30,
     "status": "completed"
   }
 }
