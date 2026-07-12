@@ -1,10 +1,10 @@
 {
-  "date": "2026-07-11",
-  "generated_at": "2026-07-11T10:00:30.484842",
+  "date": "2026-07-12",
+  "generated_at": "2026-07-12T10:00:57.746526",
   "summary": {
-    "total_topics": 2508,
-    "sentiment_analyzed": 2508,
-    "coverage_rate": 100.0
+    "total_topics": 2513,
+    "sentiment_analyzed": 2460,
+    "coverage_rate": 97.9
   },
   "platform_distribution": [
     {
@@ -17,11 +17,11 @@
     },
     {
       "platform": "微博",
-      "count": 510
+      "count": 503
     },
     {
       "platform": "抖音",
-      "count": 488
+      "count": 500
     },
     {
       "platform": "百度",
@@ -35,84 +35,84 @@
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 119,
-      "percentage": 4.7
+      "count": 78,
+      "percentage": 3.2
     },
     {
       "label": "neutral",
-      "count": 407,
-      "percentage": 16.2
+      "count": 360,
+      "percentage": 14.6
     },
     {
       "label": "positive",
-      "count": 1982,
-      "percentage": 79.0
+      "count": 2022,
+      "percentage": 82.2
     }
   ],
   "top_10_topics": [
     {
-      "title": "LYON零封G2 季中冠军赛",
-      "heat_score": 53868232,
+      "title": "台风“巴威”在浙江乐清二次登陆",
+      "heat_score": 116566308,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "台风“巴威”在浙江乐清二次登陆",
+      "heat_score": 114846270,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "台风“巴威”在浙江玉环登陆",
+      "heat_score": 105473557,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "台风“巴威”在浙江玉环登陆",
+      "heat_score": 103917202,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "暑期防汛科普小知识请查收",
+      "heat_score": 95436421,
       "category": "其他",
-      "platform": "B站"
-    },
-    {
-      "title": "梅里诺连场绝杀！西班牙2-1比利时",
-      "heat_score": 48410930,
-      "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "梅里诺连场绝杀！西班牙2-1比利时",
-      "heat_score": 46697368,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "梅里诺连场绝杀！西班牙2-1比利时",
-      "heat_score": 45350077,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "亚马尔领衔！西班牙VS比利时",
-      "heat_score": 44549180,
+      "title": "暑期防汛科普小知识请查收",
+      "heat_score": 94028173,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "亚马尔领衔！西班牙VS比利时",
-      "heat_score": 44022986,
-      "category": "new",
+      "title": "中国石化完成对中国航油重组",
+      "heat_score": 86354445,
+      "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "梅里诺绝杀完葡萄牙又绝杀比利时",
-      "heat_score": 43804021,
+      "title": "中国石化完成对中国航油重组",
+      "heat_score": 85080209,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "巴威实时路径",
+      "heat_score": 78136733,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "“巴威”实时路径",
-      "heat_score": 43587129,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "“巴威”实时路径",
-      "heat_score": 43080370,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "“巴威”实时路径",
-      "heat_score": 42334373,
+      "title": "巴威实时路径",
+      "heat_score": 76983757,
       "category": "hot",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 30,
+    "issues_found": 20,
     "status": "completed"
   }
 }
