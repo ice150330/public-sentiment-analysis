@@ -1,118 +1,118 @@
 {
-  "date": "2026-07-12",
-  "generated_at": "2026-07-12T10:00:57.746526",
+  "date": "2026-07-13",
+  "generated_at": "2026-07-13T10:00:15.439146",
   "summary": {
-    "total_topics": 2513,
-    "sentiment_analyzed": 2460,
-    "coverage_rate": 97.9
+    "total_topics": 482,
+    "sentiment_analyzed": 482,
+    "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 300
+      "count": 55
     },
     {
       "platform": "今日头条",
-      "count": 500
+      "count": 109
     },
     {
       "platform": "微博",
-      "count": 503
+      "count": 115
     },
     {
       "platform": "抖音",
-      "count": 500
+      "count": 70
     },
     {
       "platform": "百度",
-      "count": 510
+      "count": 96
     },
     {
       "platform": "知乎",
-      "count": 200
+      "count": 37
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 78,
-      "percentage": 3.2
+      "count": 31,
+      "percentage": 6.4
     },
     {
       "label": "neutral",
-      "count": 360,
-      "percentage": 14.6
+      "count": 80,
+      "percentage": 16.6
     },
     {
       "label": "positive",
-      "count": 2022,
-      "percentage": 82.2
+      "count": 371,
+      "percentage": 77.0
     }
   ],
   "top_10_topics": [
     {
-      "title": "台风“巴威”在浙江乐清二次登陆",
-      "heat_score": 116566308,
+      "title": "HLE战胜BLG赛后数据",
+      "heat_score": 62222635,
+      "category": "其他",
+      "platform": "B站"
+    },
+    {
+      "title": "外交部就日方恶劣言行提出严正交涉",
+      "heat_score": 56908888,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "台风“巴威”在浙江乐清二次登陆",
-      "heat_score": 114846270,
+      "title": "台风巴威实时路径",
+      "heat_score": 51493291,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "台风“巴威”在浙江玉环登陆",
-      "heat_score": 105473557,
-      "category": "hot",
+      "title": "美国最后一名“铁肺”使用者去世",
+      "heat_score": 46680614,
+      "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "台风“巴威”在浙江玉环登陆",
-      "heat_score": 103917202,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "暑期防汛科普小知识请查收",
-      "heat_score": 95436421,
+      "title": "一图读懂“六张网”之新型电网",
+      "heat_score": 46593056,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "暑期防汛科普小知识请查收",
-      "heat_score": 94028173,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "中国石化完成对中国航油重组",
-      "heat_score": 86354445,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "中国石化完成对中国航油重组",
-      "heat_score": 85080209,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "巴威实时路径",
-      "heat_score": 78136733,
+      "title": "中华人民共和国外交部郑重声明",
+      "heat_score": 45352587,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "巴威实时路径",
-      "heat_score": 76983757,
-      "category": "hot",
+      "title": "江苏盐城发生3.0级地震",
+      "heat_score": 42159141,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "锐评HLE战胜BLG夺冠",
+      "heat_score": 37309778,
+      "category": "其他",
+      "platform": "B站"
+    },
+    {
+      "title": "7月17日油价将调整",
+      "heat_score": 34516985,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "媒体：14国“南海仲裁”声明想恐吓谁",
+      "heat_score": 33393312,
+      "category": "new",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 20,
+    "issues_found": 18,
     "status": "completed"
   }
 }
