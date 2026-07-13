@@ -45,8 +45,23 @@ const PLATFORM_NAMES: Record<string, string> = {
   baidu: '百度',
 };
 
+// 中文停用词列表（常见无意义词）
+const STOP_WORDS = new Set([
+  '的', '了', '在', '是', '我', '有', '和', '就', '不', '人', '都', '一', '一个', '上', '也', '很', '到', '说', '要', '去', '你', '会', '着', '没有', '看', '好', '自己', '这', '那', '这些', '那些', '这个', '那个', '之', '与', '及', '等', '或', '但', '而', '如果', '因为', '所以', '虽然', '然而', '然后', '而且', '并且', '或者', '还是', '以及', '可以', '能够', '可能', '应该', '需要', '进行', '通过', '根据', '按照', '对于', '关于', '由于', '为了', '随着', '作为', '被', '把', '让', '给', '向', '从', '到', '在', '为', '以', '于', '则', '即', '若', '乃', '兮', '乎', '者', '所', '被', '将', '把', '被', '让', '给', '向', '从', '到', '在', '为', '以', '于',
+  // 英文停用词
+  'the', 'a', 'an', 'is', 'are', 'was', 'were', 'be', 'been', 'being', 'have', 'has', 'had', 'do', 'does', 'did', 'will', 'would', 'shall', 'should', 'can', 'could', 'may', 'might', 'must', 'ought', 'need', 'dare', 'used', 'to', 'of', 'in', 'for', 'on', 'with', 'at', 'by', 'from', 'as', 'into', 'through', 'during', 'before', 'after', 'above', 'below', 'between', 'under', 'again', 'further', 'then', 'once', 'here', 'there', 'when', 'where', 'why', 'how', 'all', 'each', 'few', 'more', 'most', 'other', 'some', 'such', 'no', 'nor', 'not', 'only', 'own', 'same', 'so', 'than', 'too', 'very', 'just', 'and', 'but', 'if', 'or', 'because', 'until', 'while',
+]);
+
+// 简单情感关键词库（用于无 sentiment 数据时的推断）
+const POSITIVE_WORDS = new Set([
+  '好', '棒', '优秀', '成功', '突破', '创新', '增长', '提升', '改善', '利好', '赞', '喜', '赢', '胜', '夺冠', '晋升', '发财', '幸福', '快乐', '美丽', '精彩', '强大', '领先', '第一', '冠军', '金牌', '丰收', '顺利', '完美', '出色', '杰出', '卓越', '辉煌', '伟大', '光荣', '自豪', '激动', '感动', '温暖', '温馨', '和谐', '繁荣', '昌盛', '兴旺', '发达', '先进', '优质', '高效', '便捷', '舒适', '安全', '健康', '环保', '绿色', '美丽', '漂亮', '可爱', '迷人', '精彩', '有趣', '好玩', '开心', '高兴', '满意', '放心', '安心', '省心', '贴心', '用心', '专业', '敬业', '负责', '认真', '努力', '拼搏', '奋斗', '进取', '上进', '积极', '乐观', '向上', '阳光', '正能量',
+]);
+
+const NEGATIVE_WORDS = new Set([
+  '坏', '差', '失败', '下降', '下跌', '暴跌', '崩盘', '危机', '风险', '问题', '困难', '挑战', '矛盾', '冲突', '纠纷', '争议', '丑闻', '腐败', '贪污', '受贿', '犯罪', '违法', '违规', '事故', '灾难', '灾害', '疫情', '病毒', '死亡', '伤亡', '损失', '破坏', '损害', '伤害', '袭击', '攻击', '战争', '恐怖', '暴力', '犯罪', '小偷', '骗子', '假货', '伪劣', '劣质', '差评', '投诉', '举报', '曝光', '揭露', '内幕', '黑幕', '潜规则', '不公', '不平', '不正', '腐败', '堕落', '颓废', '消极', '悲观', '失望', '绝望', '痛苦', '悲伤', '难过', '愤怒', '生气', '恼火', '烦躁', '焦虑', '担忧', '害怕', '恐惧', '惊慌', '震惊', '意外', '突然', '紧急', '危险', '警告', '警惕', '注意', '严重', '重大', '特大', '恶性', '残忍', '冷酷', '无情', '冷漠', '麻木', '迟钝', '愚蠢', '笨', '傻', '呆', '迂腐', '陈旧', '落后', '过时', '淘汰', '失业', '破产', '倒闭', '关门', '解散', '分裂', '解体', '崩溃', '瓦解', '毁灭', '灭亡', '绝迹', '消失', '失踪', '失联', '被困', '被围', '被堵', '被封', '被禁', '被删', '被屏蔽', '被限制', '被约束', '被控制', '被压迫', '被剥削', '被欺负', '被侮辱', '被伤害', '被损害', '被侵犯', '被侵害', '被盗', '被抢', '被骗', '被偷', '被拐', '被绑架', '被劫持', '被勒索', '被敲诈', '被威胁', '被恐吓', '被骚扰', '被跟踪', '被监视', '被监听', '被曝光', '被揭发', '被举报', '被投诉', '被批评', '被指责', '被谴责', '被惩罚', '被处罚', '被判刑', '被关押', '被囚禁', '被拘留', '被逮捕', '被通缉', '被追捕', '被追杀',
+]);
+
 const SEVERITY_WEIGHT: Record<string, number> = {
-  P1: 4,
   P2: 3,
   P3: 2,
   P4: 1,
@@ -85,6 +100,21 @@ export const buildHealthScore = (overview?: Overview | null, sentiment?: Sentime
   return Math.round(((positive + neutral * 0.45) / total) * 100);
 };
 
+// 基于标题关键词推断情感倾向
+function _inferSentiment(title: string): 'positive' | 'neutral' | 'negative' {
+  let pos = 0;
+  let neg = 0;
+  for (const word of POSITIVE_WORDS) {
+    if (title.includes(word)) pos++;
+  }
+  for (const word of NEGATIVE_WORDS) {
+    if (title.includes(word)) neg++;
+  }
+  if (pos > neg) return 'positive';
+  if (neg > pos) return 'negative';
+  return 'neutral';
+}
+
 export const buildRankingData = (topics: HotTopic[]): RankingVisualItem[] =>
   topics.slice(0, 10).map((topic, index) => ({
     id: topic.id,
@@ -92,7 +122,7 @@ export const buildRankingData = (topics: HotTopic[]): RankingVisualItem[] =>
     title: topic.title,
     heat: toNumber(topic.heat_score),
     platform: displayPlatformName(topic.platform_name),
-    sentiment: 'neutral',
+    sentiment: _inferSentiment(topic.title),
   }));
 
 export const buildWordCloudData = (topics: HotTopic[]) => {
@@ -103,7 +133,7 @@ export const buildWordCloudData = (topics: HotTopic[]) => {
       .replace(/[【】《》“”"'()[\]{}]/g, ' ')
       .split(/[\s,，.。!！?？;；:：#、|｜]+/)
       .map((word) => word.trim())
-      .filter((word) => word.length >= 2 && word.length <= 12);
+      .filter((word) => word.length >= 2 && word.length <= 12 && !STOP_WORDS.has(word));
 
     words.forEach((word) => {
       wordMap[word] = (wordMap[word] || 0) + heat;
