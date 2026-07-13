@@ -27,27 +27,27 @@ const TimelineScatter: React.FC<TimelineScatterProps> = ({
       symbolSize: (val: number) => Math.max(8, Math.min(40, val / 5000)),
       data: data
         .filter(d => d.platform === platform)
-        .map(d => [d.time, d.heat]),
+        .map(d => ({ value: [d.time, d.heat], title: d.title })),
       itemStyle: { color: platformColors[platform] || '#1890ff' },
       emphasis: { focus: 'series', itemStyle: { borderColor: '#fff', borderWidth: 2 } },
     }));
 
     return {
-      title: {
+      title: title ? {
         text: title,
         left: 'center',
         top: 8,
         textStyle: { fontSize: 14, fontWeight: 'bold', color: '#1f2937' },
-      },
+      } : undefined,
       tooltip: {
         trigger: 'item',
         formatter: (p: any) => {
-          const d = data[p.dataIndex];
-          return `${d?.title?.slice(0, 16) || ''}...<br/>时间: ${p.data[0]}<br/>热度: ${Number(p.data[1]).toLocaleString()}`;
+          const titleText = p.data?.title || '';
+          return `${titleText.slice(0, 18)}${titleText.length > 18 ? '...' : ''}<br/>时间: ${p.value[0]}<br/>热度: ${Number(p.value[1]).toLocaleString()}`;
         },
       },
       legend: { data: platforms, bottom: 0, textStyle: { fontSize: 10 } },
-      grid: { left: '8%', right: '8%', bottom: '15%', top: '18%', containLabel: true },
+      grid: { left: '8%', right: '8%', bottom: '15%', top: title ? '18%' : '8%', containLabel: true },
       xAxis: { type: 'time', axisLabel: { fontSize: 10, color: '#6b7280' }, splitLine: { show: false } },
       yAxis: { type: 'value', name: '热度', nameTextStyle: { fontSize: 10, color: '#6b7280' }, axisLabel: { fontSize: 10, color: '#6b7280' }, splitLine: { lineStyle: { type: 'dashed', color: '#f3f4f6' } } },
       series,

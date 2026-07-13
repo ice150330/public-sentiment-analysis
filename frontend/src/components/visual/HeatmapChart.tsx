@@ -15,25 +15,22 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({
   height = 280,
 }) => {
   const option = useMemo(() => {
-    // 如果没有数据，生成模拟数据
-    const hours = Array.from({ length: 12 }, (_, i) => `${String(i * 2).padStart(2, '0')}:00`);
-    const platforms = ['微博', '抖音', 'B站', '知乎', '今日头条', '百度'];
-    const chartData: Array<[string, string, number]> = data.length > 0
-      ? data
-      : hours.flatMap((h) => platforms.map((p) => [h, p, Math.floor(Math.random() * 100)] as [string, string, number]));
+    const hours = Array.from(new Set(data.map((item) => item[0]))).sort();
+    const platforms = Array.from(new Set(data.map((item) => item[1])));
+    const chartData = data;
 
     return {
-      title: {
+      title: title ? {
         text: title,
         left: 'center',
         top: 8,
         textStyle: { fontSize: 14, fontWeight: 'bold', color: '#1f2937' },
-      },
+      } : undefined,
       tooltip: {
         position: 'top',
         formatter: (p: any) => `${p.data[1]} ${p.data[0]}<br/>情感指数: ${p.data[2]}`,
       },
-      grid: { left: '12%', right: '8%', bottom: '15%', top: '18%' },
+      grid: { left: '12%', right: '8%', bottom: '15%', top: title ? '18%' : '8%' },
       xAxis: {
         type: 'category',
         data: hours,
@@ -50,6 +47,7 @@ const HeatmapChart: React.FC<HeatmapChartProps> = ({
         min: 0,
         max: 100,
         calculable: true,
+        show: chartData.length > 0,
         orient: 'horizontal',
         left: 'center',
         bottom: '0%',

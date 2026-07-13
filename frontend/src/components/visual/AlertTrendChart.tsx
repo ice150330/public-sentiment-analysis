@@ -15,22 +15,21 @@ const AlertTrendChart: React.FC<AlertTrendChartProps> = ({
   height = 260,
 }) => {
   const option = useMemo(() => {
-    // 如果没有数据，生成模拟数据
-    const hasData = data && data.length > 0;
-    const hours = Array.from({ length: 24 }, (_, i) => `${String(i).padStart(2, '0')}:00`);
-    const counts = hasData
-      ? data.map(d => d.count)
-      : hours.map(() => Math.floor(Math.random() * 20) + 2);
+    const hours = data.map(d => d.time);
+    const counts = data.map(d => ({
+      value: d.count,
+      severity: d.severity,
+    }));
 
     return {
-      title: {
+      title: title ? {
         text: title,
         left: 'center',
         top: 8,
         textStyle: { fontSize: 14, fontWeight: 'bold', color: '#1f2937' },
-      },
+      } : undefined,
       tooltip: { trigger: 'axis' },
-      grid: { left: '3%', right: '4%', bottom: '8%', top: '20%', containLabel: true },
+      grid: { left: '3%', right: '4%', bottom: '8%', top: title ? '20%' : '10%', containLabel: true },
       xAxis: {
         type: 'category',
         data: hours,
@@ -70,7 +69,7 @@ const AlertTrendChart: React.FC<AlertTrendChartProps> = ({
         },
         markLine: {
           silent: true,
-          data: [{ yAxis: 10, lineStyle: { color: '#faad14', type: 'dashed' }, label: { formatter: '警戒线' } }],
+          data: counts.length ? [{ yAxis: 10, lineStyle: { color: '#faad14', type: 'dashed' }, label: { formatter: '警戒线' } }] : [],
         },
       }],
     };

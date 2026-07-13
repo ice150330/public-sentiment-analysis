@@ -438,6 +438,12 @@ export const analyzeText = (text: string) =>
 export const analyzeBatch = (texts: string[]) =>
   api.post<unknown, UnifiedResponse<SentimentAnalyzeResult[]>>('/sentiment/analyze/batch', { texts });
 
+export const analyzeTextV2 = (text: string) =>
+  api.post<unknown, UnifiedResponse<SentimentAnalyzeResult>>('/sentiment/v2/analyze', { text });
+
+export const analyzeBatchV2 = (texts: string[]) =>
+  api.post<unknown, UnifiedResponse<SentimentAnalyzeResult[]>>('/sentiment/v2/batch', { texts });
+
 export const getSentimentResults = (params?: {
   label?: string;
   platform?: string;

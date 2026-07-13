@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Input, Table } from 'antd';
+import { Button, Input, Segmented, Table } from 'antd';
 import {
   AreaChartOutlined,
   FileSearchOutlined,
@@ -10,7 +10,9 @@ import {
 import ReactECharts from 'echarts-for-react';
 import {
   analyzeBatch,
+  analyzeBatchV2,
   analyzeText,
+  analyzeTextV2,
   forecastHeat,
   ForecastHeat,
   getErrorMessage,
@@ -45,12 +47,18 @@ const scoreLabels = [
   { key: 'neutral', label: '中性', className: 'neutral' },
 ] as const;
 
+const modelModeOptions = [
+  { label: '快速模型', value: 'classic' },
+  { label: '增强模型', value: 'v2' },
+] as const;
+
 const Sentiment: React.FC = () => {
   const [activeView, setActiveView] = useState('text');
   const [text, setText] = useState('');
   const [batchText, setBatchText] = useState('');
   const [latestResult, setLatestResult] = useState<SentimentAnalyzeResult | null>(null);
   const [batchResults, setBatchResults] = useState<SentimentAnalyzeResult[]>([]);
+  const [modelMode, setModelMode] = useState<'classic' | 'v2'>('classic');
   const [storedResults, setStoredResults] = useState<SentimentResult[]>([]);
   const [heatTrend, setHeatTrend] = useState<HeatTrend | null>(null);
   const [forecast, setForecast] = useState<ForecastHeat | null>(null);
@@ -90,7 +98,9 @@ const Sentiment: React.FC = () => {
     if (!text.trim()) return;
     try {
       setLoading(true);
-      const res = await analyzeText(text.trim());
+      const res = modelMode === 'v2'
+        ? await analyzeTextV2(text.trim())
+        : await analyzeText(text.trim());
       setLatestResult(res.data);
       setActiveView('explain');
       setLastUpdated(new Date().toISOString());
@@ -107,7 +117,9 @@ const Sentiment: React.FC = () => {
     if (texts.length === 0) return;
     try {
       setLoading(true);
-      const res = await analyzeBatch(texts);
+      const res = modelMode === 'v2'
+        ? await analyzeBatchV2(texts)
+        : await analyzeBatch(texts);
       setBatchResults(res.data || []);
       setActiveView('batch');
       setLastUpdated(new Date().toISOString());
@@ -208,6 +220,12 @@ const Sentiment: React.FC = () => {
         <div className="psa-grid one-two">
           <Panel title="批量输入">
             <div className="psa-input-panel">
+              <Segmented
+                size="small"
+                value={modelMode}
+                options={[...modelModeOptions]}
+                onChange={(value) => setModelMode(value as 'classic' | 'v2')}
+              />
               <Input.TextArea
                 className="psa-textarea"
                 value={batchText}
@@ -340,6 +358,12 @@ const Sentiment: React.FC = () => {
       <div className="psa-grid one-two">
         <Panel title="文本输入" eyebrow="单条分析">
           <div className="psa-input-panel">
+            <Segmented
+              size="small"
+              value={modelMode}
+              options={[...modelModeOptions]}
+              onChange={(value) => setModelMode(value as 'classic' | 'v2')}
+            />
             <Input.TextArea
               className="psa-textarea"
               value={text}

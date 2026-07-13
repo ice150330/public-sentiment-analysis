@@ -319,7 +319,9 @@ export const FloatingDock: React.FC = () => {
     ? '/analysis'
     : location.pathname === '/management' || location.pathname === '/stats'
       ? '/management'
-      : location.pathname;
+      : location.pathname === '/monitor'
+        ? '/'
+        : location.pathname;
 
   return (
     <nav className="psa-floating-dock" aria-label="主导航">

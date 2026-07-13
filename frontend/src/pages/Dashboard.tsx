@@ -24,12 +24,14 @@ import {
   getDataQualityChecks,
   getDataQualityFunnel,
   getErrorMessage,
+  getTopics,
   getHeatTrend,
   getOverview,
   getPlatforms,
   getSentimentDistribution,
   getTypedDataQualityIssues,
   HeatTrend,
+  HotTopic,
   Overview,
   Platform,
   SentimentDistribution,
@@ -45,21 +47,52 @@ import {
   StatusBadge,
   SubView,
 } from '../components/DesignSystem';
+import { RankingList } from '../components/common/RankingList';
+import AlertTrendChart from '../components/visual/AlertTrendChart';
+import GaugeChart from '../components/visual/GaugeChart';
+import HeatmapChart from '../components/visual/HeatmapChart';
+import NegativePlatformRanking from '../components/visual/NegativePlatformRanking';
+import PlatformRadarChart from '../components/visual/PlatformRadarChart';
+import PlatformSentimentBar from '../components/visual/PlatformSentimentBar';
+import RelationGraph from '../components/visual/RelationGraph';
+import SankeyChart from '../components/visual/SankeyChart';
+import TimelineScatter from '../components/visual/TimelineScatter';
+import TreemapChart from '../components/visual/TreemapChart';
+import WordCloudChart from '../components/visual/WordCloudChart';
+import {
+  buildAlertTrendData,
+  buildHealthScore,
+  buildHeatmapData,
+  buildHeatTrendOption,
+  buildNegativeData,
+  buildRadarData,
+  buildRankingData,
+  buildRelationData,
+  buildSankeyData,
+  buildSentimentPieOption,
+  buildTimelineData,
+  buildWordCloudData,
+  normalizePlatformSentiment,
+} from './dashboardVisualData';
 
 const views: SubView[] = [
   { key: 'overview', label: '实时概览', icon: <BarChartOutlined /> },
+  { key: 'visual', label: '可视研判', icon: <RadarChartOutlined /> },
   { key: 'platforms', label: '平台监测', icon: <ApiOutlined /> },
   { key: 'alerts', label: '预警中心', icon: <AlertOutlined /> },
   { key: 'quality', label: '数据质量', icon: <RadarChartOutlined /> },
 ];
 
-const Dashboard: React.FC = () => {
-  const [activeView, setActiveView] = useState('overview');
+const Dashboard: React.FC<{ initialView?: string }> = ({ initialView = 'overview' }) => {
+  const [activeView, setActiveView] = useState(initialView);
   const [overview, setOverview] = useState<Overview | null>(null);
   const [sentiment, setSentiment] = useState<SentimentDistribution | null>(null);
   const [heatTrend, setHeatTrend] = useState<HeatTrend | null>(null);
   const [crawlRate, setCrawlRate] = useState<CrawlSuccessRate | null>(null);
   const [platforms, setPlatforms] = useState<Platform[]>([]);
+  const [topics, setTopics] = useState<HotTopic[]>([]);
+  const [alertSummary, setAlertSummary] = useState<AlertSummary | null>(null);
+  const [alertEvents, setAlertEvents] = useState<AlertEvent[]>([]);
   const [logs, setLogs] = useState<CrawlLog[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,13 +101,26 @@ const Dashboard: React.FC = () => {
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
-      const [overviewRes, sentimentRes, trendRes, crawlRateRes, platformsRes, logsRes] = await Promise.all([
+      const [
+        overviewRes,
+        sentimentRes,
+        trendRes,
+        crawlRateRes,
+        platformsRes,
+        logsRes,
+        topicsRes,
+        alertSummaryRes,
+        alertEventsRes,
+      ] = await Promise.all([
         getOverview(),
         getSentimentDistribution(),
         getHeatTrend({ days: 7, aggregation: 'daily' }),
         getCrawlSuccessRate({ days: 7 }),
         getPlatforms(),
         getCrawlLogs({ page: 1, page_size: 6 }),
+        getTopics({ page: 1, page_size: 24, sort_by: 'heat_score', sort_order: 'desc' }),
+        getAlertSummary(),
+        getAlertEvents({ page: 1, page_size: 24 }),
       ]);
 
       setOverview(overviewRes.data);
@@ -83,6 +129,9 @@ const Dashboard: React.FC = () => {
       setCrawlRate(crawlRateRes.data);
       setPlatforms(platformsRes.data || []);
       setLogs(logsRes.data?.items || []);
+      setTopics(topicsRes.data?.items || []);
+      setAlertSummary(alertSummaryRes.data);
+      setAlertEvents(alertEventsRes.data?.items || []);
       setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {
@@ -96,76 +145,23 @@ const Dashboard: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  const sentimentChart = useMemo(() => {
-    if (!sentiment || sentiment.total === 0) return null;
+  useEffect(() => {
+    setActiveView(initialView);
+  }, [initialView]);
 
-    return {
-      tooltip: { trigger: 'item' },
-      legend: { bottom: 0, textStyle: { color: '#64748B', fontWeight: 700 } },
-      color: ['#16A34A', '#E11D48', '#64748B'],
-      series: [
-        {
-          type: 'pie',
-          radius: ['48%', '72%'],
-          center: ['50%', '45%'],
-          avoidLabelOverlap: true,
-          itemStyle: { borderRadius: 8, borderColor: '#fff', borderWidth: 2 },
-          label: { formatter: '{b} {d}%', color: '#152033', fontWeight: 700 },
-          data: sentiment.distribution.map((item) => ({
-            name: item.label,
-            value: item.count,
-          })),
-        },
-      ],
-    };
-  }, [sentiment]);
-
-  const heatChart = useMemo(() => {
-    const series = heatTrend?.series?.filter((item) => item.data.length > 0) || [];
-    if (series.length === 0) return null;
-
-    const dates = Array.from(new Set(series.flatMap((item) => item.data.map((point) => point.date))));
-
-    return {
-      tooltip: { trigger: 'axis' },
-      legend: { top: 0, textStyle: { color: '#64748B', fontWeight: 700 } },
-      grid: { left: 36, right: 16, top: 44, bottom: 26 },
-      xAxis: { type: 'category', data: dates, axisLabel: { color: '#64748B' } },
-      yAxis: { type: 'value', axisLabel: { color: '#64748B' }, splitLine: { lineStyle: { color: '#E7EEF7' } } },
-      series: series.map((item) => ({
-        name: item.platform,
-        type: 'line',
-        smooth: true,
-        symbolSize: 6,
-        data: dates.map((date) => item.data.find((point) => point.date === date)?.avg_heat ?? null),
-      })),
-    };
-  }, [heatTrend]);
-
-  const platformChart = useMemo(() => {
-    if (!sentiment?.by_platform) return null;
-    const names = Object.keys(sentiment.by_platform);
-    if (names.length === 0) return null;
-
-    return {
-      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-      grid: { left: 72, right: 18, top: 16, bottom: 24 },
-      xAxis: { type: 'value', splitLine: { lineStyle: { color: '#E7EEF7' } } },
-      yAxis: { type: 'category', data: names, axisLabel: { color: '#64748B', fontWeight: 700 } },
-      series: [
-        {
-          name: '情感记录',
-          type: 'bar',
-          barWidth: 10,
-          itemStyle: { color: '#2563EB', borderRadius: 999 },
-          data: names.map((name) => {
-            const item = sentiment.by_platform?.[name] || {};
-            return Object.values(item).reduce((sum, value) => sum + value, 0);
-          }),
-        },
-      ],
-    };
-  }, [sentiment]);
+  const heatChart = useMemo(() => buildHeatTrendOption(heatTrend), [heatTrend]);
+  const sentimentChart = useMemo(() => buildSentimentPieOption(sentiment), [sentiment]);
+  const platformSentiment = useMemo(() => normalizePlatformSentiment(sentiment), [sentiment]);
+  const healthScore = useMemo(() => buildHealthScore(overview, sentiment), [overview, sentiment]);
+  const rankingData = useMemo(() => buildRankingData(topics), [topics]);
+  const wordCloudData = useMemo(() => buildWordCloudData(topics), [topics]);
+  const relationData = useMemo(() => buildRelationData(topics), [topics]);
+  const radarData = useMemo(() => buildRadarData(platformSentiment, alertSummary), [platformSentiment, alertSummary]);
+  const negativeData = useMemo(() => buildNegativeData(platformSentiment), [platformSentiment]);
+  const sankeyData = useMemo(() => buildSankeyData(topics), [topics]);
+  const timelineData = useMemo(() => buildTimelineData(topics), [topics]);
+  const heatmapData = useMemo(() => buildHeatmapData(topics), [topics]);
+  const alertTrendData = useMemo(() => buildAlertTrendData(alertEvents), [alertEvents]);
 
   const renderContent = () => {
     if (activeView === 'platforms') {
@@ -174,6 +170,28 @@ const Dashboard: React.FC = () => {
 
     if (activeView === 'alerts') {
       return <AlertCenter />;
+    }
+
+    if (activeView === 'visual') {
+      return (
+        <DashboardVisualMatrix
+          loading={loading}
+          error={error}
+          heatChart={heatChart}
+          sentimentChart={sentimentChart}
+          platformSentiment={platformSentiment}
+          rankingData={rankingData}
+          wordCloudData={wordCloudData}
+          relationData={relationData}
+          radarData={radarData}
+          negativeData={negativeData}
+          sankeyData={sankeyData}
+          timelineData={timelineData}
+          heatmapData={heatmapData}
+          alertTrendData={alertTrendData}
+          healthScore={healthScore}
+        />
+      );
     }
 
     if (activeView === 'quality') {
@@ -211,23 +229,59 @@ const Dashboard: React.FC = () => {
           />
         </div>
 
-        <div className="psa-grid two" style={{ marginTop: 16 }}>
-          <Panel title="热度趋势" eyebrow={heatTrend?.period}>
+        <div className="psa-dashboard-lead">
+          <Panel title="热度趋势" eyebrow={heatTrend?.period} className="psa-panel-flush">
             <DataState empty={!heatChart} emptyTitle="暂无热度趋势">
-              <ReactECharts option={heatChart || {}} className="psa-chart" />
+              <ReactECharts option={heatChart || {}} className="psa-chart psa-chart-wide" />
             </DataState>
+          </Panel>
+          <Panel title="舆情健康度" eyebrow="由情感分布计算">
+            <GaugeChart score={healthScore} title="" height={210} />
           </Panel>
           <Panel title="情感分布" eyebrow={sentiment ? `样本 ${formatNumber(sentiment.total)}` : undefined}>
             <DataState empty={!sentimentChart} emptyTitle="暂无情感分布">
-              <ReactECharts option={sentimentChart || {}} className="psa-chart" />
+              <ReactECharts option={sentimentChart || {}} className="psa-chart psa-chart-compact" />
+            </DataState>
+          </Panel>
+        </div>
+
+        <div className="psa-dashboard-visual-grid">
+          <Panel title="热榜 TOP10" eyebrow="按热度排序" className="psa-panel-tight">
+            <DataState empty={rankingData.length === 0} emptyTitle="暂无热榜">
+              <RankingList data={rankingData} visibleCount={8} title="" />
+            </DataState>
+          </Panel>
+          <Panel title="关键词云" eyebrow="由热榜标题提取" className="psa-panel-tight">
+            <DataState empty={wordCloudData.length === 0} emptyTitle="暂无关键词">
+              <WordCloudChart data={wordCloudData} title="" height={250} />
+            </DataState>
+          </Panel>
+          <Panel title="关系图谱" eyebrow="话题与平台关联" className="psa-panel-span-2">
+            <DataState empty={relationData.nodes.length === 0} emptyTitle="暂无关系图谱">
+              <RelationGraph nodes={relationData.nodes} links={relationData.links} categories={['话题', '平台']} title="" height={300} />
+            </DataState>
+          </Panel>
+          <Panel title="平台情感分布" eyebrow="正负中性堆叠" className="psa-panel-span-2">
+            <DataState empty={Object.keys(platformSentiment).length === 0} emptyTitle="暂无平台情感分布">
+              <PlatformSentimentBar data={platformSentiment} title="" height={270} />
+            </DataState>
+          </Panel>
+          <Panel title="负面平台排行" eyebrow="按负面样本数">
+            <DataState empty={Object.keys(negativeData).length === 0} emptyTitle="暂无负面排行">
+              <NegativePlatformRanking data={negativeData} title="" height={270} />
+            </DataState>
+          </Panel>
+          <Panel title="预警趋势" eyebrow={`待处理 ${formatNumber(alertSummary?.pending_count)}`}>
+            <DataState empty={alertTrendData.length === 0} emptyTitle="暂无预警趋势">
+              <AlertTrendChart data={alertTrendData} title="" height={270} />
             </DataState>
           </Panel>
         </div>
 
         <div className="psa-grid two-one" style={{ marginTop: 16 }}>
-          <Panel title="平台分布" eyebrow="按真实情感记录聚合">
-            <DataState empty={!platformChart} emptyTitle="暂无平台分布">
-              <ReactECharts option={platformChart || {}} className="psa-chart" />
+          <Panel title="多维平台雷达" eyebrow="体量、情感与风险综合">
+            <DataState empty={Object.keys(radarData).length === 0} emptyTitle="暂无平台雷达">
+              <PlatformRadarChart data={radarData} title="" height={280} />
             </DataState>
           </Panel>
           <Panel title="最近采集">
@@ -249,6 +303,29 @@ const Dashboard: React.FC = () => {
             </DataState>
           </Panel>
         </div>
+
+        <div className="psa-dashboard-secondary-grid">
+          <Panel title="平台话题流向" eyebrow="热度权重映射">
+            <DataState empty={sankeyData.length === 0} emptyTitle="暂无流向数据">
+              <SankeyChart data={sankeyData} title="" height={250} />
+            </DataState>
+          </Panel>
+          <Panel title="时段热力矩阵" eyebrow="按采集时间与平台聚合">
+            <DataState empty={heatmapData.length === 0} emptyTitle="暂无热力矩阵">
+              <HeatmapChart data={heatmapData} title="" height={250} />
+            </DataState>
+          </Panel>
+          <Panel title="话题热度演变" eyebrow="热榜采集时间线">
+            <DataState empty={timelineData.length === 0} emptyTitle="暂无时间线">
+              <TimelineScatter data={timelineData} title="" height={250} />
+            </DataState>
+          </Panel>
+          <Panel title="舆情体量分布" eyebrow="平台与情感层级">
+            <DataState empty={Object.keys(platformSentiment).length === 0} emptyTitle="暂无体量分布">
+              <TreemapChart data={platformSentiment} title="" height={250} />
+            </DataState>
+          </Panel>
+        </div>
       </DataState>
     );
   };
@@ -267,6 +344,119 @@ const Dashboard: React.FC = () => {
     </ModuleFrame>
   );
 };
+
+const DashboardVisualMatrix: React.FC<{
+  loading: boolean;
+  error: string | null;
+  heatChart: any;
+  sentimentChart: any;
+  platformSentiment: Record<string, { positive: number; negative: number; neutral: number }>;
+  rankingData: Array<{ id: string | number; rank: number; title: string; heat: number; platform: string; sentiment: 'positive' | 'neutral' | 'negative' }>;
+  wordCloudData: Array<{ name: string; value: number }>;
+  relationData: {
+    nodes: Array<{ id: string; name: string; category: number; value?: number; symbolSize?: number; itemStyle?: { color: string } }>;
+    links: Array<{ source: string; target: string; value?: number }>;
+  };
+  radarData: Record<string, { heat: number; positive: number; negative: number; neutral: number; alert: number }>;
+  negativeData: Record<string, { negative: number; total: number }>;
+  sankeyData: Array<{ source: string; target: string; value: number }>;
+  timelineData: Array<{ time: string; heat: number; title: string; platform: string }>;
+  heatmapData: Array<[string, string, number]>;
+  alertTrendData: Array<{ time: string; count: number; severity: 'P1' | 'P2' | 'P3' | 'P4' }>;
+  healthScore: number;
+}> = ({
+  loading,
+  error,
+  heatChart,
+  sentimentChart,
+  platformSentiment,
+  rankingData,
+  wordCloudData,
+  relationData,
+  radarData,
+  negativeData,
+  sankeyData,
+  timelineData,
+  heatmapData,
+  alertTrendData,
+  healthScore,
+}) => (
+  <DataState loading={loading} error={error} empty={!heatChart && relationData.nodes.length === 0} emptyTitle="可视研判数据不可用">
+    <div className="psa-visual-summary">
+      <Panel title="实时热度主线" eyebrow="跨平台趋势">
+        <DataState empty={!heatChart} emptyTitle="暂无热度主线">
+          <ReactECharts option={heatChart || {}} className="psa-chart psa-chart-wide" />
+        </DataState>
+      </Panel>
+      <Panel title="舆情健康度" eyebrow="综合情绪评分">
+        <GaugeChart score={healthScore} title="" height={230} />
+      </Panel>
+      <Panel title="情感占比" eyebrow="整体样本">
+        <DataState empty={!sentimentChart} emptyTitle="暂无情感占比">
+          <ReactECharts option={sentimentChart || {}} className="psa-chart psa-chart-compact" />
+        </DataState>
+      </Panel>
+    </div>
+
+    <div className="psa-dashboard-visual-grid">
+      <Panel title="舆情关系图谱" eyebrow="热点与平台网络" className="psa-panel-span-2">
+        <DataState empty={relationData.nodes.length === 0} emptyTitle="暂无图谱数据">
+          <RelationGraph nodes={relationData.nodes} links={relationData.links} categories={['话题', '平台']} title="" height={330} />
+        </DataState>
+      </Panel>
+      <Panel title="热榜滚动排行" eyebrow="前 10 热点" className="psa-panel-tight">
+        <DataState empty={rankingData.length === 0} emptyTitle="暂无热榜数据">
+          <RankingList data={rankingData} visibleCount={10} title="" />
+        </DataState>
+      </Panel>
+      <Panel title="关键词云" eyebrow="标题关键词聚合" className="psa-panel-tight">
+        <DataState empty={wordCloudData.length === 0} emptyTitle="暂无关键词">
+          <WordCloudChart data={wordCloudData} title="" height={290} />
+        </DataState>
+      </Panel>
+      <Panel title="多维平台雷达" eyebrow="体量、情绪、风险">
+        <DataState empty={Object.keys(radarData).length === 0} emptyTitle="暂无雷达数据">
+          <PlatformRadarChart data={radarData} title="" height={300} />
+        </DataState>
+      </Panel>
+      <Panel title="平台情感堆叠" eyebrow="平台样本结构" className="psa-panel-span-2">
+        <DataState empty={Object.keys(platformSentiment).length === 0} emptyTitle="暂无平台情感">
+          <PlatformSentimentBar data={platformSentiment} title="" height={300} />
+        </DataState>
+      </Panel>
+      <Panel title="负面平台排行" eyebrow="风险排序">
+        <DataState empty={Object.keys(negativeData).length === 0} emptyTitle="暂无负面排行">
+          <NegativePlatformRanking data={negativeData} title="" height={300} />
+        </DataState>
+      </Panel>
+      <Panel title="预警趋势" eyebrow="按触发时间聚合">
+        <DataState empty={alertTrendData.length === 0} emptyTitle="暂无预警趋势">
+          <AlertTrendChart data={alertTrendData} title="" height={280} />
+        </DataState>
+      </Panel>
+      <Panel title="时段热力矩阵" eyebrow="时段 × 平台">
+        <DataState empty={heatmapData.length === 0} emptyTitle="暂无热力矩阵">
+          <HeatmapChart data={heatmapData} title="" height={280} />
+        </DataState>
+      </Panel>
+      <Panel title="平台话题流向" eyebrow="热度权重">
+        <DataState empty={sankeyData.length === 0} emptyTitle="暂无流向数据">
+          <SankeyChart data={sankeyData} title="" height={280} />
+        </DataState>
+      </Panel>
+      <Panel title="话题时间线" eyebrow="采集时间与热度">
+        <DataState empty={timelineData.length === 0} emptyTitle="暂无时间线">
+          <TimelineScatter data={timelineData} title="" height={280} />
+        </DataState>
+      </Panel>
+      <Panel title="舆情体量树图" eyebrow="平台与情感层级">
+        <DataState empty={Object.keys(platformSentiment).length === 0} emptyTitle="暂无体量树图">
+          <TreemapChart data={platformSentiment} title="" height={280} />
+        </DataState>
+      </Panel>
+    </div>
+  </DataState>
+);
 
 const PlatformMonitor: React.FC<{
   platforms: Platform[];

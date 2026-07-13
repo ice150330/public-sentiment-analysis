@@ -4,7 +4,6 @@ import Dashboard from './pages/Dashboard';
 import Topics from './pages/Topics';
 import Sentiment from './pages/Sentiment';
 import Stats from './pages/Stats';
-import Monitor from './pages/monitor/Monitor';
 import './index.css';
 
 const App: React.FC = () => {
@@ -17,7 +16,7 @@ const App: React.FC = () => {
         <Route path="/sentiment" element={<Navigate to="/analysis" replace />} />
         <Route path="/management" element={<Stats />} />
         <Route path="/stats" element={<Navigate to="/management" replace />} />
-        <Route path="/monitor" element={<Monitor />} />
+        <Route path="/monitor" element={<Dashboard initialView="visual" />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </Router>

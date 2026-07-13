@@ -3,8 +3,10 @@
 
 from typing import Dict, List, Optional
 import asyncio
+import logging
 import threading
-import os
+
+logger = logging.getLogger(__name__)
 
 # 尝试导入 Transformers
 try:
@@ -13,7 +15,7 @@ try:
     _TRANSFORMERS_AVAILABLE = True
 except ImportError:
     _TRANSFORMERS_AVAILABLE = False
-    print("[WARN] transformers/torch 未安装，sentiment_v2 将使用模拟模式")
+    logger.warning("transformers/torch 未安装，sentiment_v2 将使用规则兜底模式")
 
 
 class TransformersSentimentAnalyzer:
@@ -52,7 +54,7 @@ class TransformersSentimentAnalyzer:
             from transformers.utils.hub import cached_file
             cached_file(self._model_name, "config.json", local_files_only=True)
         except Exception:
-            print(f"[INFO] 模型 {self._model_name} 未在本地缓存，使用模拟模式")
+            logger.info("模型 %s 未在本地缓存，使用规则兜底模式", self._model_name)
             self._model = None
             self._tokenizer = None
             return
@@ -61,9 +63,9 @@ class TransformersSentimentAnalyzer:
             self._model = AutoModelForSequenceClassification.from_pretrained(self._model_name, local_files_only=True)
             self._model.to(self._device)
             self._model.eval()
-            print(f"[INFO] Transformers 模型加载成功: {self._model_name}")
+            logger.info("Transformers 模型加载成功: %s", self._model_name)
         except Exception as e:
-            print(f"[WARN] Transformers 模型加载失败: {e}, 使用模拟模式")
+            logger.warning("Transformers 模型加载失败: %s，使用规则兜底模式", e)
             self._model = None
             self._tokenizer = None
 
@@ -72,8 +74,9 @@ class TransformersSentimentAnalyzer:
         if not text or not text.strip():
             return {
                 "sentiment": "neutral",
-                "positive_score": 0.5,
-                "negative_score": 0.5,
+                "positive_score": 0.0,
+                "negative_score": 0.0,
+                "neutral_score": 1.0,
                 "confidence": 0.0,
                 "model": "fallback",
             }
@@ -105,11 +108,12 @@ class TransformersSentimentAnalyzer:
                 "sentiment": sentiment,
                 "positive_score": round(pos_prob, 4),
                 "negative_score": round(neg_prob, 4),
+                "neutral_score": round(max(0.0, 1 - max(pos_prob, neg_prob)), 4),
                 "confidence": round(max(pos_prob, neg_prob), 4),
                 "model": self._model_name,
             }
         except Exception as e:
-            print(f"[WARN] Transformers 推理失败: {e}, 使用模拟模式")
+            logger.warning("Transformers 推理失败: %s，使用规则兜底模式", e)
             return self._mock_analyze(text)
 
     def _mock_analyze(self, text: str) -> Dict:
@@ -124,10 +128,11 @@ class TransformersSentimentAnalyzer:
         if total == 0:
             return {
                 "sentiment": "neutral",
-                "positive_score": 0.5,
-                "negative_score": 0.5,
+                "positive_score": 0.0,
+                "negative_score": 0.0,
+                "neutral_score": 1.0,
                 "confidence": 0.0,
-                "model": "mock",
+                "model": "rule-fallback",
             }
 
         pos_score = pos_count / total if total > 0 else 0.5
@@ -139,8 +144,9 @@ class TransformersSentimentAnalyzer:
             "sentiment": sentiment,
             "positive_score": round(pos_score, 4),
             "negative_score": round(neg_score, 4),
+            "neutral_score": 0.0,
             "confidence": round(confidence, 4),
-            "model": "mock",
+            "model": "rule-fallback",
         }
 
     def batch_analyze(self, texts: List[str]) -> List[Dict]:
@@ -149,12 +155,12 @@ class TransformersSentimentAnalyzer:
 
     async def analyze_async(self, text: str) -> Dict:
         """异步分析（将同步计算放入线程池）"""
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.analyze, text)
 
     async def analyze_batch_async(self, texts: List[str]) -> List[Dict]:
         """异步批量分析"""
-        loop = asyncio.get_event_loop()
+        loop = asyncio.get_running_loop()
         return await loop.run_in_executor(None, self.batch_analyze, texts)
 
 

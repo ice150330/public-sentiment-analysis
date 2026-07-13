@@ -57,7 +57,8 @@ const RelationGraph: React.FC<RelationGraphProps> = ({
       },
       series: [{
         type: 'graph',
-        layout: 'force',
+        layout: 'circular',
+        circular: { rotateLabel: false },
         data: nodes.map(n => ({
           ...n,
           symbolSize: n.symbolSize || 30 + (n.value || 0) * 2,
@@ -65,17 +66,12 @@ const RelationGraph: React.FC<RelationGraphProps> = ({
         })),
         links: links.map(l => ({
           ...l,
-          lineStyle: { width: Math.max(1, (l.value || 1) / 3), curveness: 0.2 },
+          lineStyle: { width: Math.min(4, Math.max(1, (l.value || 1) / 4)), curveness: 0.2, opacity: 0.18 },
         })),
         categories: catList,
-        roam: true,
-        draggable: true,
+        roam: false,
+        draggable: false,
         focusNodeAdjacency: true,
-        force: {
-          repulsion: 300,
-          edgeLength: [50, 150],
-          gravity: 0.1,
-        },
         emphasis: {
           focus: 'adjacency',
           lineStyle: { width: 4 },

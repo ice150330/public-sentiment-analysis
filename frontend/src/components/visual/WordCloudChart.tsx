@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import ReactECharts from 'echarts-for-react';
 
 /* ───── 词云图组件 ───── */
 
@@ -16,54 +15,33 @@ interface WordCloudChartProps {
 
 const WordCloudChart: React.FC<WordCloudChartProps> = ({
   data,
-  title = '关键词云',
   height = 300,
 }) => {
-  const option = useMemo(() => {
+  const words = useMemo(() => {
     const sorted = [...data].sort((a, b) => b.value - a.value).slice(0, 80);
     const maxVal = sorted[0]?.value || 1;
-
-    return {
-      title: {
-        text: title,
-        left: 'center',
-        top: 8,
-        textStyle: { fontSize: 14, fontWeight: 'bold', color: '#1f2937' },
-      },
-      tooltip: {
-        show: true,
-        formatter: (params: any) => `${params.name}: ${params.value}`,
-      },
-      series: [{
-        type: 'scatter',
-        symbolSize: (val: number[]) => Math.max(12, (val[2] / maxVal) * 60),
-        data: sorted.map((item, index) => ({
-          name: item.name,
-          value: [index % 10, Math.floor(index / 10), item.value],
-          itemStyle: {
-            color: `hsl(${200 + (index * 137.5) % 60}, ${70 + (index % 20)}%, ${45 + (index % 15)}%)`,
-          },
-        })),
-        label: {
-          show: true,
-          formatter: (p: any) => p.name,
-          fontSize: 12,
-          color: '#1f2937',
-        },
-        emphasis: {
-          label: { fontSize: 16, fontWeight: 'bold' },
-          itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.2)' },
-        },
-      }],
-      grid: { top: 40, right: 10, bottom: 10, left: 10 },
-      xAxis: { show: false, min: -1, max: 10 },
-      yAxis: { show: false, min: -1, max: 8 },
-    };
-  }, [data, title]);
+    return sorted.map((item, index) => ({
+      ...item,
+      size: 12 + Math.round((item.value / maxVal) * 14),
+      color: ['#2563EB', '#16A34A', '#E11D48', '#F59E0B', '#0EA5E9', '#64748B'][index % 6],
+    }));
+  }, [data]);
 
   return (
-    <div style={{ width: '100%', height }}>
-      <ReactECharts option={option} style={{ height: '100%', width: '100%' }} />
+    <div className="psa-word-cloud" style={{ height }}>
+      {words.map((word) => (
+        <span
+          key={word.name}
+          className="psa-word-chip"
+          style={{
+            color: word.color,
+            fontSize: word.size,
+          }}
+          title={`${word.name}: ${word.value.toLocaleString()}`}
+        >
+          {word.name}
+        </span>
+      ))}
     </div>
   );
 };

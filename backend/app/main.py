@@ -249,15 +249,6 @@ app.include_router(
 )
 
 
-from app.api.v1 import sentiment_v2
-
-app.include_router(
-    sentiment_v2.router,
-    prefix="/api/v1/sentiment",
-    tags=["情感分析"],
-)
-
-
 if __name__ == "__main__":
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
