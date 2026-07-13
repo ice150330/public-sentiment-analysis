@@ -5,7 +5,7 @@
 模块职责: 热榜数据 ORM 模型
 """
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, JSON, func, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, Integer, String, Text, DateTime, Date, JSON, func, ForeignKey, UniqueConstraint
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -25,11 +25,12 @@ class HotTopic(Base):
     content_summary = Column(Text, comment="正文摘要（前500字）")
     raw_data = Column(JSON, comment="原始数据备份(JSON)")
     crawl_time = Column(DateTime, nullable=False, comment="采集时间")
+    crawl_date = Column(Date, nullable=False, comment="采集日期(用于去重)")
     created_at = Column(DateTime, server_default=func.now())
     
     # 联合唯一键：同一平台同一话题同一天只存一次
     __table_args__ = (
-        UniqueConstraint("platform_id", "topic_id", "crawl_time", name="uix_platform_topic_crawl"),
+        UniqueConstraint("platform_id", "topic_id", "crawl_date", name="uix_platform_topic_date"),
     )
     
     # 关系

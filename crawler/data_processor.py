@@ -318,9 +318,14 @@ class DataProcessor:
                 # 提取运营标签
                 title, heat_tag = cls.extract_heat_tag(title)
                 
-                # 生成 topic_id
-                topic_id = str(item.get("id", item.get("rank", ""))).strip()
-                if not topic_id or topic_id in {"0", "None", "null", ""}:
+                # 生成 topic_id（稳定的标识符）
+                # 优先使用平台提供的原始ID；没有则用标题的hash（保证同一话题id不变）
+                raw_id = str(item.get("id", "")).strip()
+                rank = str(item.get("rank", "")).strip()
+                if raw_id and raw_id not in {"0", "None", "null", "", rank}:
+                    topic_id = raw_id
+                else:
+                    # 用 title hash 生成稳定id，避免rank变化导致重复
                     topic_id = hashlib.sha1(f"{platform_id}:{title}".encode("utf-8")).hexdigest()[:16]
                 
                 # 分类规范化

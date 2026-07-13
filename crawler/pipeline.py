@@ -313,9 +313,14 @@ class DataProcessor:
                 # 提取运营标签
                 title, heat_tag = cls.extract_heat_tag(title)
                 
-                # 生成 topic_id
-                topic_id = str(item.get("id", item.get("rank", ""))).strip()
-                if not topic_id or topic_id in {"0", "None", "null", ""}:
+                # 生成 topic_id（稳定的标识符）
+                # 优先使用平台提供的原始ID；没有则用标题的hash（保证同一话题id不变）
+                raw_id = str(item.get("id", "")).strip()
+                rank = str(item.get("rank", "")).strip()
+                if raw_id and raw_id not in {"0", "None", "null", "", rank}:
+                    topic_id = raw_id
+                else:
+                    # 用 title hash 生成稳定id，避免rank变化导致重复
                     topic_id = hashlib.sha1(f"{platform_id}:{title}".encode("utf-8")).hexdigest()[:16]
                 
                 # 分类规范化
@@ -490,8 +495,8 @@ class CrawlPipeline:
         updated = 0
         crawl_time = datetime.now()
         
-        # 去重时间窗口：1小时（同一标题在1小时内不重复）
-        dedup_window = crawl_time - timedelta(hours=1)
+        # 去重时间窗口：当天（同一标题在同一天内不重复）
+        dedup_window = crawl_time.replace(hour=0, minute=0, second=0, microsecond=0)
 
         try:
             for topic in topics:
@@ -519,9 +524,10 @@ class CrawlPipeline:
                         content_summary=topic.get("content_summary", ""),
                         raw_data={
                             **(topic.get("raw_data") or {}),
-                            "heat_tag": topic.get("heat_tag"),  # 运营标签存入 raw_data
+                            "heat_tag": topic.get("heat_tag"),
                         },
                         crawl_time=crawl_time,
+                        crawl_date=crawl_time.date(),
                     )
 
                     self.db.add(hot_topic)
@@ -554,27 +560,30 @@ class CrawlPipeline:
     
     def _find_duplicate(self, topic: Dict, since: datetime) -> Optional[HotTopic]:
         """
-        查找重复话题
+        查找重复话题（当天维度）
         
         检查维度:
         1. topic_id 匹配（最严格的匹配）
-        2. 标题相似度（同一平台1小时内相同标题）
+        2. 标题精确匹配（同一平台当天相同标题）
         """
-        # 先检查 topic_id
+        from datetime import date
+        today = date.today()
+        
+        # 先检查 topic_id（当天）
         existing = self.db.query(HotTopic).filter(
             HotTopic.platform_id == topic["platform_id"],
             HotTopic.topic_id == topic["topic_id"],
-            HotTopic.crawl_time >= since,
+            HotTopic.crawl_date == today,
         ).first()
         
         if existing:
             return existing
         
-        # 再检查标题（模糊匹配）
+        # 再检查标题（当天）
         existing = self.db.query(HotTopic).filter(
             HotTopic.platform_id == topic["platform_id"],
             HotTopic.title == topic["title"],
-            HotTopic.crawl_time >= since,
+            HotTopic.crawl_date == today,
         ).first()
         
         return existing

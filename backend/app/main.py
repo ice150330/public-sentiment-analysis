@@ -17,7 +17,7 @@ from fastapi.exceptions import RequestValidationError
 
 from app.core.database import engine, Base
 from app.core.scheduler import get_scheduler
-from app.api.v1 import platforms, topics, sentiment, stats, crawler, alerts, data_quality, system, topic_ext, model, ui_compat
+from app.api.v1 import platforms, topics, sentiment, stats, crawler, alerts, data_quality, system, topic_ext, model, ui_compat, sentiment_v2
 from app.api.v1 import topic_clusters, propagation_paths, trend_predictions, model_explanations
 
 
@@ -170,6 +170,13 @@ app.include_router(
     tags=["情感分析"],
 )
 
+# Transformers V2 情感分析（增强版）
+app.include_router(
+    sentiment_v2.router,
+    prefix="/api/v1/sentiment",
+    tags=["情感分析V2"],
+)
+
 app.include_router(
     stats.router,
     prefix="/api/v1/stats",
@@ -239,6 +246,15 @@ app.include_router(
 app.include_router(
     ui_compat.router,
     tags=["UI 兼容接口"],
+)
+
+
+from app.api.v1 import sentiment_v2
+
+app.include_router(
+    sentiment_v2.router,
+    prefix="/api/v1/sentiment",
+    tags=["情感分析"],
 )
 
 

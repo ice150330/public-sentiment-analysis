@@ -6,6 +6,7 @@ import {
   FireOutlined,
   SmileOutlined,
   BarChartOutlined,
+  MonitorOutlined,
 } from '@ant-design/icons';
 
 const Navbar: React.FC = () => {
@@ -32,6 +33,11 @@ const Navbar: React.FC = () => {
       key: '/stats',
       icon: <BarChartOutlined />,
       label: '统计分析',
+    },
+    {
+      key: '/monitor',
+      icon: <MonitorOutlined />,
+      label: '监控面板',
     },
   ];
 
