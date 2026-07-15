@@ -1,114 +1,114 @@
 {
-  "date": "2026-07-14",
-  "generated_at": "2026-07-14T10:01:05.659510",
+  "date": "2026-07-15",
+  "generated_at": "2026-07-15T10:00:21.058115",
   "summary": {
-    "total_topics": 513,
-    "sentiment_analyzed": 513,
+    "total_topics": 569,
+    "sentiment_analyzed": 569,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 52
+      "count": 76
     },
     {
       "platform": "今日头条",
-      "count": 111
+      "count": 112
     },
     {
       "platform": "微博",
-      "count": 129
+      "count": 137
     },
     {
       "platform": "抖音",
-      "count": 70
+      "count": 79
     },
     {
       "platform": "百度",
-      "count": 106
+      "count": 124
     },
     {
       "platform": "知乎",
-      "count": 45
+      "count": 41
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 30,
-      "percentage": 5.8
+      "count": 37,
+      "percentage": 6.5
     },
     {
       "label": "neutral",
-      "count": 96,
-      "percentage": 18.7
+      "count": 92,
+      "percentage": 16.2
     },
     {
       "label": "positive",
-      "count": 387,
-      "percentage": 75.4
+      "count": 440,
+      "percentage": 77.3
     }
   ],
   "top_10_topics": [
     {
-      "title": "消防员抱出3个月婴儿时手都抖了",
-      "heat_score": 27433165,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "于东来亮相新闻联播",
-      "heat_score": 24822554,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "国务院：逐步提高城乡居民基础养老金",
-      "heat_score": 23825803,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "格雷厄姆猝死将如何影响美中期选举",
-      "heat_score": 21558478,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "放射科主任伙同女友受贿2392万获刑",
-      "heat_score": 20322988,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "解锁2026世界人工智能大会新亮点",
-      "heat_score": 19506917,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "法国vs西班牙半决赛前将进行默哀仪式",
-      "heat_score": 19087441,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "海南禁售燃油车之后下一个是谁",
-      "heat_score": 18389000,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "中山大学222人取消录取资格",
-      "heat_score": 17650589,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "浙江一住户为防台风用「米」字胶带加固窗户，却成为全楼唯一一户碎玻璃的，为啥会这样？「米」字封窗有用吗？",
-      "heat_score": 17510000,
+      "title": "西班牙 2-0 法国，晋级世界杯决赛，亚马尔造点、姆巴佩哑火，如何评价本场比赛？",
+      "heat_score": 51690000,
       "category": "问答",
       "platform": "知乎"
+    },
+    {
+      "title": "世界杯半决赛，法国 vs 西班牙，如何评价本场比赛？",
+      "heat_score": 36280000,
+      "category": "问答",
+      "platform": "知乎"
+    },
+    {
+      "title": "西班牙中场再现“世界名画”",
+      "heat_score": 32303480,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "姆巴佩PK亚马尔！法国VS西班牙",
+      "heat_score": 31338046,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "没有现任金球奖得主能在世界杯夺冠",
+      "heat_score": 29229397,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "功夫女足票房破7亿",
+      "heat_score": 28535685,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "姆巴佩心态崩了",
+      "heat_score": 27984662,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "法国队遭西班牙“三连杀”",
+      "heat_score": 27266991,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "法国是世界杯被判点球最多的球队",
+      "heat_score": 26865933,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "普京：将以牙还牙回应敌方袭击",
+      "heat_score": 26158663,
+      "category": "new",
+      "platform": "今日头条"
     }
   ],
   "data_quality": {
