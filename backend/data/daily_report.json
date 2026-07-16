@@ -1,113 +1,113 @@
 {
-  "date": "2026-07-15",
-  "generated_at": "2026-07-15T10:00:21.058115",
+  "date": "2026-07-16",
+  "generated_at": "2026-07-16T10:00:23.751115",
   "summary": {
-    "total_topics": 569,
-    "sentiment_analyzed": 569,
+    "total_topics": 567,
+    "sentiment_analyzed": 567,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 76
+      "count": 63
     },
     {
       "platform": "今日头条",
-      "count": 112
+      "count": 111
     },
     {
       "platform": "微博",
-      "count": 137
+      "count": 152
     },
     {
       "platform": "抖音",
-      "count": 79
+      "count": 70
     },
     {
       "platform": "百度",
-      "count": 124
+      "count": 120
     },
     {
       "platform": "知乎",
-      "count": 41
+      "count": 51
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 37,
-      "percentage": 6.5
+      "count": 33,
+      "percentage": 5.8
     },
     {
       "label": "neutral",
-      "count": 92,
-      "percentage": 16.2
+      "count": 86,
+      "percentage": 15.2
     },
     {
       "label": "positive",
-      "count": 440,
-      "percentage": 77.3
+      "count": 448,
+      "percentage": 79.0
     }
   ],
   "top_10_topics": [
     {
-      "title": "西班牙 2-0 法国，晋级世界杯决赛，亚马尔造点、姆巴佩哑火，如何评价本场比赛？",
-      "heat_score": 51690000,
-      "category": "问答",
-      "platform": "知乎"
-    },
-    {
-      "title": "世界杯半决赛，法国 vs 西班牙，如何评价本场比赛？",
-      "heat_score": 36280000,
-      "category": "问答",
-      "platform": "知乎"
-    },
-    {
-      "title": "西班牙中场再现“世界名画”",
-      "heat_score": 32303480,
-      "category": "hot",
+      "title": "官方把房子定位为大宗消费品意味啥",
+      "heat_score": 79067563,
+      "category": "depth",
       "platform": "今日头条"
     },
     {
-      "title": "姆巴佩PK亚马尔！法国VS西班牙",
-      "heat_score": 31338046,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "没有现任金球奖得主能在世界杯夺冠",
-      "heat_score": 29229397,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "功夫女足票房破7亿",
-      "heat_score": 28535685,
+      "title": "超市老板称天热碳酸饮料卖不动",
+      "heat_score": 71543289,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "姆巴佩心态崩了",
-      "heat_score": 27984662,
-      "category": "hot",
-      "platform": "今日头条"
+      "title": "世界杯半决赛，阿根廷 7 分钟两球 2-1 逆转英格兰，如何评价本场比赛？",
+      "heat_score": 70440000,
+      "category": "问答",
+      "platform": "知乎"
     },
     {
-      "title": "法国队遭西班牙“三连杀”",
-      "heat_score": 27266991,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "法国是世界杯被判点球最多的球队",
-      "heat_score": 26865933,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "普京：将以牙还牙回应敌方袭击",
-      "heat_score": 26158663,
+      "title": "英阿大战来了",
+      "heat_score": 66811451,
       "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "四川一中巴车坠崖 有人员伤亡",
+      "heat_score": 65714714,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "今年上半年中国经济总体平稳向新向优",
+      "heat_score": 64735045,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "肉搏战！英阿半场19次犯规",
+      "heat_score": 60087151,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "四川一旅游车坠入河滩",
+      "heat_score": 58574691,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "步步高超市学胖东来2年多有何变化",
+      "heat_score": 53490755,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "法国输球后巴黎街头陷入混乱",
+      "heat_score": 53000572,
+      "category": "其他",
       "platform": "今日头条"
     }
   ],
