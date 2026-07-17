@@ -1,112 +1,112 @@
 {
-  "date": "2026-07-16",
-  "generated_at": "2026-07-16T10:00:23.751115",
+  "date": "2026-07-17",
+  "generated_at": "2026-07-17T10:00:34.496759",
   "summary": {
-    "total_topics": 567,
-    "sentiment_analyzed": 567,
+    "total_topics": 506,
+    "sentiment_analyzed": 506,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 63
+      "count": 56
     },
     {
       "platform": "今日头条",
-      "count": 111
+      "count": 110
     },
     {
       "platform": "微博",
-      "count": 152
+      "count": 126
     },
     {
       "platform": "抖音",
-      "count": 70
+      "count": 73
     },
     {
       "platform": "百度",
-      "count": 120
+      "count": 94
     },
     {
       "platform": "知乎",
-      "count": 51
+      "count": 47
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 33,
-      "percentage": 5.8
+      "count": 19,
+      "percentage": 3.8
     },
     {
       "label": "neutral",
-      "count": 86,
-      "percentage": 15.2
+      "count": 95,
+      "percentage": 18.8
     },
     {
       "label": "positive",
-      "count": 448,
-      "percentage": 79.0
+      "count": 392,
+      "percentage": 77.5
     }
   ],
   "top_10_topics": [
     {
-      "title": "官方把房子定位为大宗消费品意味啥",
-      "heat_score": 79067563,
-      "category": "depth",
-      "platform": "今日头条"
-    },
-    {
-      "title": "超市老板称天热碳酸饮料卖不动",
-      "heat_score": 71543289,
+      "title": "俄不承认“南海仲裁案裁决”合法性",
+      "heat_score": 79161449,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "世界杯半决赛，阿根廷 7 分钟两球 2-1 逆转英格兰，如何评价本场比赛？",
-      "heat_score": 70440000,
-      "category": "问答",
-      "platform": "知乎"
-    },
-    {
-      "title": "英阿大战来了",
-      "heat_score": 66811451,
+      "title": "今夏饮料市场出现明显反常现象",
+      "heat_score": 72524070,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "四川一中巴车坠崖 有人员伤亡",
-      "heat_score": 65714714,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "今年上半年中国经济总体平稳向新向优",
-      "heat_score": 64735045,
+      "title": "岛内民调称88%青年愿上战场结果翻车",
+      "heat_score": 71628242,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "肉搏战！英阿半场19次犯规",
-      "heat_score": 60087151,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "四川一旅游车坠入河滩",
-      "heat_score": 58574691,
+      "title": "1组数字看2026上半年中国经济",
+      "heat_score": 64811913,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "步步高超市学胖东来2年多有何变化",
-      "heat_score": 53490755,
+      "title": "A股哪些板块在逆势吸筹",
+      "heat_score": 58644244,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "餐厅服务员帮顾客传话搭讪女生",
+      "heat_score": 53484539,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "法国输球后巴黎街头陷入混乱",
-      "heat_score": 53000572,
+      "title": "玛莎拉蒂新车88万二手只要24.8万",
+      "heat_score": 53063506,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "世界杯冠军奖金5000万美元",
+      "heat_score": 48013846,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "昆明暴雨呈柱状倾泻如“登天电梯”",
+      "heat_score": 47545066,
+      "category": "onSite",
+      "platform": "今日头条"
+    },
+    {
+      "title": "巴菲特发出警告：市场已成“赌场”",
+      "heat_score": 43020554,
       "category": "其他",
       "platform": "今日头条"
     }
