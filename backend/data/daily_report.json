@@ -1,112 +1,112 @@
 {
-  "date": "2026-07-17",
-  "generated_at": "2026-07-17T10:00:34.496759",
+  "date": "2026-07-18",
+  "generated_at": "2026-07-18T10:00:38.345729",
   "summary": {
-    "total_topics": 506,
-    "sentiment_analyzed": 506,
+    "total_topics": 519,
+    "sentiment_analyzed": 519,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 56
+      "count": 50
     },
     {
       "platform": "今日头条",
-      "count": 110
+      "count": 109
     },
     {
       "platform": "微博",
-      "count": 126
+      "count": 140
     },
     {
       "platform": "抖音",
-      "count": 73
+      "count": 81
     },
     {
       "platform": "百度",
-      "count": 94
+      "count": 102
     },
     {
       "platform": "知乎",
-      "count": 47
+      "count": 37
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 19,
-      "percentage": 3.8
+      "count": 15,
+      "percentage": 2.9
     },
     {
       "label": "neutral",
-      "count": 95,
-      "percentage": 18.8
+      "count": 75,
+      "percentage": 14.5
     },
     {
       "label": "positive",
-      "count": 392,
-      "percentage": 77.5
+      "count": 429,
+      "percentage": 82.7
     }
   ],
   "top_10_topics": [
     {
-      "title": "俄不承认“南海仲裁案裁决”合法性",
-      "heat_score": 79161449,
+      "title": "T1战胜HLE数据雷达图",
+      "heat_score": 90914882,
       "category": "其他",
+      "platform": "B站"
+    },
+    {
+      "title": "重庆山体崩塌已致8死34失联",
+      "heat_score": 46724579,
+      "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "今夏饮料市场出现明显反常现象",
-      "heat_score": 72524070,
+      "title": "飞天茅台再涨价",
+      "heat_score": 44619400,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "岛内民调称88%青年愿上战场结果翻车",
-      "heat_score": 71628242,
+      "title": "店主回应送老顾客彩票中508万",
+      "heat_score": 42278148,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "1组数字看2026上半年中国经济",
-      "heat_score": 64811913,
+      "title": "我国服务出口快速增长",
+      "heat_score": 38254850,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "A股哪些板块在逆势吸筹",
-      "heat_score": 58644244,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "餐厅服务员帮顾客传话搭讪女生",
-      "heat_score": 53484539,
+      "title": "世界杯三四名决赛有没有存在的必要",
+      "heat_score": 36531275,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "玛莎拉蒂新车88万二手只要24.8万",
-      "heat_score": 53063506,
+      "title": "国防部：望各方理性看待中俄军事合作",
+      "heat_score": 34614420,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "世界杯冠军奖金5000万美元",
-      "heat_score": 48013846,
+      "title": "蔡磊牵线研发国产渐冻症药有望上市",
+      "heat_score": 31320422,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "VG战胜Falcons晋级四强",
+      "heat_score": 29227668,
       "category": "其他",
-      "platform": "今日头条"
+      "platform": "B站"
     },
     {
-      "title": "昆明暴雨呈柱状倾泻如“登天电梯”",
-      "heat_score": 47545066,
-      "category": "onSite",
-      "platform": "今日头条"
-    },
-    {
-      "title": "巴菲特发出警告：市场已成“赌场”",
-      "heat_score": 43020554,
+      "title": "80后女子吐槽断崖式衰老被喊奶奶",
+      "heat_score": 28339890,
       "category": "其他",
       "platform": "今日头条"
     }
