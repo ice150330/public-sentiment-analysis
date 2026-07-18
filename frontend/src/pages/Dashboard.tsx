@@ -1,11 +1,12 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Progress, Table } from 'antd';
+import { Button, Progress, Table } from 'antd';
 import {
   AlertOutlined,
   ApiOutlined,
   BarChartOutlined,
   CheckCircleOutlined,
   DatabaseOutlined,
+  DownloadOutlined,
   RadarChartOutlined,
 } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
@@ -17,6 +18,7 @@ import {
   DataQualityCheck,
   DataQualityFunnel,
   DataQualityIssue,
+  exportAlertEventsCsv,
   getAlertEvents,
   getAlertSummary,
   getCrawlLogs,
@@ -515,6 +517,7 @@ const AlertCenter: React.FC = () => {
   const [summary, setSummary] = useState<AlertSummary | null>(null);
   const [events, setEvents] = useState<AlertEvent[]>([]);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   const fetchAlerts = useCallback(async () => {
@@ -540,10 +543,27 @@ const AlertCenter: React.FC = () => {
 
   const severityRows = Object.entries(summary?.severity_distribution || {});
 
+  const handleExport = useCallback(async () => {
+    try {
+      setExporting(true);
+      await exportAlertEventsCsv({ limit: 5000 });
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setExporting(false);
+    }
+  }, []);
+
   return (
     <DataState loading={loading} error={error} empty={!summary} emptyTitle="暂无预警摘要">
       <div className="psa-grid two-one">
-        <Panel title="预警队列" className="tall" eyebrow={`待处理 ${formatNumber(summary?.pending_count)}`}>
+        <Panel
+          title="预警队列"
+          className="tall"
+          eyebrow={`待处理 ${formatNumber(summary?.pending_count)}`}
+          extra={<Button size="small" icon={<DownloadOutlined />} onClick={handleExport} loading={exporting}>导出</Button>}
+        >
           <DataState empty={events.length === 0} emptyTitle="暂无预警事件" emptyDescription="当前没有待展示的预警事件。">
             <div className="psa-list">
               {events.map((event) => (

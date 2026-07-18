@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Empty, Result, Skeleton, Tag } from 'antd';
+import { Button, Empty, Result, Skeleton, Tag, Tooltip } from 'antd';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { gsap } from 'gsap';
 import { useGSAP } from '@gsap/react';
@@ -10,12 +10,15 @@ import {
   DatabaseOutlined,
   ExclamationCircleOutlined,
   FireOutlined,
+  LogoutOutlined,
   RadarChartOutlined,
   ReloadOutlined,
   SearchOutlined,
   SettingOutlined,
   SmileOutlined,
+  UserOutlined,
 } from '@ant-design/icons';
+import { useAuth } from '../auth/AuthContext';
 
 gsap.registerPlugin(useGSAP);
 
@@ -42,7 +45,7 @@ const moduleRoutes = [
   { path: '/', label: '总览', icon: <DashboardOutlined /> },
   { path: '/topics', label: '热点', icon: <FireOutlined /> },
   { path: '/analysis', label: '分析', icon: <SmileOutlined /> },
-  { path: '/management', label: '管理', icon: <SettingOutlined /> },
+  { path: '/management', label: '管理', icon: <SettingOutlined />, adminOnly: true },
 ];
 
 export const formatDateTime = (value?: string | null) => {
@@ -227,6 +230,8 @@ const TopFunctionBar: React.FC<Omit<ModuleFrameProps, 'children'>> = ({
 }) => {
   const [localSearch, setLocalSearch] = React.useState('');
   const [now, setNow] = React.useState(() => Date.now());
+  const navigate = useNavigate();
+  const { user, logout } = useAuth();
 
   React.useEffect(() => {
     const timer = window.setInterval(() => setNow(Date.now()), 10000);
@@ -307,6 +312,24 @@ const TopFunctionBar: React.FC<Omit<ModuleFrameProps, 'children'>> = ({
             刷新数据
           </Button>
         )}
+        {user && (
+          <>
+            <button type="button" className="psa-user-chip" onClick={() => navigate('/profile')}>
+              <UserOutlined />
+              <span>{user.username}</span>
+            </button>
+            <Tooltip title="退出登录">
+              <Button
+                className="psa-icon-action"
+                icon={<LogoutOutlined />}
+                onClick={() => {
+                  logout();
+                  navigate('/login', { replace: true });
+                }}
+              />
+            </Tooltip>
+          </>
+        )}
       </div>
     </header>
   );
@@ -315,6 +338,7 @@ const TopFunctionBar: React.FC<Omit<ModuleFrameProps, 'children'>> = ({
 export const FloatingDock: React.FC = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { user } = useAuth();
   const current = location.pathname === '/analysis' || location.pathname === '/sentiment'
     ? '/analysis'
     : location.pathname === '/management' || location.pathname === '/stats'
@@ -325,7 +349,7 @@ export const FloatingDock: React.FC = () => {
 
   return (
     <nav className="psa-floating-dock" aria-label="主导航">
-      {moduleRoutes.map((item) => (
+      {moduleRoutes.filter((item) => !item.adminOnly || user?.role === 'admin').map((item) => (
         <button
           type="button"
           key={item.path}

@@ -239,6 +239,7 @@ temp/
 *.sql
 *.sqlite
 *.sqlite3
+backend/backups/
 
 # Docker volumes
 volumes/

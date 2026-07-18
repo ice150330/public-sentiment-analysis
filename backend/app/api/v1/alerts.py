@@ -12,9 +12,11 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func, and_
 
+from app.core.auth import require_admin, require_analyst
 from app.core.database import get_db
-from app.models import AlertRule, AlertEvent, AlertAction, HotTopic
+from app.models import AlertRule, AlertEvent, AlertAction, HotTopic, User
 from app.schemas import UnifiedResponse
+from app.services.audit_service import write_audit_log
 from app.services.alert_engine import AlertEngine
 
 router = APIRouter()
@@ -109,6 +111,7 @@ async def get_alert_rule(
 @router.post("/rules", response_model=UnifiedResponse[dict], status_code=201)
 async def create_alert_rule(
     rule_data: dict,
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """创建预警规则"""
@@ -123,6 +126,13 @@ async def create_alert_rule(
         is_active=rule_data.get("is_active", True),
     )
     db.add(rule)
+    write_audit_log(
+        db,
+        operator=current_user.username,
+        action="create_alert_rule",
+        target_type="alert_rule",
+        after=rule_data,
+    )
     db.commit()
     db.refresh(rule)
     
@@ -137,6 +147,7 @@ async def create_alert_rule(
 async def update_alert_rule(
     rule_id: int,
     rule_data: dict,
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """更新预警规则"""
@@ -144,9 +155,20 @@ async def update_alert_rule(
     if not rule:
         raise HTTPException(status_code=404, detail="Alert rule not found")
     
+    before = {key: getattr(rule, key) for key in rule_data if hasattr(rule, key)}
     for key, value in rule_data.items():
         if hasattr(rule, key) and value is not None:
             setattr(rule, key, value)
+    after = {key: getattr(rule, key) for key in before}
+    write_audit_log(
+        db,
+        operator=current_user.username,
+        action="update_alert_rule",
+        target_type="alert_rule",
+        target_id=rule.id,
+        before=before,
+        after=after,
+    )
     
     db.commit()
     db.refresh(rule)
@@ -162,6 +184,7 @@ async def update_alert_rule(
 async def patch_alert_rule(
     rule_id: int,
     rule_data: dict,
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """部分更新预警规则（启停等）"""
@@ -169,9 +192,20 @@ async def patch_alert_rule(
     if not rule:
         raise HTTPException(status_code=404, detail="Alert rule not found")
     
+    before = {key: getattr(rule, key) for key in rule_data if hasattr(rule, key)}
     for key, value in rule_data.items():
         if hasattr(rule, key):
             setattr(rule, key, value)
+    after = {key: getattr(rule, key) for key in before}
+    write_audit_log(
+        db,
+        operator=current_user.username,
+        action="patch_alert_rule",
+        target_type="alert_rule",
+        target_id=rule.id,
+        before=before,
+        after=after,
+    )
     
     db.commit()
     db.refresh(rule)
@@ -186,6 +220,7 @@ async def patch_alert_rule(
 @router.delete("/rules/{rule_id}", response_model=UnifiedResponse[dict])
 async def delete_alert_rule(
     rule_id: int,
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """删除预警规则"""
@@ -193,7 +228,21 @@ async def delete_alert_rule(
     if not rule:
         raise HTTPException(status_code=404, detail="Alert rule not found")
     
+    before = {
+        "id": rule.id,
+        "name": rule.name,
+        "severity": rule.severity,
+        "condition_type": rule.condition_type,
+    }
     db.delete(rule)
+    write_audit_log(
+        db,
+        operator=current_user.username,
+        action="delete_alert_rule",
+        target_type="alert_rule",
+        target_id=rule_id,
+        before=before,
+    )
     db.commit()
     
     return {
@@ -317,6 +366,7 @@ async def get_alert_event(
 async def acknowledge_alert(
     event_id: int,
     note: str = "",
+    current_user: User = Depends(require_analyst),
     db: Session = Depends(get_db),
 ):
     """确认预警事件"""
@@ -331,7 +381,7 @@ async def acknowledge_alert(
     action = AlertAction(
         event_id=event_id,
         action_type="acknowledge",
-        operator="user",
+        operator=current_user.username,
         note=note,
     )
     db.add(action)
@@ -348,6 +398,7 @@ async def acknowledge_alert(
 async def resolve_alert(
     event_id: int,
     note: str = "",
+    current_user: User = Depends(require_analyst),
     db: Session = Depends(get_db),
 ):
     """解决预警事件"""
@@ -361,7 +412,7 @@ async def resolve_alert(
     action = AlertAction(
         event_id=event_id,
         action_type="resolve",
-        operator="user",
+        operator=current_user.username,
         note=note,
     )
     db.add(action)
@@ -378,6 +429,7 @@ async def resolve_alert(
 async def ignore_alert(
     event_id: int,
     note: str = "",
+    current_user: User = Depends(require_analyst),
     db: Session = Depends(get_db),
 ):
     """忽略预警事件"""
@@ -391,7 +443,7 @@ async def ignore_alert(
     action = AlertAction(
         event_id=event_id,
         action_type="ignore",
-        operator="user",
+        operator=current_user.username,
         note=note,
     )
     db.add(action)
@@ -463,6 +515,7 @@ async def get_alert_summary(
 @router.post("/evaluate", response_model=UnifiedResponse[dict])
 async def evaluate_alert_rules(
     rule_ids: list = None,
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """

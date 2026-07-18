@@ -12,9 +12,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 
+from app.core.auth import require_admin
 from app.core.database import get_db
-from app.models import Platform, CrawlLog, HotTopic, SentimentResult
+from app.models import Platform, CrawlLog, HotTopic, SentimentResult, User
 from app.schemas import PlatformResponse, PlatformUpdate, UnifiedResponse
+from app.services.audit_service import write_audit_log
 
 router = APIRouter()
 
@@ -64,6 +66,7 @@ async def get_platform(
 async def update_platform(
     platform_id: int,
     update: PlatformUpdate,
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """
@@ -78,8 +81,19 @@ async def update_platform(
     
     # 只更新传入的字段
     update_data = update.model_dump(exclude_unset=True)
+    before = {field: getattr(platform, field) for field in update_data}
     for field, value in update_data.items():
         setattr(platform, field, value)
+    after = {field: getattr(platform, field) for field in update_data}
+    write_audit_log(
+        db,
+        operator=current_user.username,
+        action="update_platform",
+        target_type="platform",
+        target_id=platform.id,
+        before=before,
+        after=after,
+    )
     
     db.commit()
     db.refresh(platform)

@@ -8,7 +8,7 @@
 from datetime import datetime
 from typing import List
 
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, Request
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 
@@ -18,9 +18,17 @@ from app.schemas import HotTopicResponse, HotTopicListResponse, UnifiedResponse
 
 router = APIRouter()
 
+TOPIC_SORT_FIELDS = {
+    "heat_score": HotTopic.heat_score,
+    "crawl_time": HotTopic.crawl_time,
+    "created_at": HotTopic.created_at,
+    "id": HotTopic.id,
+}
+
 
 @router.get("", response_model=UnifiedResponse[HotTopicListResponse])
 async def list_topics(
+    request: Request,
     platform: str = None,
     keyword: str = None,
     start_time: datetime = None,
@@ -57,11 +65,11 @@ async def list_topics(
         query = query.filter(HotTopic.category == category)
     
     # 排序
-    sort_field = getattr(HotTopic, sort_by, HotTopic.heat_score)
-    if sort_order == "desc":
-        query = query.order_by(desc(sort_field))
-    else:
+    sort_field = TOPIC_SORT_FIELDS.get(sort_by, HotTopic.heat_score)
+    if sort_order.lower() == "asc":
         query = query.order_by(sort_field)
+    else:
+        query = query.order_by(desc(sort_field))
     
     # 分页
     total = query.count()
@@ -71,6 +79,8 @@ async def list_topics(
     items = []
     for topic in topics:
         topic_data = HotTopicResponse.from_orm(topic).dict()
+        if getattr(request.state, "auth_role", None) != "admin":
+            topic_data["raw_data"] = None
         topic_data["platform_name"] = topic.platform.display_name if topic.platform else None
         
         # 附加情感分析结果（如果存在）
@@ -113,6 +123,7 @@ async def list_topics(
 
 @router.get("/{topic_id:int}", response_model=UnifiedResponse[HotTopicResponse])
 async def get_topic(
+    request: Request,
     topic_id: int,
     db: Session = Depends(get_db),
 ):
@@ -122,6 +133,8 @@ async def get_topic(
         raise HTTPException(status_code=404, detail="Topic not found")
     
     topic_data = HotTopicResponse.from_orm(topic).dict()
+    if getattr(request.state, "auth_role", None) != "admin":
+        topic_data["raw_data"] = None
     topic_data["platform_name"] = topic.platform.display_name if topic.platform else None
     
     # 附加情感分析结果

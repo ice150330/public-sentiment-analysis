@@ -5,7 +5,7 @@
 模块职责: 预警事件队列 ORM 模型
 """
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, ForeignKey, func
+from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -35,6 +35,13 @@ class AlertEvent(Base):
     
     created_at = Column(DateTime, server_default=func.now())
     updated_at = Column(DateTime, server_default=func.now(), onupdate=func.now())
+
+    __table_args__ = (
+        Index("idx_alert_events_status_severity_triggered_at", "status", "severity", "triggered_at"),
+        Index("idx_alert_events_rule_triggered_at", "rule_id", "triggered_at"),
+        Index("idx_alert_events_topic_id", "topic_id"),
+        Index("idx_alert_events_triggered_at", "triggered_at"),
+    )
     
     # 关系
     rule = relationship("AlertRule", back_populates="events")

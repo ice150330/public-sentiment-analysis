@@ -10,6 +10,8 @@ from app.models.platform import Platform
 from app.models.hot_topic import HotTopic
 from app.models.sentiment import SentimentResult
 from app.models.crawl_log import CrawlLog
+from app.models.user import User
+from app.models.password_reset_token import PasswordResetToken
 
 # 延迟加载装饰器
 import importlib
@@ -92,7 +94,7 @@ SentimentJob = _task_state.SentimentJob
 DataArchiveRun = _task_state.DataArchiveRun
 
 __all__ = [
-    "Platform", "HotTopic", "SentimentResult", "CrawlLog",
+    "Platform", "HotTopic", "SentimentResult", "CrawlLog", "User", "PasswordResetToken",
     "SystemConfig", "AlertRule", "AlertEvent", "AlertAction",
     "DataQualityRun", "DataQualityIssue",
     "SystemLog", "AuditLog",

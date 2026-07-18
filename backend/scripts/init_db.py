@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..'))
 
 from app.core.database import engine, Base, SessionLocal
 from app.models import Platform
+from app.services.sqlite_maintenance import ensure_sqlite_indexes
 
 
 def init_database():
@@ -28,6 +29,7 @@ def init_database():
     # 创建所有表
     print("Creating tables...")
     Base.metadata.create_all(bind=engine)
+    ensure_sqlite_indexes(engine)
     print("Tables created successfully.")
     
     # 插入初始平台数据

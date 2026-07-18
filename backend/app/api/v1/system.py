@@ -7,14 +7,24 @@
 
 from datetime import datetime, timedelta
 from typing import Optional
+from pathlib import Path
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
-from sqlalchemy import desc, func
+from sqlalchemy import desc, func, text
 
+from app.core.auth import require_admin
 from app.core.database import get_db, engine
 from app.models import CrawlLog, HotTopic, SentimentResult, SystemLog, AuditLog, Platform
 from app.schemas import UnifiedResponse
+from app.services.audit_service import write_audit_log
+from app.services.sqlite_backup_service import (
+    SQLiteBackupError,
+    create_sqlite_backup,
+    get_sqlite_backup_path,
+    list_sqlite_backups,
+)
 
 router = APIRouter()
 
@@ -34,7 +44,7 @@ async def get_system_health(
     # 数据库状态
     db_status = "healthy"
     try:
-        db.execute("SELECT 1")
+        db.execute(text("SELECT 1"))
     except Exception:
         db_status = "error"
     
@@ -84,6 +94,75 @@ async def get_system_health(
     }
 
 
+@router.post("/database/backup", response_model=UnifiedResponse[dict], status_code=201)
+async def create_database_backup(
+    current_user = Depends(require_admin),
+    db: Session = Depends(get_db),
+):
+    """创建 SQLite 数据库在线备份"""
+    try:
+        backup = create_sqlite_backup()
+    except SQLiteBackupError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    data = backup.to_public_dict()
+    write_audit_log(
+        db,
+        operator=current_user.username,
+        action="create_database_backup",
+        target_type="database",
+        target_id=backup.filename,
+        after=data,
+    )
+    db.commit()
+
+    return {
+        "code": 201,
+        "data": data,
+        "message": "Database backup created",
+    }
+
+
+@router.get("/database/backups", response_model=UnifiedResponse[dict])
+async def list_database_backups(
+    current_user = Depends(require_admin),
+):
+    """查询可下载的 SQLite 备份文件"""
+    try:
+        backups = [backup.to_public_dict() for backup in list_sqlite_backups()]
+    except SQLiteBackupError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return {
+        "code": 200,
+        "data": {
+            "items": backups,
+            "total": len(backups),
+        },
+        "message": "success",
+    }
+
+
+@router.get("/database/backups/{filename}")
+async def download_database_backup(
+    filename: str,
+    current_user = Depends(require_admin),
+):
+    """下载指定 SQLite 备份文件"""
+    try:
+        backup_path = get_sqlite_backup_path(filename)
+    except FileNotFoundError as exc:
+        raise HTTPException(status_code=404, detail="Backup not found") from exc
+    except SQLiteBackupError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+
+    return FileResponse(
+        path=backup_path,
+        media_type="application/octet-stream",
+        filename=Path(backup_path).name,
+    )
+
+
 @router.get("/logs", response_model=UnifiedResponse[dict])
 async def list_system_logs(
     level: str = None,
@@ -92,6 +171,7 @@ async def list_system_logs(
     end_time: datetime = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """查询系统日志"""
@@ -145,6 +225,7 @@ async def list_system_logs(
 @router.post("/logs", response_model=UnifiedResponse[dict], status_code=201)
 async def create_system_log(
     log_data: dict,
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """写入系统日志（供各模块调用）"""
@@ -178,6 +259,7 @@ async def list_audit_logs(
     end_time: datetime = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(50, ge=1, le=200),
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """查询审计日志"""
@@ -234,6 +316,7 @@ async def list_audit_logs(
 @router.post("/audit-logs", response_model=UnifiedResponse[dict], status_code=201)
 async def create_audit_log(
     log_data: dict,
+    current_user = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """写入审计日志（供各模块调用）"""

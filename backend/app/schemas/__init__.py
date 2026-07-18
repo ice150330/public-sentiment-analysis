@@ -46,3 +46,13 @@ from app.schemas.crawler import (
     CrawlerTriggerResponse,
     CrawlLogResponse,
 )
+from app.schemas.auth import (
+    LoginRequest,
+    PasswordChangeRequest,
+    PasswordResetConfirmRequest,
+    PasswordResetRequest,
+    RegisterRequest,
+    TokenResponse,
+    UserUpdateRequest,
+    UserResponse,
+)

@@ -9,6 +9,24 @@ export interface UnifiedResponse<T> {
   request_id?: string | null;
 }
 
+export type AuthRole = 'admin' | 'analyst' | 'visitor';
+
+export interface AuthUser {
+  id: number;
+  username: string;
+  email?: string | null;
+  role: AuthRole;
+  platform_scope: string;
+  is_active: boolean;
+}
+
+export interface AuthSession {
+  access_token: string;
+  token_type: 'bearer' | string;
+  expires_at: string;
+  user: AuthUser;
+}
+
 export interface Platform {
   id: number;
   name: string;
@@ -48,6 +66,56 @@ export interface HotTopic {
 export interface HotTopicList {
   items: HotTopic[];
   pagination: Pagination;
+}
+
+export interface TopicClusterSummary {
+  id: number;
+  cluster_name: string;
+  description?: string | null;
+  algorithm: string;
+  params?: Record<string, unknown>;
+  keywords?: string[];
+  embedding_provider?: string | null;
+  topic_count: number;
+  avg_sentiment?: number | null;
+  dominant_sentiment?: string | null;
+  start_time?: string | null;
+  end_time?: string | null;
+  created_at?: string | null;
+}
+
+export interface TopicClusterMember {
+  id: number;
+  topic_id: number;
+  topic_title?: string | null;
+  platform_name?: string | null;
+  weight?: number | null;
+  distance_to_center?: number | null;
+  features?: Record<string, unknown>;
+  heat_score?: number | null;
+  sentiment_label?: string | null;
+  crawl_time?: string | null;
+}
+
+export interface TopicClusterDetail {
+  cluster: TopicClusterSummary;
+  members: TopicClusterMember[];
+  pagination: Pagination;
+}
+
+export interface TopicClusterRunResult {
+  clusters: Array<{
+    id: number;
+    name?: string;
+    cluster_name: string;
+    topic_count: number;
+    keywords?: string[];
+    dominant_sentiment?: string | null;
+  }>;
+  total_topics: number;
+  algorithm: string;
+  embedding_provider?: string | null;
+  keywords_method?: string | null;
 }
 
 export interface TopicQuery {
@@ -208,13 +276,23 @@ export interface AuditLogRecord {
   created_at?: string | null;
 }
 
+export interface DatabaseBackup {
+  filename: string;
+  size_bytes: number;
+  created_at: string;
+  download_url: string;
+}
+
 export interface ModelStatus {
   model: {
     version?: string | null;
     model_name?: string | null;
     device: string;
     is_loaded: boolean;
+    provider?: string | null;
+    traffic_percent?: number;
   };
+  active_versions?: ModelVersion[];
   recent_analyzed: number;
   avg_confidence: number;
   confidence_distribution: {
@@ -234,10 +312,35 @@ export interface ModelVersion {
   device?: string | null;
   metrics_json?: string | null;
   config_json?: string | null;
+  metrics?: Record<string, unknown>;
+  config?: Record<string, unknown>;
+  provider?: string;
+  traffic_percent?: number;
   is_active: boolean;
   description?: string | null;
   created_at: string;
   updated_at: string;
+}
+
+export interface SentimentReviewItem {
+  id: number;
+  sentiment_result_id: number;
+  topic_id?: number | null;
+  topic_title?: string | null;
+  platform_name?: string | null;
+  sentiment_label: string;
+  original_label: string;
+  suggested_label: string;
+  corrected_label?: string | null;
+  confidence: number;
+  confidence_snapshot: number;
+  status: 'pending' | 'reviewed' | 'ignored' | string;
+  reviewer?: string | null;
+  note?: string | null;
+  analyzed_at?: string | null;
+  reviewed_at?: string | null;
+  created_at?: string | null;
+  updated_at?: string | null;
 }
 
 export interface PaginatedResponse<T> {
@@ -273,7 +376,14 @@ export interface PropagationNode {
   platform_name?: string | null;
   level: number;
   parent_node_id?: number | string | null;
+  heat_score?: number | null;
+  sentiment_label?: string | null;
+  influence_score?: number | null;
+  similarity_score?: number | null;
+  delay_hours?: number | null;
+  match_method?: string | null;
   discovered_at?: string | null;
+  children?: PropagationNode[];
 }
 
 export interface TopicPropagation {
@@ -289,6 +399,42 @@ export interface TopicPropagation {
   edges: Array<Record<string, unknown>>;
 }
 
+export interface PropagationPathSummary {
+  id: number;
+  root_topic_id: number;
+  root_topic_title?: string | null;
+  depth: number;
+  total_nodes: number;
+  max_breadth: number;
+  platforms_involved?: string[];
+  platform_transitions: number;
+  first_seen_at?: string | null;
+  last_seen_at?: string | null;
+  created_at?: string | null;
+}
+
+export interface PropagationPathDetail {
+  path: PropagationPathSummary;
+  tree: PropagationNode[];
+  nodes: PropagationNode[];
+  edges: Array<{
+    source: number | string;
+    target: number | string;
+    similarity_score?: number | null;
+    delay_hours?: number | null;
+  }>;
+}
+
+export interface PropagationAnalyzeResult extends PropagationPathDetail {
+  path_id: number;
+  root_topic_id: number;
+  root_topic_title?: string | null;
+  depth: number;
+  total_nodes: number;
+  platforms_involved?: string[];
+  platform_transitions: number;
+}
+
 export interface SentimentSummary {
   today_analyzed: number;
   total_analyzed: number;
@@ -302,6 +448,7 @@ export interface SentimentSummary {
 export interface ForecastHeatPoint {
   date: string;
   predicted_heat: number;
+  predicted_value?: number;
   confidence_lower: number;
   confidence_upper: number;
 }
@@ -311,6 +458,20 @@ export interface ForecastHeat {
   current_heat: number;
   forecast: ForecastHeatPoint[];
   model: string;
+  metrics?: {
+    mse?: number | null;
+    mae?: number | null;
+    mape?: number | null;
+    r2_score?: number | null;
+    backtest_points?: number;
+  };
+  signals?: Array<{
+    name: string;
+    value: number;
+    change_rate?: number;
+    direction: 'up' | 'down' | 'stable' | string;
+    description?: string;
+  }>;
 }
 
 export interface SentimentDistributionItem {
@@ -415,6 +576,29 @@ const api = axios.create({
   },
 });
 
+export const AUTH_TOKEN_KEY = 'psa_access_token';
+
+export const getAuthToken = () => {
+  if (typeof window === 'undefined') return null;
+  return window.localStorage.getItem(AUTH_TOKEN_KEY);
+};
+
+export const saveAuthToken = (token: string) => {
+  window.localStorage.setItem(AUTH_TOKEN_KEY, token);
+};
+
+export const clearAuthToken = () => {
+  window.localStorage.removeItem(AUTH_TOKEN_KEY);
+};
+
+api.interceptors.request.use((config) => {
+  const token = getAuthToken();
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
 api.interceptors.response.use(
   (response) => response.data,
   (error) => Promise.reject(error)
@@ -431,6 +615,96 @@ export const getTopics = (params?: TopicQuery) =>
 
 export const getTopic = (id: number) =>
   api.get<unknown, UnifiedResponse<HotTopic>>(`/topics/${id}`);
+
+const compactParams = (params?: object) =>
+  Object.fromEntries(
+    Object.entries(params || {}).filter(([, value]) => value !== undefined && value !== null && value !== '')
+  );
+
+const downloadCsv = async (path: string, params: object | undefined, filenamePrefix: string) => {
+  const token = getAuthToken();
+  const response = await axios.get<Blob>(`${API_BASE_URL}/api/v1${path}`, {
+    params: compactParams(params),
+    responseType: 'blob',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  const url = window.URL.createObjectURL(response.data);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `${filenamePrefix}-${timestamp}.csv`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
+export const exportTopicsCsv = (params?: TopicQuery & { limit?: number }) =>
+  downloadCsv('/exports/topics.csv', params, 'hot-topics');
+
+export const exportAlertEventsCsv = (params?: {
+  status?: string;
+  severity?: string;
+  rule_id?: number;
+  start_time?: string;
+  end_time?: string;
+  limit?: number;
+}) => downloadCsv('/exports/alerts.csv', params, 'alert-events');
+
+export const exportSentimentReportPdf = async (params?: {
+  platform?: string;
+  start_time?: string;
+  end_time?: string;
+  topic_limit?: number;
+}) => {
+  const token = getAuthToken();
+  const response = await axios.get<Blob>(`${API_BASE_URL}/api/v1/exports/sentiment-report.pdf`, {
+    params: compactParams(params),
+    responseType: 'blob',
+    headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+  });
+  const timestamp = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+  const url = window.URL.createObjectURL(response.data);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `sentiment-report-${timestamp}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
+export const login = (payload: { username: string; password: string }) =>
+  api.post<unknown, UnifiedResponse<AuthSession>>('/auth/login', payload);
+
+export const register = (payload: { username: string; password: string; email?: string }) =>
+  api.post<unknown, UnifiedResponse<AuthSession>>('/auth/register', payload);
+
+export const getCurrentUser = () =>
+  api.get<unknown, UnifiedResponse<AuthUser>>('/auth/me');
+
+export const changePassword = (payload: { current_password: string; new_password: string }) =>
+  api.post<unknown, UnifiedResponse<{ id: number }>>('/auth/password', payload);
+
+export const requestPasswordReset = (payload: { username?: string; email?: string }) =>
+  api.post<unknown, UnifiedResponse<{ reset_token?: string | null; expires_at?: string | null }>>('/auth/password/reset/request', payload);
+
+export const confirmPasswordReset = (payload: { token: string; new_password: string }) =>
+  api.post<unknown, UnifiedResponse<{ id: number }>>('/auth/password/reset/confirm', payload);
+
+export const getMyAuditLogs = (params?: { page?: number; page_size?: number }) =>
+  api.get<unknown, UnifiedResponse<PaginatedResponse<AuditLogRecord>>>('/auth/audit-logs', { params });
+
+export const getUsers = (params?: {
+  role?: string;
+  is_active?: boolean;
+  keyword?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<AuthUser>>>('/auth/users', { params });
+
+export const updateUser = (id: number, payload: Partial<Pick<AuthUser, 'role' | 'platform_scope' | 'is_active'>>) =>
+  api.patch<unknown, UnifiedResponse<AuthUser>>(`/auth/users/${id}`, payload);
 
 export const analyzeText = (text: string) =>
   api.post<unknown, UnifiedResponse<SentimentAnalyzeResult>>('/sentiment/analyze', { text });
@@ -622,6 +896,31 @@ export const getTypedAuditLogs = (params?: {
   page_size?: number;
 }) => api.get<unknown, UnifiedResponse<PaginatedResponse<AuditLogRecord>>>('/system/audit-logs', { params });
 
+export const createDatabaseBackup = () =>
+  api.post<unknown, UnifiedResponse<DatabaseBackup>>('/system/database/backup');
+
+export const getDatabaseBackups = () =>
+  api.get<unknown, UnifiedResponse<{ items: DatabaseBackup[]; total: number }>>('/system/database/backups');
+
+export const downloadDatabaseBackup = async (filename: string) => {
+  const token = getAuthToken();
+  const response = await axios.get<Blob>(
+    `${API_BASE_URL}/api/v1/system/database/backups/${encodeURIComponent(filename)}`,
+    {
+      responseType: 'blob',
+      headers: token ? { Authorization: `Bearer ${token}` } : undefined,
+    }
+  );
+  const url = window.URL.createObjectURL(response.data);
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = filename;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+  window.URL.revokeObjectURL(url);
+};
+
 // ========== 模型管理 ==========
 
 export const getModelStatus = () =>
@@ -630,11 +929,26 @@ export const getModelStatus = () =>
 export const getModelVersions = (params?: { is_active?: boolean }) =>
   api.get<unknown, UnifiedResponse<{ items: ModelVersion[]; total: number }>>('/model/versions', { params });
 
+export const activateModelVersion = (id: number, payload?: { traffic_percent?: number }) =>
+  api.post<unknown, UnifiedResponse<ModelVersion>>(`/model/versions/${id}/activate`, payload || { traffic_percent: 100 });
+
 export const getLowConfidenceResults = (params?: {
   threshold?: number;
   page?: number;
   page_size?: number;
 }) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/model/low-confidence', { params });
+
+export const getSentimentReviewQueue = (params?: {
+  threshold?: number;
+  status?: string;
+  page?: number;
+  page_size?: number;
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<SentimentReviewItem> & { threshold: number; created: number }>>('/model/review-queue', { params });
+
+export const updateSentimentReviewItem = (
+  id: number,
+  payload: { status: 'pending' | 'reviewed' | 'ignored'; corrected_label?: string | null; note?: string | null }
+) => api.patch<unknown, UnifiedResponse<SentimentReviewItem>>(`/model/review-queue/${id}`, payload);
 
 // ========== 话题扩展 ==========
 
@@ -659,16 +973,16 @@ export const getTopicClusters = (params?: {
   algorithm?: string;
   page?: number;
   page_size?: number;
-}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/topic-clusters', { params });
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<TopicClusterSummary>>>('/topic-clusters', { params });
 
 export const getTopicCluster = (id: number, params?: { page?: number; page_size?: number }) =>
-  api.get<unknown, UnifiedResponse<Record<string, unknown>>>(`/topic-clusters/${id}`, { params });
+  api.get<unknown, UnifiedResponse<TopicClusterDetail>>(`/topic-clusters/${id}`, { params });
 
 export const runClustering = (params?: {
   algorithm?: string;
   n_clusters?: number;
   time_window_hours?: number;
-}) => api.post<unknown, UnifiedResponse<Record<string, unknown>>>('/topic-clusters/run', { params });
+}) => api.post<unknown, UnifiedResponse<TopicClusterRunResult>>('/topic-clusters/run', { params });
 
 // ========== 传播路径 ==========
 
@@ -679,13 +993,16 @@ export const getPropagationPaths = (params?: {
   end_time?: string;
   page?: number;
   page_size?: number;
-}) => api.get<unknown, UnifiedResponse<PaginatedResponse<Record<string, unknown>>>>('/propagation-paths', { params });
+}) => api.get<unknown, UnifiedResponse<PaginatedResponse<PropagationPathSummary>>>('/propagation-paths', { params });
 
 export const getPropagationPath = (id: number) =>
-  api.get<unknown, UnifiedResponse<Record<string, unknown>>>(`/propagation-paths/${id}`);
+  api.get<unknown, UnifiedResponse<PropagationPathDetail>>(`/propagation-paths/${id}`);
 
-export const analyzePropagation = (topicId: number, params?: { time_window_hours?: number }) =>
-  api.post<unknown, UnifiedResponse<Record<string, unknown>>>(`/propagation-paths/analyze/${topicId}`, { params });
+export const analyzePropagation = (topicId: number, params?: {
+  time_window_hours?: number;
+  similarity_threshold?: number;
+  max_nodes?: number;
+}) => api.post<unknown, UnifiedResponse<PropagationAnalyzeResult>>(`/propagation-paths/analyze/${topicId}`, { params });
 
 // ========== 趋势预测 ==========
 

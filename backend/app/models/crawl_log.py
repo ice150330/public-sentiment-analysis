@@ -5,7 +5,7 @@
 模块职责: 采集日志 ORM 模型
 """
 
-from sqlalchemy import Column, Integer, String, Text, DateTime, func, ForeignKey
+from sqlalchemy import Column, DateTime, ForeignKey, Index, Integer, String, Text, func
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -23,6 +23,12 @@ class CrawlLog(Base):
     started_at = Column(DateTime, nullable=False, comment="开始时间")
     completed_at = Column(DateTime, comment="完成时间")
     created_at = Column(DateTime, server_default=func.now())
+
+    __table_args__ = (
+        Index("idx_crawl_logs_platform_started_at", "platform_id", "started_at"),
+        Index("idx_crawl_logs_status_started_at", "status", "started_at"),
+        Index("idx_crawl_logs_completed_at", "completed_at"),
+    )
     
     # 关系
     platform = relationship("Platform", backref="crawl_logs")

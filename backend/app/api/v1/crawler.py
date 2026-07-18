@@ -13,8 +13,9 @@ from fastapi import APIRouter, Depends, Query
 from sqlalchemy.orm import Session
 from sqlalchemy import desc, func
 
+from app.core.auth import require_admin
 from app.core.database import get_db
-from app.models import CrawlLog, Platform, SystemConfig, HotTopic, SentimentResult, CrawlerTask, CrawlerTaskEvent
+from app.models import CrawlLog, Platform, SystemConfig, HotTopic, SentimentResult, CrawlerTask, CrawlerTaskEvent, User
 from app.schemas import (
     CrawlerTriggerRequest,
     CrawlerTriggerResponse,
@@ -24,6 +25,7 @@ from app.schemas import (
     UnifiedResponse,
 )
 from app.services.crawler_service import CrawlerService
+from app.services.audit_service import write_audit_log
 from app.services.task_state_service import expire_stale_crawler_tasks
 
 router = APIRouter()
@@ -32,6 +34,7 @@ router = APIRouter()
 @router.post("/trigger", response_model=UnifiedResponse[CrawlerTriggerResponse], status_code=202)
 async def trigger_crawler(
     request: CrawlerTriggerRequest,
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """
@@ -59,6 +62,14 @@ async def trigger_crawler(
         started_at=now,
     )
     db.add(task)
+    write_audit_log(
+        db,
+        operator=current_user.username,
+        action="trigger_crawler",
+        target_type="crawler_task",
+        target_id=task_id,
+        after={"platforms": platforms, "is_async": request.is_async},
+    )
     db.commit()
     db.refresh(task)
     db.add(CrawlerTaskEvent(
@@ -315,6 +326,7 @@ async def get_schedule_config(
 @router.put("/schedule", response_model=UnifiedResponse[CrawlerScheduleConfig])
 async def update_schedule_config(
     config: CrawlerScheduleConfig,
+    current_user: User = Depends(require_admin),
     db: Session = Depends(get_db),
 ):
     """修改定时采集配置"""
@@ -329,6 +341,14 @@ async def update_schedule_config(
         enabled.config_value = "true" if config.is_enabled else "false"
     else:
         db.add(SystemConfig(config_key="crawler_enabled", config_value="true" if config.is_enabled else "false"))
+    write_audit_log(
+        db,
+        operator=current_user.username,
+        action="update_crawler_schedule",
+        target_type="system_config",
+        target_id="crawler",
+        after=config.model_dump(),
+    )
     
     db.commit()
     

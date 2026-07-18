@@ -1,28 +1,38 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Switch, Table } from 'antd';
+import { Button, Input, Select, Switch, Table } from 'antd';
 import {
+  DatabaseOutlined,
+  DownloadOutlined,
   FileTextOutlined,
   PlayCircleOutlined,
   SafetyOutlined,
   SettingOutlined,
   SyncOutlined,
+  TeamOutlined,
 } from '@ant-design/icons';
 import {
   AlertRule,
   AuditLogRecord,
+  AuthUser,
   CrawlLog,
   CrawlStatus,
+  createDatabaseBackup,
+  DatabaseBackup,
+  downloadDatabaseBackup,
   getAlertRules,
   getCrawlLogs,
   getCrawlStatus,
+  getDatabaseBackups,
   getErrorMessage,
   getPlatforms,
   getTypedAuditLogs,
   getTypedSystemLogs,
+  getUsers,
   Platform,
   SystemLogRecord,
   triggerCrawler,
   updatePlatform,
+  updateUser,
 } from '../services/api';
 import {
   DataState,
@@ -37,9 +47,11 @@ import {
 
 const views: SubView[] = [
   { key: 'platforms', label: '平台配置', icon: <SettingOutlined /> },
+  { key: 'users', label: '用户权限', icon: <TeamOutlined /> },
   { key: 'crawler', label: '采集任务', icon: <SyncOutlined /> },
   { key: 'rules', label: '预警规则', icon: <SafetyOutlined /> },
   { key: 'logs', label: '系统日志', icon: <FileTextOutlined /> },
+  { key: 'database', label: '数据库', icon: <DatabaseOutlined /> },
 ];
 
 const Stats: React.FC = () => {
@@ -125,8 +137,16 @@ const Stats: React.FC = () => {
       return <AlertRules />;
     }
 
+    if (activeView === 'users') {
+      return <UserManagement />;
+    }
+
     if (activeView === 'logs') {
       return <SystemLogs />;
+    }
+
+    if (activeView === 'database') {
+      return <DatabaseMaintenance />;
     }
 
     return (
@@ -184,6 +204,261 @@ const Stats: React.FC = () => {
     >
       {renderContent()}
     </ModuleFrame>
+  );
+};
+
+const formatBytes = (value?: number | null) => {
+  const bytes = value || 0;
+  if (bytes >= 1024 * 1024) {
+    return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
+  }
+  if (bytes >= 1024) {
+    return `${(bytes / 1024).toFixed(1)} KB`;
+  }
+  return `${formatNumber(bytes)} B`;
+};
+
+const DatabaseMaintenance: React.FC = () => {
+  const [backups, setBackups] = useState<DatabaseBackup[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [acting, setActing] = useState(false);
+  const [downloading, setDownloading] = useState<string | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchBackups = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await getDatabaseBackups();
+      setBackups(response.data?.items || []);
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchBackups();
+  }, [fetchBackups]);
+
+  const createBackup = async () => {
+    try {
+      setActing(true);
+      const response = await createDatabaseBackup();
+      setBackups((current) => [
+        response.data,
+        ...current.filter((item) => item.filename !== response.data.filename),
+      ]);
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setActing(false);
+    }
+  };
+
+  const downloadBackup = async (filename: string) => {
+    try {
+      setDownloading(filename);
+      await downloadDatabaseBackup(filename);
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setDownloading(null);
+    }
+  };
+
+  return (
+    <div className="psa-grid two-one">
+      <Panel title="备份文件" className="tall" eyebrow={`${formatNumber(backups.length)} 个文件`}>
+        <DataState loading={loading} error={error}>
+          <Table<DatabaseBackup>
+            className="psa-table"
+            size="small"
+            rowKey="filename"
+            pagination={{ pageSize: 8, size: 'small' }}
+            dataSource={backups}
+            locale={{ emptyText: '暂无备份文件' }}
+            columns={[
+              { title: '文件名', dataIndex: 'filename', ellipsis: true },
+              { title: '大小', dataIndex: 'size_bytes', render: (value) => formatBytes(value) },
+              { title: '创建时间', dataIndex: 'created_at', render: (value) => formatDateTime(value) },
+              {
+                title: '操作',
+                render: (_, record) => (
+                  <Button
+                    size="small"
+                    icon={<DownloadOutlined />}
+                    loading={downloading === record.filename}
+                    onClick={() => downloadBackup(record.filename)}
+                  >
+                    下载
+                  </Button>
+                ),
+              },
+            ]}
+          />
+        </DataState>
+      </Panel>
+      <Panel title="SQLite 维护">
+        <div className="psa-detail-list">
+          <div className="psa-detail-item">
+            <span>数据库</span>
+            <strong>SQLite</strong>
+          </div>
+          <div className="psa-detail-item">
+            <span>索引状态</span>
+            <strong>启动自动维护</strong>
+          </div>
+          <div className="psa-detail-item">
+            <span>恢复方式</span>
+            <strong>停机替换</strong>
+          </div>
+        </div>
+        <div className="psa-actions" style={{ marginTop: 16 }}>
+          <Button type="primary" icon={<DatabaseOutlined />} loading={acting} onClick={createBackup}>
+            创建备份
+          </Button>
+          <Button icon={<SyncOutlined />} loading={loading} onClick={fetchBackups}>
+            刷新
+          </Button>
+        </div>
+      </Panel>
+    </div>
+  );
+};
+
+const UserManagement: React.FC = () => {
+  const [users, setUsers] = useState<AuthUser[]>([]);
+  const [keyword, setKeyword] = useState('');
+  const [loading, setLoading] = useState(true);
+  const [actingId, setActingId] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchUsers = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await getUsers({ keyword: keyword.trim() || undefined, page: 1, page_size: 50 });
+      setUsers(response.data?.items || []);
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setLoading(false);
+    }
+  }, [keyword]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
+
+  const updateUserRow = async (target: AuthUser, patch: Partial<Pick<AuthUser, 'role' | 'platform_scope' | 'is_active'>>) => {
+    try {
+      setActingId(target.id);
+      const response = await updateUser(target.id, patch);
+      setUsers((current) => current.map((item) => (item.id === target.id ? response.data : item)));
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setActingId(null);
+    }
+  };
+
+  return (
+    <DataState loading={loading} error={error} empty={users.length === 0} emptyTitle="暂无用户">
+      <div className="psa-grid one-two">
+        <Panel
+          title="用户权限"
+          className="tall"
+          extra={
+            <div className="psa-inline-tools">
+              <Input.Search
+                allowClear
+                value={keyword}
+                onChange={(event) => setKeyword(event.target.value)}
+                onSearch={fetchUsers}
+                placeholder="搜索用户名"
+                style={{ width: 200 }}
+              />
+            </div>
+          }
+        >
+          <Table<AuthUser>
+            className="psa-table"
+            size="small"
+            rowKey="id"
+            pagination={{ pageSize: 10, size: 'small' }}
+            dataSource={users}
+            columns={[
+              { title: '用户', dataIndex: 'username', ellipsis: true },
+              {
+                title: '角色',
+                render: (_, record) => (
+                  <Select
+                    size="small"
+                    value={record.role}
+                    style={{ width: 110 }}
+                    loading={actingId === record.id}
+                    onChange={(role) => updateUserRow(record, { role })}
+                    options={[
+                      { value: 'admin', label: '管理员' },
+                      { value: 'analyst', label: '分析师' },
+                      { value: 'visitor', label: '访客' },
+                    ]}
+                  />
+                ),
+              },
+              {
+                title: '平台范围',
+                render: (_, record) => (
+                  <Input
+                    size="small"
+                    defaultValue={record.platform_scope}
+                    onPressEnter={(event) => updateUserRow(record, { platform_scope: event.currentTarget.value })}
+                    onBlur={(event) => {
+                      if (event.currentTarget.value !== record.platform_scope) {
+                        updateUserRow(record, { platform_scope: event.currentTarget.value });
+                      }
+                    }}
+                  />
+                ),
+              },
+              {
+                title: '启用',
+                render: (_, record) => (
+                  <Switch
+                    size="small"
+                    checked={record.is_active}
+                    loading={actingId === record.id}
+                    onChange={(is_active) => updateUserRow(record, { is_active })}
+                  />
+                ),
+              },
+            ]}
+          />
+        </Panel>
+        <Panel title="权限说明">
+          <div className="psa-detail-list">
+            <div className="psa-detail-item">
+              <span>admin</span>
+              <strong>管理用户、系统日志、全部平台数据</strong>
+            </div>
+            <div className="psa-detail-item">
+              <span>analyst</span>
+              <strong>访问分析数据，按平台范围导出</strong>
+            </div>
+            <div className="psa-detail-item">
+              <span>visitor</span>
+              <strong>只读访问基础页面</strong>
+            </div>
+            <p className="psa-page-note">平台范围使用英文标识逗号分隔，例如 weibo,douyin；all 表示全部。</p>
+          </div>
+        </Panel>
+      </div>
+    </DataState>
   );
 };
 
