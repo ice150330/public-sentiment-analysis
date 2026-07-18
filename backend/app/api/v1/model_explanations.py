@@ -25,6 +25,7 @@ async def list_explanations(
     method: str = None,
     page: int = Query(1, ge=1),
     page_size: int = Query(20, ge=1, le=100),
+    current_user: User = Depends(require_analyst),
     db: Session = Depends(get_db),
 ):
     """查询模型解释结果列表"""
@@ -71,9 +72,10 @@ async def list_explanations(
 @router.get("/{explanation_id}", response_model=UnifiedResponse[dict])
 async def get_explanation(
     explanation_id: int,
+    current_user: User = Depends(require_analyst),
     db: Session = Depends(get_db),
 ):
-    """获取模型解释详情及特征贡献度"""
+    """获取模型解释详情及特征贡献度（需 analyst 及以上权限）"""
     exp = db.query(ModelExplanation).filter(ModelExplanation.id == explanation_id).first()
     if not exp:
         return {"code": 404, "data": None, "message": "Explanation not found"}
@@ -170,6 +172,7 @@ async def generate_explanation(
 async def explain_sentiment(
     sentiment_result_id: int,
     method: str = "lime",
+    current_user: User = Depends(require_analyst),
     db: Session = Depends(get_db),
 ):
     """

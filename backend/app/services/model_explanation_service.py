@@ -95,7 +95,10 @@ def _fit_contributions(masks: np.ndarray, scores: list[dict[str, float]]) -> np.
     weighted_x = design * weights[:, None]
     reg = RIDGE_ALPHA * np.eye(n_tokens + 1)
     reg[0, 0] = 0.0
-    beta = np.linalg.solve(weighted_x.T @ design + reg, weighted_x.T @ targets)
+    try:
+        beta = np.linalg.solve(weighted_x.T @ design + reg, weighted_x.T @ targets)
+    except np.linalg.LinAlgError:
+        beta = np.linalg.pinv(weighted_x.T @ design + reg) @ (weighted_x.T @ targets)
     return beta[1:, 0] - beta[1:, 1]
 
 

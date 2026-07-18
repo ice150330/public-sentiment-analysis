@@ -100,11 +100,9 @@ export function useRealtime({
     connect();
 
     const onVisibilityChange = () => {
-      if (!document.hidden) {
-        if (!connected && attemptRef.current > 0) {
-          attemptRef.current = 0;
-          connect();
-        }
+      if (!document.hidden && wsRef.current?.readyState !== WebSocket.OPEN) {
+        attemptRef.current = 0;
+        connect();
       }
     };
     visibilityHandlerRef.current = onVisibilityChange;
@@ -114,7 +112,7 @@ export function useRealtime({
       document.removeEventListener('visibilitychange', onVisibilityChange);
       disconnect();
     };
-  }, [token, connect, disconnect, connected]);
+  }, [token, connect, disconnect]);
 
   return { connected, lastMessage };
 }

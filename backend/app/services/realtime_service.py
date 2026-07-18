@@ -60,12 +60,20 @@ class RealtimeConnectionManager:
             await websocket.close(code=1008, reason="Invalid token payload")
             return False
 
+        user_id = int(user_id)
+        old = self._connections.get(user_id)
+        if old is not None:
+            try:
+                await old.websocket.close(code=1008, reason="Replaced by new connection")
+            except Exception as exc:
+                logger.debug(f"Failed to close old websocket for user {user_id}: {exc}")
+
         await websocket.accept()
         username = payload.get("username", str(user_id))
         role = payload.get("role", "visitor")
-        self._connections[int(user_id)] = _Connection(
+        self._connections[user_id] = _Connection(
             websocket=websocket,
-            user_id=int(user_id),
+            user_id=user_id,
             username=username,
             role=role,
         )
