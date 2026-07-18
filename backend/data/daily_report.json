@@ -1,15 +1,15 @@
 {
-  "date": "2026-07-13",
-  "generated_at": "2026-07-13T10:00:15.439146",
+  "date": "2026-07-18",
+  "generated_at": "2026-07-18T10:00:38.345729",
   "summary": {
-    "total_topics": 482,
-    "sentiment_analyzed": 482,
+    "total_topics": 519,
+    "sentiment_analyzed": 519,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 55
+      "count": 50
     },
     {
       "platform": "今日头条",
@@ -17,15 +17,15 @@
     },
     {
       "platform": "微博",
-      "count": 115
+      "count": 140
     },
     {
       "platform": "抖音",
-      "count": 70
+      "count": 81
     },
     {
       "platform": "百度",
-      "count": 96
+      "count": 102
     },
     {
       "platform": "知乎",
@@ -35,84 +35,84 @@
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 31,
-      "percentage": 6.4
+      "count": 15,
+      "percentage": 2.9
     },
     {
       "label": "neutral",
-      "count": 80,
-      "percentage": 16.6
+      "count": 75,
+      "percentage": 14.5
     },
     {
       "label": "positive",
-      "count": 371,
-      "percentage": 77.0
+      "count": 429,
+      "percentage": 82.7
     }
   ],
   "top_10_topics": [
     {
-      "title": "HLE战胜BLG赛后数据",
-      "heat_score": 62222635,
+      "title": "T1战胜HLE数据雷达图",
+      "heat_score": 90914882,
       "category": "其他",
       "platform": "B站"
     },
     {
-      "title": "外交部就日方恶劣言行提出严正交涉",
-      "heat_score": 56908888,
+      "title": "重庆山体崩塌已致8死34失联",
+      "heat_score": 46724579,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "台风巴威实时路径",
-      "heat_score": 51493291,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "美国最后一名“铁肺”使用者去世",
-      "heat_score": 46680614,
+      "title": "飞天茅台再涨价",
+      "heat_score": 44619400,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "一图读懂“六张网”之新型电网",
-      "heat_score": 46593056,
+      "title": "店主回应送老顾客彩票中508万",
+      "heat_score": 42278148,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "中华人民共和国外交部郑重声明",
-      "heat_score": 45352587,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "江苏盐城发生3.0级地震",
-      "heat_score": 42159141,
+      "title": "我国服务出口快速增长",
+      "heat_score": 38254850,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "锐评HLE战胜BLG夺冠",
-      "heat_score": 37309778,
+      "title": "世界杯三四名决赛有没有存在的必要",
+      "heat_score": 36531275,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "国防部：望各方理性看待中俄军事合作",
+      "heat_score": 34614420,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "蔡磊牵线研发国产渐冻症药有望上市",
+      "heat_score": 31320422,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "VG战胜Falcons晋级四强",
+      "heat_score": 29227668,
       "category": "其他",
       "platform": "B站"
     },
     {
-      "title": "7月17日油价将调整",
-      "heat_score": 34516985,
+      "title": "80后女子吐槽断崖式衰老被喊奶奶",
+      "heat_score": 28339890,
       "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "媒体：14国“南海仲裁”声明想恐吓谁",
-      "heat_score": 33393312,
-      "category": "new",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 18,
+    "issues_found": 15,
     "status": "completed"
   }
 }
