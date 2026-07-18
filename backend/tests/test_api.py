@@ -489,6 +489,14 @@ class TestTopicClusterEndpoints:
         assert matched_detail["members"]
         assert isinstance(matched_detail["members"][0]["features"], dict)
 
+        representatives = matched_detail["representative_members"]
+        assert representatives
+        assert len(representatives) <= 5
+        rep_distances = [item["distance_to_center"] for item in representatives]
+        assert rep_distances == sorted(rep_distances)
+        assert representatives[0]["topic_id"]
+        assert representatives[0]["topic_title"]
+
     async def test_run_clustering_rejects_unknown_algorithm(self, async_client):
         """测试未知聚类算法返回 400"""
         response = await async_client.post(
@@ -752,6 +760,175 @@ class TestModelVersionEndpoints:
                 json={"traffic_percent": 100},
             )
         assert response.status_code == status.HTTP_403_FORBIDDEN
+
+
+def create_explanation_sentiment_result(tag: str = "explain") -> int:
+    """Create a clearly negative topic + sentiment result for explanation tests."""
+    db = SessionLocal()
+    try:
+        platform = db.query(Platform).filter(Platform.name == "weibo").first()
+        if not platform:
+            platform = Platform(name="weibo", display_name="微博", sort_order=1, is_active=True)
+            db.add(platform)
+            db.flush()
+
+        now = datetime.now()
+        topic = HotTopic(
+            platform_id=platform.id,
+            topic_id=f"{tag}-{int(now.timestamp() * 1000)}",
+            title="产品质量太差劲非常糟糕令人失望",
+            heat_score=456,
+            category="测试",
+            content_summary="用户投诉服务糟糕体验极差",
+            crawl_time=now,
+            crawl_date=date.today(),
+        )
+        db.add(topic)
+        db.flush()
+
+        result = SentimentResult(
+            topic_id=topic.id,
+            sentiment_label="negative",
+            confidence=0.91,
+            positive_score=0.05,
+            negative_score=0.90,
+            neutral_score=0.05,
+            model_version="pytest-explain",
+        )
+        db.add(result)
+        db.commit()
+        return result.id
+    finally:
+        db.close()
+
+
+class TestModelExplanation:
+    """模型解释接口测试"""
+
+    async def _activate_version(self, async_client, version_name: str):
+        """激活指定情感模型版本（解释跟随当前激活模型）"""
+        response = await async_client.get("/api/v1/model/versions")
+        assert response.status_code == status.HTTP_200_OK
+        version = next(
+            item for item in response.json()["data"]["items"] if item["version"] == version_name
+        )
+        activate = await async_client.post(
+            f"/api/v1/model/versions/{version['id']}/activate",
+            json={"traffic_percent": 100},
+        )
+        assert activate.status_code == status.HTTP_200_OK
+
+    async def test_generate_explanation_requires_auth(self, unauthenticated_client):
+        """测试未认证调用生成接口被拒绝"""
+        response = await unauthenticated_client.post(
+            "/api/v1/model-explanations/generate",
+            json={"text": "这个产品太糟糕了"},
+        )
+        assert response.status_code == status.HTTP_401_UNAUTHORIZED
+
+    async def test_generate_explanation_forbidden_for_visitor(self):
+        """测试 visitor 角色调用生成接口被拒绝"""
+        transport = ASGITransport(app=app)
+        async with AsyncClient(
+            transport=transport,
+            base_url="http://test",
+            headers=make_auth_headers("explain_visitor", "visitor"),
+        ) as client:
+            response = await client.post(
+                "/api/v1/model-explanations/generate",
+                json={"text": "这个产品太糟糕了"},
+            )
+        assert response.status_code == status.HTTP_403_FORBIDDEN
+
+    async def test_generate_explanation_text_mode(self, async_client):
+        """测试 text 即时解释：明显负面文本的主要贡献词方向为 negative"""
+        await self._activate_version(async_client, "transformers-v2")
+        try:
+            response = await async_client.post(
+                "/api/v1/model-explanations/generate",
+                json={"text": "这个产品太糟糕了，非常失望，服务态度极差", "n_samples": 60},
+            )
+            assert response.status_code == status.HTTP_200_OK
+            payload = response.json()
+            assert payload["code"] == 200
+            data = payload["data"]
+            assert data["method"] == "lime"
+            assert data["sentiment_label"] == "negative"
+            assert data["tokens"]
+            assert data["tokens"][0]["direction"] == "negative"
+            magnitudes = [abs(item["contribution"]) for item in data["tokens"]]
+            assert magnitudes == sorted(magnitudes, reverse=True)
+            assert data["persisted"] is False
+            assert data["explanation_id"] is None
+            assert "负面" in data["summary"]
+        finally:
+            await self._activate_version(async_client, "classic-v1")
+
+    async def test_generate_explanation_by_sentiment_result(self, async_client):
+        """测试 sentiment_result_id 模式：解释落库，列表/详情/审计可回归"""
+        await self._activate_version(async_client, "transformers-v2")
+        try:
+            result_id = create_explanation_sentiment_result("generate")
+            response = await async_client.post(
+                "/api/v1/model-explanations/generate",
+                json={"sentiment_result_id": result_id, "n_samples": 60},
+            )
+            assert response.status_code == status.HTTP_200_OK
+            data = response.json()["data"]
+            assert data["explanation_id"]
+            assert data["persisted"] is True
+            assert data["sentiment_result_id"] == result_id
+            assert data["tokens"]
+            assert data["tokens"][0]["direction"] == "negative"
+
+            list_response = await async_client.get(
+                f"/api/v1/model-explanations?sentiment_result_id={result_id}"
+            )
+            assert list_response.status_code == status.HTTP_200_OK
+            items = list_response.json()["data"]["items"]
+            assert any(item["id"] == data["explanation_id"] for item in items)
+            assert items[0]["method"] == "lime"
+
+            detail_response = await async_client.get(
+                f"/api/v1/model-explanations/{data['explanation_id']}"
+            )
+            assert detail_response.status_code == status.HTTP_200_OK
+            detail = detail_response.json()["data"]
+            assert detail["explanation"]["method"] == "lime"
+            assert detail["explanation"]["summary"]
+            assert detail["sentiment_result"]["id"] == result_id
+            assert detail["features"]
+            ranks = [item["importance_rank"] for item in detail["features"]]
+            assert sorted(ranks, reverse=True) == ranks  # 详情接口按 rank 降序返回
+
+            audit_response = await async_client.get(
+                "/api/v1/system/audit-logs?action=generate_model_explanation&page_size=10"
+            )
+            assert audit_response.status_code == status.HTTP_200_OK
+            assert any(
+                str(item["target_id"]) == str(data["explanation_id"])
+                for item in audit_response.json()["data"]["items"]
+            )
+        finally:
+            await self._activate_version(async_client, "classic-v1")
+
+    async def test_generate_explanation_missing_result_returns_404(self, async_client):
+        """测试解释不存在的情感结果返回 404"""
+        response = await async_client.post(
+            "/api/v1/model-explanations/generate",
+            json={"sentiment_result_id": 999_999_999, "n_samples": 20},
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["code"] == 404
+
+    async def test_generate_explanation_requires_text_or_result_id(self, async_client):
+        """测试缺少 text 与 sentiment_result_id 时返回 400"""
+        response = await async_client.post(
+            "/api/v1/model-explanations/generate",
+            json={"n_samples": 20},
+        )
+        assert response.status_code == status.HTTP_200_OK
+        assert response.json()["code"] == 400
 
 
 class TestStatsEndpoints:

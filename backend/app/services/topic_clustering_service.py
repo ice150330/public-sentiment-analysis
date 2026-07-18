@@ -145,6 +145,7 @@ class TopicClusteringService:
         return {
             "cluster": self.list_payload(cluster),
             "members": member_items,
+            "representative_members": self._representative_members(cluster.id),
             "pagination": {
                 "page": page,
                 "page_size": page_size,
@@ -154,6 +155,31 @@ class TopicClusteringService:
                 "has_prev": page > 1,
             },
         }
+
+    def _representative_members(self, cluster_id: int, *, limit: int = 5) -> list[dict[str, Any]]:
+        """返回距质心最近的成员话题，作为聚类解释的代表性文档。"""
+        members = (
+            self.db.query(ClusterMember)
+            .filter(ClusterMember.cluster_id == cluster_id)
+            .join(HotTopic)
+            .all()
+        )
+        ranked = sorted(
+            (member for member in members if member.distance_to_center is not None),
+            key=lambda member: member.distance_to_center,
+        )[:limit]
+        items = []
+        for member in ranked:
+            topic = member.topic
+            items.append({
+                "id": member.id,
+                "topic_id": member.topic_id,
+                "topic_title": topic.title if topic else None,
+                "platform_name": topic.platform.display_name if topic and topic.platform else None,
+                "distance_to_center": member.distance_to_center,
+                "heat_score": topic.heat_score if topic else None,
+            })
+        return items
 
     def _build_vectors(self, documents: list[str]):
         embedding = self._try_sentence_transformers(documents)

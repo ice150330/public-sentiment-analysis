@@ -458,6 +458,26 @@ const Topics: React.FC = () => {
                     ))}
                     {keywords.length === 0 && <span className="psa-page-note">暂无关键词</span>}
                   </div>
+                  <div>
+                    <p className="psa-row-title">代表话题（距质心最近）</p>
+                    <div className="psa-list">
+                      {(clusterDetail?.representative_members || []).map((member) => (
+                        <div className="psa-row" key={`rep-${member.id}`}>
+                          <div>
+                            <p className="psa-row-title">{member.topic_title || `话题 #${member.topic_id}`}</p>
+                            <div className="psa-row-meta">
+                              <PlatformBadge name={member.platform_name} />
+                              <span>距离 {(member.distance_to_center ?? 0).toFixed(3)}</span>
+                            </div>
+                          </div>
+                          <strong>{formatNumber(member.heat_score)}</strong>
+                        </div>
+                      ))}
+                      {(clusterDetail?.representative_members || []).length === 0 && (
+                        <p className="psa-page-note">暂无代表话题</p>
+                      )}
+                    </div>
+                  </div>
                   <div className="psa-detail-item">
                     <span>主导情感</span>
                     <SentimentBadge label={selectedCluster?.dominant_sentiment || 'neutral'} />

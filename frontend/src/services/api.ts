@@ -100,6 +100,7 @@ export interface TopicClusterMember {
 export interface TopicClusterDetail {
   cluster: TopicClusterSummary;
   members: TopicClusterMember[];
+  representative_members?: TopicClusterMember[];
   pagination: Pagination;
 }
 
@@ -1041,6 +1042,34 @@ export const getModelExplanations = (params?: {
 
 export const getModelExplanation = (id: number) =>
   api.get<unknown, UnifiedResponse<Record<string, unknown>>>(`/model-explanations/${id}`);
+
+export interface ModelExplanationToken {
+  token: string;
+  contribution: number;
+  direction: 'positive' | 'negative' | string;
+  rank: number;
+}
+
+export interface ModelExplanationResult {
+  explanation_id?: number | null;
+  sentiment_result_id?: number | null;
+  method: string;
+  model_version?: string | null;
+  summary?: string | null;
+  text?: string | null;
+  sentiment_label?: string | null;
+  confidence?: number | null;
+  scores?: { positive: number; negative: number; neutral: number };
+  n_samples?: number;
+  persisted?: boolean;
+  tokens: ModelExplanationToken[];
+}
+
+export const generateModelExplanation = (payload: {
+  sentiment_result_id?: number;
+  text?: string;
+  n_samples?: number;
+}) => api.post<unknown, UnifiedResponse<ModelExplanationResult>>('/model-explanations/generate', payload);
 
 export const explainSentiment = (sentimentResultId: number, params?: { method?: string }) =>
   api.post<unknown, UnifiedResponse<Record<string, unknown>>>(`/model-explanations/explain/${sentimentResultId}`, { params });

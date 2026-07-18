@@ -36,6 +36,8 @@ import {
   SentimentResult,
   SentimentSummary,
   updateSentimentReviewItem,
+  generateModelExplanation,
+  ModelExplanationResult,
 } from '../services/api';
 import {
   DataState,
@@ -97,6 +99,8 @@ const Sentiment: React.FC = () => {
   const [storedResults, setStoredResults] = useState<SentimentResult[]>([]);
   const [heatTrend, setHeatTrend] = useState<HeatTrend | null>(null);
   const [forecast, setForecast] = useState<ForecastHeat | null>(null);
+  const [explanation, setExplanation] = useState<ModelExplanationResult | null>(null);
+  const [explaining, setExplaining] = useState(false);
   const [summary, setSummary] = useState<SentimentSummary | null>(null);
   const [reviewItems, setReviewItems] = useState<SentimentReviewItem[]>([]);
   const [modelStatus, setModelStatus] = useState<ModelStatus | null>(null);
@@ -149,6 +153,7 @@ const Sentiment: React.FC = () => {
         ? await analyzeTextV2(text.trim())
         : await analyzeText(text.trim());
       setLatestResult(res.data);
+      setExplanation(null);
       setActiveView('explain');
       setLastUpdated(new Date().toISOString());
       setError(null);
@@ -156,6 +161,22 @@ const Sentiment: React.FC = () => {
       setError(getErrorMessage(err));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runExplanation = async () => {
+    if (!latestResult) return;
+    try {
+      setExplaining(true);
+      const res = await generateModelExplanation({ text: latestResult.text });
+      setExplanation(res.data);
+      setActiveView('explain');
+      setLastUpdated(new Date().toISOString());
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setExplaining(false);
     }
   };
 
@@ -606,9 +627,20 @@ const Sentiment: React.FC = () => {
     }
 
     if (activeView === 'explain') {
+      const maxTokenContribution = Math.max(
+        1e-6,
+        ...(explanation?.tokens || []).map((item) => Math.abs(item.contribution)),
+      );
       return (
         <div className="psa-grid two-one">
-          <Panel title="模型解释">
+          <Panel
+            title="模型解释"
+            extra={(
+              <Button size="small" type="primary" icon={<ScanOutlined />} onClick={runExplanation} loading={explaining} disabled={!latestResult}>
+                生成解释
+              </Button>
+            )}
+          >
             <DataState empty={!latestResult} emptyTitle="暂无可解释结果" emptyDescription="提交文本分析后，此处展示后端返回的真实概率分布。">
               {latestResult && (
                 <div className="psa-detail-list">
@@ -632,6 +664,29 @@ const Sentiment: React.FC = () => {
                     <span>模型版本</span>
                     <strong>{latestResult.model_version || '未返回'}</strong>
                   </div>
+                  {explanation && (
+                    <>
+                      <div className="psa-detail-item">
+                        <span>解释方法</span>
+                        <strong>{explanation.method || 'lime'} / {explanation.model_version || '未知版本'}</strong>
+                      </div>
+                      <p className="psa-page-note">{explanation.summary}</p>
+                      <div className="psa-score-bars">
+                        {explanation.tokens.map((item) => (
+                          <div className="psa-score-line" key={item.token}>
+                            <span>{item.token}</span>
+                            <div className="psa-bar-track">
+                              <div
+                                className={`psa-bar-fill ${item.direction === 'negative' ? 'negative' : 'positive'}`}
+                                style={{ width: `${Math.max(4, Math.round((Math.abs(item.contribution) / maxTokenContribution) * 100))}%` }}
+                              />
+                            </div>
+                            <strong>{item.contribution.toFixed(3)}</strong>
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </DataState>
@@ -671,7 +726,14 @@ const Sentiment: React.FC = () => {
             </div>
           </div>
         </Panel>
-        <Panel title="最近一次结果">
+        <Panel
+          title="最近一次结果"
+          extra={(
+            <Button size="small" icon={<ScanOutlined />} onClick={runExplanation} loading={explaining} disabled={!latestResult}>
+              查看解释
+            </Button>
+          )}
+        >
           <DataState loading={loading} error={error} empty={!latestResult} emptyTitle="暂无分析结果">
             {latestResult && (
               <div className="psa-detail-list">

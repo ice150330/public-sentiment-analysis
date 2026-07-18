@@ -58,3 +58,4 @@ from app.schemas.auth import (
 )
 from app.schemas.model_review import SentimentReviewUpdateRequest
 from app.schemas.model_version import ModelActivationRequest
+from app.schemas.model_explanation import ModelExplanationGenerateRequest
