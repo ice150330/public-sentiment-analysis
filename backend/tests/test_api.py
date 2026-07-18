@@ -1089,6 +1089,25 @@ class TestCrawlerEndpoints:
         data = response.json()
         assert data["code"] == 200
 
+    async def test_sentiment_rule_fallback_deterministic(self, async_client):
+        """规则兜底情感分析结果应稳定可复现"""
+        response = await async_client.post(
+            "/api/v1/sentiment/analyze",
+            json={"text": "这个产品太棒了，非常喜欢"},
+        )
+        assert response.status_code == status.HTTP_200_OK
+        data = response.json()["data"]
+        assert data["sentiment_label"] == "positive"
+        assert data["confidence"] > 0
+
+        response2 = await async_client.post(
+            "/api/v1/sentiment/analyze",
+            json={"text": "这个产品太棒了，非常喜欢"},
+        )
+        data2 = response2.json()["data"]
+        assert data2["sentiment_label"] == data["sentiment_label"]
+        assert data2["confidence"] == data["confidence"]
+
 
 class TestErrorHandling:
     """错误处理测试"""

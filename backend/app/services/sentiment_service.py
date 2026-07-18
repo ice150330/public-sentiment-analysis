@@ -10,15 +10,26 @@
 
 import logging
 import os
-import random
 from datetime import datetime
 from typing import List, Dict, Optional
 
+import jieba
 from sqlalchemy.orm import Session
 
 from app.models import HotTopic, SentimentResult
 
 logger = logging.getLogger(__name__)
+
+# 轻量级规则兜底情感词库（确定性、离线可用）
+_POSITIVE_WORDS = {
+    "好", "棒", "赞", "优秀", "喜欢", "爱", "支持", "成功", "惊喜", "满意",
+    "开心", "快乐", "幸福", "美好", "顺利", "值得", "推荐", "优秀", "出色",
+}
+_NEGATIVE_WORDS = {
+    "坏", "差", "糟", "失败", "讨厌", "恨", "反对", "失望", "愤怒", "难过",
+    "悲伤", "恐惧", "垃圾", "恶心", "可怕", "糟糕", "悲剧", "遗憾", "不满",
+}
+
 
 # 尝试加载 Sklearn 模型（如果存在）
 _model = None
@@ -34,7 +45,7 @@ def _get_model():
             _model = SklearnSentimentModel(model_path)
             logger.info(f"Loaded sentiment model from {model_path}")
         else:
-            logger.warning("Sentiment model not found, using mock predictions")
+            logger.warning("Sentiment model not found, using rule-based fallback")
     return _model
 
 
@@ -59,9 +70,9 @@ class SentimentService:
             try:
                 return self._normalize_result(self.model.predict([text])[0])
             except Exception as e:
-                logger.warning(f"Sentiment model prediction failed, using mock fallback: {e}")
+                logger.warning(f"Sentiment model prediction failed, using rule-based fallback: {e}")
 
-        return self._normalize_result(self._mock_analyze(text))
+        return self._normalize_result(self._rule_fallback(text))
     
     def analyze_batch(self, texts: List[str]) -> List[Dict]:
         """
@@ -77,9 +88,9 @@ class SentimentService:
             try:
                 return [self._normalize_result(item) for item in self.model.predict(texts)]
             except Exception as e:
-                logger.warning(f"Sentiment batch prediction failed, using mock fallback: {e}")
+                logger.warning(f"Sentiment batch prediction failed, using rule-based fallback: {e}")
 
-        return [self._normalize_result(self._mock_analyze(text)) for text in texts]
+        return [self._normalize_result(self._rule_fallback(text)) for text in texts]
     
     def analyze_unprocessed_topics(self, limit: int = 100) -> int:
         """
@@ -114,7 +125,7 @@ class SentimentService:
                     positive_score=result["scores"]["positive"],
                     negative_score=result["scores"]["negative"],
                     neutral_score=result["scores"]["neutral"],
-                    model_version="sklearn-v1",
+                    model_version=result.get("model_version", "classic-v1"),
                     analyzed_at=datetime.now(),
                 )
                 
@@ -135,26 +146,48 @@ class SentimentService:
         if "sentiment_label" not in result and "label" in result:
             result["sentiment_label"] = result["label"]
         return result
-    
-    def _mock_analyze(self, text: str) -> Dict:
-        """
-        模拟情感分析（备用）
-        """
-        import random
 
-        labels = ["positive", "negative", "neutral"]
-        label = random.choice(labels)
+    def _rule_fallback(self, text: str) -> Dict:
+        """
+        基于轻量级词库的规则情感分析（确定性兜底）
+
+        当 Sklearn 模型不可用时使用，保证结果稳定可复现。
+        """
+        if not text:
+            return {
+                "label": "neutral",
+                "confidence": 1.0,
+                "scores": {"positive": 0.0, "negative": 0.0, "neutral": 1.0},
+                "model_version": "rule-fallback-v1",
+            }
+
+        tokens = set(jieba.lcut(text))
+        pos = len(tokens & _POSITIVE_WORDS)
+        neg = len(tokens & _NEGATIVE_WORDS)
+
+        if pos > neg:
+            label = "positive"
+            confidence = min(0.95, 0.55 + 0.08 * (pos - neg))
+        elif neg > pos:
+            label = "negative"
+            confidence = min(0.95, 0.55 + 0.08 * (neg - pos))
+        else:
+            label = "neutral"
+            confidence = 0.75
 
         if label == "positive":
-            scores = {"positive": 0.85, "negative": 0.05, "neutral": 0.10}
+            scores = {"positive": confidence, "negative": (1 - confidence) * 0.3, "neutral": (1 - confidence) * 0.7}
         elif label == "negative":
-            scores = {"positive": 0.10, "negative": 0.80, "neutral": 0.10}
+            scores = {"positive": (1 - confidence) * 0.3, "negative": confidence, "neutral": (1 - confidence) * 0.7}
         else:
-            scores = {"positive": 0.20, "negative": 0.15, "neutral": 0.65}
+            scores = {"positive": (1 - confidence) * 0.45, "negative": (1 - confidence) * 0.45, "neutral": confidence}
+
+        total = sum(scores.values())
+        scores = {k: round(v / total, 4) for k, v in scores.items()}
 
         return {
             "label": label,
-            "confidence": max(scores.values()),
+            "confidence": round(confidence, 4),
             "scores": scores,
-            "model_version": "mock-v1",
+            "model_version": "rule-fallback-v1",
         }
