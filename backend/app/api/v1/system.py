@@ -19,6 +19,7 @@ from app.core.database import get_db, engine
 from app.models import CrawlLog, HotTopic, SentimentResult, SystemLog, AuditLog, Platform
 from app.schemas import UnifiedResponse
 from app.services.audit_service import write_audit_log
+from app.services.realtime_service import get_realtime_manager
 from app.services.sqlite_backup_service import (
     SQLiteBackupError,
     create_sqlite_backup,
@@ -35,19 +36,19 @@ async def get_system_health(
 ):
     """
     获取系统健康状态
-    
+
     检查 API、数据库、爬虫、模型等组件状态
     """
     # API 状态（本服务运行中）
     api_status = "healthy"
-    
+
     # 数据库状态
     db_status = "healthy"
     try:
         db.execute(text("SELECT 1"))
     except Exception:
         db_status = "error"
-    
+
     # 爬虫状态（最近采集时间）
     last_crawl = db.query(CrawlLog).order_by(desc(CrawlLog.completed_at)).first()
     crawler_status = "healthy"
@@ -59,7 +60,7 @@ async def get_system_health(
         delay = (datetime.now() - last_crawl.completed_at).total_seconds() / 60 if last_crawl.completed_at else 0
         if delay > 180:
             crawler_status = "warning"
-    
+
     # 模型状态（情感分析能力）
     model_status = "healthy"
     recent_sentiment = db.query(SentimentResult).order_by(desc(SentimentResult.analyzed_at)).first()
@@ -67,7 +68,7 @@ async def get_system_health(
         model_status = "warning"
     elif recent_sentiment.analyzed_at and (datetime.now() - recent_sentiment.analyzed_at).total_seconds() > 86400:
         model_status = "warning"
-    
+
     # 各组件状态汇总
     components = {
         "api": {"status": api_status, "message": "API 服务运行正常"},
@@ -75,14 +76,14 @@ async def get_system_health(
         "crawler": {"status": crawler_status, "message": "爬虫运行正常" if crawler_status == "healthy" else "爬虫可能存在异常"},
         "model": {"status": model_status, "message": "模型服务正常" if model_status == "healthy" else "模型服务可能异常"},
     }
-    
+
     # 整体状态
     overall_status = "healthy"
     if any(c["status"] == "error" for c in components.values()):
         overall_status = "error"
     elif any(c["status"] == "warning" for c in components.values()):
         overall_status = "warning"
-    
+
     return {
         "code": 200,
         "data": {
@@ -176,7 +177,7 @@ async def list_system_logs(
 ):
     """查询系统日志"""
     query = db.query(SystemLog)
-    
+
     if level:
         query = query.filter(SystemLog.level == level)
     if module:
@@ -185,11 +186,11 @@ async def list_system_logs(
         query = query.filter(SystemLog.created_at >= start_time)
     if end_time:
         query = query.filter(SystemLog.created_at <= end_time)
-    
+
     total = query.count()
     logs = query.order_by(desc(SystemLog.created_at))
     logs = logs.offset((page - 1) * page_size).limit(page_size).all()
-    
+
     items = []
     for log in logs:
         items.append({
@@ -202,9 +203,9 @@ async def list_system_logs(
             "request_id": log.request_id,
             "created_at": log.created_at.isoformat() if log.created_at else None,
         })
-    
+
     total_pages = (total + page_size - 1) // page_size
-    
+
     return {
         "code": 200,
         "data": {
@@ -240,7 +241,7 @@ async def create_system_log(
     db.add(log)
     db.commit()
     db.refresh(log)
-    
+
     return {
         "code": 201,
         "data": {"id": log.id},
@@ -264,7 +265,7 @@ async def list_audit_logs(
 ):
     """查询审计日志"""
     query = db.query(AuditLog)
-    
+
     if operator:
         query = query.filter(AuditLog.operator == operator)
     if action:
@@ -275,11 +276,11 @@ async def list_audit_logs(
         query = query.filter(AuditLog.created_at >= start_time)
     if end_time:
         query = query.filter(AuditLog.created_at <= end_time)
-    
+
     total = query.count()
     logs = query.order_by(desc(AuditLog.created_at))
     logs = logs.offset((page - 1) * page_size).limit(page_size).all()
-    
+
     items = []
     for log in logs:
         items.append({
@@ -293,9 +294,9 @@ async def list_audit_logs(
             "note": log.note,
             "created_at": log.created_at.isoformat() if log.created_at else None,
         })
-    
+
     total_pages = (total + page_size - 1) // page_size
-    
+
     return {
         "code": 200,
         "data": {
@@ -332,9 +333,20 @@ async def create_audit_log(
     db.add(log)
     db.commit()
     db.refresh(log)
-    
+
     return {
         "code": 201,
         "data": {"id": log.id},
         "message": "Audit log created",
+    }
+
+@router.get("/realtime-status", response_model=UnifiedResponse[dict])
+async def get_realtime_status(
+    current_user = Depends(require_admin),
+):
+    """获取实时推送连接状态（管理员）"""
+    return {
+        "code": 200,
+        "data": get_realtime_manager().get_status(),
+        "message": "success",
     }

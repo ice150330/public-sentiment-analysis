@@ -17,15 +17,19 @@
 from datetime import date, datetime, timedelta
 from pathlib import Path
 
+import json
 import pytest
 import pytest_asyncio
 from httpx import ASGITransport, AsyncClient
 from fastapi import status
+from unittest.mock import AsyncMock, MagicMock, patch
 
 import app.main as main_module
 from app.core.database import SessionLocal
 from app.main import app
 from app.models import HotTopic, Platform, SentimentResult
+from app.core.security import create_access_token
+from app.services.realtime_service import get_realtime_manager
 from app.services.sqlite_backup_service import resolve_backup_dir
 from auth_test_utils import TEST_PASSWORD, ensure_test_user, make_auth_headers
 
@@ -1121,3 +1125,104 @@ class TestCORS:
         )
         assert response.status_code == status.HTTP_200_OK
         assert "access-control-allow-origin" in response.headers
+
+
+class TestRealtimeEndpoints:
+    """实时推送 (WebSocket) 测试"""
+
+    async def test_manager_connect_valid_token(self):
+        """有效 token 可建立 WebSocket 连接"""
+        user = ensure_test_user(username="pytest_ws_user", role="analyst")
+        token, _ = create_access_token(
+            {
+                "user_id": user.id,
+                "username": user.username,
+                "role": user.role,
+                "platform_scope": user.platform_scope,
+            }
+        )
+        manager = get_realtime_manager()
+        ws = MagicMock()
+        ws.accept = AsyncMock()
+        ws.send_text = AsyncMock()
+
+        result = await manager.connect(ws, token)
+        assert result is True
+        assert manager.active_count > 0
+        assert ws.accept.called
+
+    async def test_manager_reject_invalid_token(self):
+        """无效 token 拒绝连接并关闭"""
+        manager = get_realtime_manager()
+        ws = MagicMock()
+        ws.close = AsyncMock()
+        result = await manager.connect(ws, "invalid-token")
+        assert result is False
+        assert ws.close.called
+
+    async def test_broadcast_reaches_connected_client(self):
+        """广播消息会发送到已连接客户端"""
+        user = ensure_test_user(username="pytest_ws_broadcast", role="analyst")
+        token, _ = create_access_token(
+            {
+                "user_id": user.id,
+                "username": user.username,
+                "role": user.role,
+                "platform_scope": user.platform_scope,
+            }
+        )
+        manager = get_realtime_manager()
+        ws = MagicMock()
+        ws.accept = AsyncMock()
+        ws.send_text = AsyncMock()
+        await manager.connect(ws, token)
+
+        await manager.broadcast({"type": "test", "payload": {"msg": "hello"}, "timestamp": datetime.now().isoformat()})
+        assert ws.send_text.called
+        sent = json.loads(ws.send_text.call_args[0][0])
+        assert sent["type"] == "test"
+
+    async def test_alert_event_broadcasted(self, async_client):
+        """预警触发后应通过实时服务广播 alert 事件"""
+        headers = make_auth_headers(role="admin")
+        rule_response = await async_client.post(
+            "/api/v1/alerts/rules",
+            json={
+                "name": "pytest-ws-heat-spike",
+                "condition_type": "heat_spike",
+                "condition_expr": '{"threshold": 1, "time_window_hours": 24}',
+                "severity": "high",
+                "is_active": True,
+                "cooldown_minutes": 0,
+            },
+            headers=headers,
+        )
+        assert rule_response.status_code in [status.HTTP_200_OK, status.HTTP_201_CREATED]
+
+        with patch("app.services.alert_engine.broadcast_event_sync") as mock_broadcast:
+            eval_response = await async_client.post("/api/v1/alerts/evaluate", headers=headers)
+            assert eval_response.status_code == status.HTTP_200_OK
+            assert mock_broadcast.called
+            args = mock_broadcast.call_args[0]
+            assert args[0] == "alert"
+
+    async def test_crawl_complete_broadcasted(self, async_client):
+        """采集完成后应广播 crawl_complete 事件"""
+        headers = make_auth_headers(role="admin")
+        with patch("app.services.crawler_service.broadcast_event_sync") as mock_broadcast:
+            response = await async_client.post(
+                "/api/v1/crawler/trigger",
+                json={"platforms": ["weibo"], "is_async": False},
+                headers=headers,
+            )
+            assert response.status_code in [status.HTTP_200_OK, status.HTTP_202_ACCEPTED]
+            assert mock_broadcast.called
+            args = mock_broadcast.call_args[0]
+            assert args[0] == "crawl_complete"
+
+    async def test_realtime_status_admin(self, async_client):
+        """管理员可查询实时连接状态"""
+        headers = make_auth_headers(role="admin")
+        response = await async_client.get("/api/v1/system/realtime-status", headers=headers)
+        assert response.status_code == status.HTTP_200_OK
+        assert "active_connections" in response.json()["data"]

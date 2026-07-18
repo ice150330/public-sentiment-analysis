@@ -1,4 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAuth } from '../auth/AuthContext';
+import { useRealtime } from '../hooks/useRealtime';
 import { Button, Progress, Table } from 'antd';
 import {
   AlertOutlined,
@@ -31,6 +33,7 @@ import {
   getOverview,
   getPlatforms,
   getSentimentDistribution,
+  getAuthToken,
   getTypedDataQualityIssues,
   HeatTrend,
   HotTopic,
@@ -146,6 +149,18 @@ const Dashboard: React.FC<{ initialView?: string }> = ({ initialView = 'overview
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const { user } = useAuth();
+  const { lastMessage } = useRealtime({
+    token: user ? getAuthToken() || '' : '',
+  });
+
+  useEffect(() => {
+    if (!lastMessage) return;
+    if (lastMessage.type === 'alert' || lastMessage.type === 'crawl_complete') {
+      fetchData();
+    }
+  }, [lastMessage, fetchData]);
 
   useEffect(() => {
     setActiveView(initialView);

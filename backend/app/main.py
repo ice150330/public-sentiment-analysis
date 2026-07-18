@@ -5,6 +5,7 @@ FastAPI 应用主入口
 模块职责: 应用初始化、路由注册、异常处理、中间件配置
 """
 
+import json
 import uuid
 import time
 import os
@@ -12,7 +13,7 @@ from collections import defaultdict, deque
 from datetime import datetime
 from typing import Optional
 
-from fastapi import FastAPI, Request, status
+from fastapi import FastAPI, Request, WebSocket, WebSocketDisconnect, status
 from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
@@ -21,6 +22,7 @@ from app.core.database import engine, Base
 from app.core.scheduler import get_scheduler
 from app.core.security import TokenError, decode_access_token
 from app.services.sqlite_maintenance import ensure_sqlite_indexes
+from app.services.realtime_service import get_realtime_manager
 from app.api.v1 import platforms, topics, sentiment, stats, crawler, alerts, data_quality, system, topic_ext, model, ui_compat, sentiment_v2, exports, auth
 from app.api.v1 import topic_clusters, propagation_paths, trend_predictions, model_explanations
 
@@ -359,6 +361,33 @@ app.include_router(
     ui_compat.router,
     tags=["UI 兼容接口"],
 )
+
+
+
+@app.websocket("/ws")
+async def realtime_websocket(websocket: WebSocket, token: str = ""):
+    """实时推送 WebSocket 连接入口；通过 query 参数 token 鉴权"""
+    manager = get_realtime_manager()
+    if not token:
+        await websocket.close(code=1008, reason="Missing token")
+        return
+    if not await manager.connect(websocket, token):
+        return
+    try:
+        while True:
+            # 保持连接并处理客户端心跳/确认
+            data = await websocket.receive_text()
+            try:
+                message = json.loads(data)
+                if message.get("type") == "ping":
+                    await websocket.send_text(json.dumps({"type": "pong"}, ensure_ascii=False))
+            except json.JSONDecodeError:
+                pass
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
+    except Exception as exc:
+        logger.warning(f"Realtime websocket error: {exc}")
+        manager.disconnect(websocket)
 
 
 if __name__ == "__main__":

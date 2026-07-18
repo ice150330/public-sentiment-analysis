@@ -8,6 +8,7 @@ import Profile from './pages/Profile';
 import Topics from './pages/Topics';
 import Sentiment from './pages/Sentiment';
 import Stats from './pages/Stats';
+import { RealtimeNotifier } from './components/RealtimeNotifier';
 import './index.css';
 
 const roleLevel = {
@@ -56,6 +57,7 @@ const App: React.FC = () => {
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <RealtimeNotifier />
       </AuthProvider>
     </Router>
   );

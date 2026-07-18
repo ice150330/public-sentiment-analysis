@@ -12,6 +12,7 @@ from typing import List, Dict
 from sqlalchemy.orm import Session
 
 from app.models import Platform
+from app.services.realtime_service import broadcast_event_sync
 from crawler.pipeline import CrawlPipeline
 
 logger = logging.getLogger(__name__)
@@ -81,5 +82,19 @@ class CrawlerService:
                     "status": "failed",
                     "error": str(e),
                 })
+
+        # 实时推送采集完成事件
+        try:
+            broadcast_event_sync(
+                "crawl_complete",
+                {
+                    "total": results["total"],
+                    "success": results["success"],
+                    "failed": results["failed"],
+                    "details": results["details"],
+                },
+            )
+        except Exception as exc:
+            logger.warning(f"Failed to broadcast crawl complete event: {exc}")
 
         return results
