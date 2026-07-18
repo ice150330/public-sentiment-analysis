@@ -19,6 +19,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.exceptions import RequestValidationError
 
 from app.core.database import engine, Base
+from app.core.logging import setup_logging
 from app.core.scheduler import get_scheduler
 from app.core.security import TokenError, decode_access_token
 from app.services.sqlite_maintenance import ensure_sqlite_indexes
@@ -206,6 +207,7 @@ async def global_exception_handler(request: Request, exc: Exception):
 @app.on_event("startup")
 async def startup_event():
     """应用启动时初始化"""
+    setup_logging()
     if os.getenv("DISABLE_SCHEDULER", "false").lower() == "true":
         return
     # 启动后台任务调度器

@@ -1,0 +1,39 @@
+# 公众情绪智能分析系统 - 全栈 Docker Compose（精简版）
+# 适用于本地演示与毕设展示，不依赖 PostgreSQL/Redis/MongoDB/InfluxDB
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: sentiment-backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/data:/app/backend/data
+      - ./backend/backups:/app/backend/backups
+      - ./logs:/app/logs
+    environment:
+      - DATABASE_URL=sqlite:////app/backend/data/sentiment.db
+      - JWT_SECRET_KEY=${JWT_SECRET_KEY:-change-me-in-production}
+      - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE:-120}
+      - LOG_LEVEL=${LOG_LEVEL:-INFO}
+      - DISABLE_SCHEDULER=${DISABLE_SCHEDULER:-false}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: sentiment-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    restart: unless-stopped
