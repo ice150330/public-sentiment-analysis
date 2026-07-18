@@ -16,17 +16,20 @@ import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parent))
 os.environ.setdefault(
     "DATABASE_URL",
     f"sqlite:///{(Path(__file__).resolve().parents[1] / 'data' / 'sentiment.db').as_posix()}",
 )
 
 from app.main import app
+from auth_test_utils import make_auth_headers
 
 
 async def _request(method: str, path: str, **kwargs):
     transport = httpx.ASGITransport(app=app)
     async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+        client.headers.update(make_auth_headers())
         return await client.request(method, path, **kwargs)
 
 

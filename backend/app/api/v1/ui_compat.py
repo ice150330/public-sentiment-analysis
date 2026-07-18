@@ -45,8 +45,10 @@ from app.schemas import UnifiedResponse
 from app.services.data_quality_service import DataQualityService
 from app.services.sentiment_service import SentimentService
 from app.services.task_state_service import expire_stale_crawler_tasks
+from app.services.trend_forecast_service import TrendForecastService
 
 router = APIRouter()
+trend_forecast_service = TrendForecastService()
 
 
 def _pagination(page: int, page_size: int, total: int) -> dict:
@@ -1213,58 +1215,20 @@ async def forecast_heat(payload: dict | None = None, db: Session = Depends(get_d
     payload = payload or {}
     topic_id = payload.get("topic_id")
     horizon_days = int(payload.get("horizon_days", 7))
-    query = db.query(HotTopic)
-    if topic_id:
-        query = query.filter(HotTopic.id == topic_id)
-    topics = query.order_by(desc(HotTopic.crawl_time)).limit(100).all()
-    current = topics[0].heat_score if topics else 0
-    avg_heat = sum((topic.heat_score or 0) for topic in topics) / len(topics) if topics else 0
-    forecast = [
-        {
-            "date": (datetime.now().date() + timedelta(days=index + 1)).isoformat(),
-            "predicted_heat": round(avg_heat * (1 + 0.02 * (index + 1)), 2),
-            "confidence_lower": round(avg_heat * 0.85, 2),
-            "confidence_upper": round(avg_heat * 1.15, 2),
-        }
-        for index in range(horizon_days)
-    ]
-    return {"code": 200, "data": {"topic_id": topic_id, "current_heat": current, "forecast": forecast, "model": "moving-average"}, "message": "success"}
+    data = trend_forecast_service.forecast_heat(db, topic_id=topic_id, horizon_days=horizon_days)
+    return {"code": 200, "data": data, "message": "success"}
 
 
 @router.get("/api/v1/forecast/signals", response_model=UnifiedResponse[dict])
 async def forecast_signals(topic_id: int = None, db: Session = Depends(get_db)):
-    topic = db.query(HotTopic).filter(HotTopic.id == topic_id).first() if topic_id else None
-    recent_platforms = db.query(HotTopic.platform_id).filter(
-        HotTopic.crawl_time >= datetime.now() - timedelta(days=7)
-    ).distinct().count()
-    return {
-        "code": 200,
-        "data": {
-            "topic_id": topic_id,
-            "signals": [
-                {"name": "heat_momentum", "value": topic.heat_score if topic else 0, "direction": "stable"},
-                {"name": "negative_momentum", "value": 0, "direction": "stable"},
-                {"name": "cross_platform_spread", "value": recent_platforms, "direction": "stable"},
-            ],
-        },
-        "message": "success",
-    }
+    data = trend_forecast_service.forecast_signals(db, topic_id=topic_id)
+    return {"code": 200, "data": data, "message": "success"}
 
 
 @router.get("/api/v1/forecast/scenarios", response_model=UnifiedResponse[dict])
-async def forecast_scenarios(topic_id: int = None):
-    return {
-        "code": 200,
-        "data": {
-            "topic_id": topic_id,
-            "scenarios": [
-                {"name": "baseline", "probability": 0.6, "description": "按当前热度和情绪水平延续"},
-                {"name": "risk", "probability": 0.25, "description": "负面情绪或跨平台扩散上升"},
-                {"name": "ease", "probability": 0.15, "description": "热度回落且情绪趋中性"},
-            ],
-        },
-        "message": "success",
-    }
+async def forecast_scenarios(topic_id: int = None, db: Session = Depends(get_db)):
+    data = trend_forecast_service.forecast_scenarios(db, topic_id=topic_id)
+    return {"code": 200, "data": data, "message": "success"}
 
 
 @router.get("/api/v1/platforms/monitoring", response_model=UnifiedResponse[dict])

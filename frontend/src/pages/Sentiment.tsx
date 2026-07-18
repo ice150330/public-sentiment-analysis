@@ -1,10 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, Input, Segmented, Table } from 'antd';
+import { Button, Input, Segmented, Select, Table } from 'antd';
 import {
   AreaChartOutlined,
+  CheckCircleOutlined,
+  DownloadOutlined,
   FileSearchOutlined,
   ScanOutlined,
   SendOutlined,
+  SettingOutlined,
+  StopOutlined,
   TableOutlined,
 } from '@ant-design/icons';
 import ReactECharts from 'echarts-for-react';
@@ -13,30 +17,43 @@ import {
   analyzeBatchV2,
   analyzeText,
   analyzeTextV2,
+  activateModelVersion,
+  exportSentimentReportPdf,
   forecastHeat,
   ForecastHeat,
   getErrorMessage,
   getHeatTrend,
+  getModelStatus,
+  getModelVersions,
+  getSentimentReviewQueue,
   getSentimentSummary,
   getSentimentResults,
   HeatTrend,
+  ModelStatus,
+  ModelVersion,
+  SentimentReviewItem,
   SentimentAnalyzeResult,
   SentimentResult,
   SentimentSummary,
+  updateSentimentReviewItem,
 } from '../services/api';
 import {
   DataState,
   formatDateTime,
+  formatNumber,
   ModuleFrame,
   Panel,
   SentimentBadge,
   sentimentText,
+  StatusBadge,
   SubView,
 } from '../components/DesignSystem';
 
 const views: SubView[] = [
   { key: 'text', label: '文本分析', icon: <FileSearchOutlined /> },
   { key: 'batch', label: '批量结果', icon: <TableOutlined /> },
+  { key: 'review', label: '人工复核', icon: <CheckCircleOutlined /> },
+  { key: 'models', label: '模型版本', icon: <SettingOutlined /> },
   { key: 'forecast', label: '趋势预测', icon: <AreaChartOutlined /> },
   { key: 'explain', label: '模型解释', icon: <ScanOutlined /> },
 ];
@@ -52,6 +69,24 @@ const modelModeOptions = [
   { label: '增强模型', value: 'v2' },
 ] as const;
 
+const reviewLabelOptions = [
+  { label: '正面', value: 'positive' },
+  { label: '中性', value: 'neutral' },
+  { label: '负面', value: 'negative' },
+];
+
+const forecastSignalLabels: Record<string, string> = {
+  heat_momentum: '热度动量',
+  negative_momentum: '负面压力',
+  cross_platform_spread: '跨平台扩散',
+};
+
+const forecastDirectionLabels: Record<string, string> = {
+  up: '上升',
+  down: '下降',
+  stable: '稳定',
+};
+
 const Sentiment: React.FC = () => {
   const [activeView, setActiveView] = useState('text');
   const [text, setText] = useState('');
@@ -63,24 +98,36 @@ const Sentiment: React.FC = () => {
   const [heatTrend, setHeatTrend] = useState<HeatTrend | null>(null);
   const [forecast, setForecast] = useState<ForecastHeat | null>(null);
   const [summary, setSummary] = useState<SentimentSummary | null>(null);
+  const [reviewItems, setReviewItems] = useState<SentimentReviewItem[]>([]);
+  const [modelStatus, setModelStatus] = useState<ModelStatus | null>(null);
+  const [modelVersions, setModelVersions] = useState<ModelVersion[]>([]);
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
+  const [reviewingId, setReviewingId] = useState<number | null>(null);
+  const [activatingVersionId, setActivatingVersionId] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   const fetchExisting = useCallback(async () => {
     try {
       setPageLoading(true);
-      const [resultsRes, trendRes, forecastRes, summaryRes] = await Promise.all([
+      const [resultsRes, trendRes, forecastRes, summaryRes, reviewRes, modelStatusRes, modelVersionsRes] = await Promise.all([
         getSentimentResults({ page: 1, page_size: 12 }),
         getHeatTrend({ days: 14, aggregation: 'daily' }),
         forecastHeat({ horizon_days: 7 }),
         getSentimentSummary(),
+        getSentimentReviewQueue({ status: 'pending', threshold: 0.6, page: 1, page_size: 12 }),
+        getModelStatus(),
+        getModelVersions(),
       ]);
       setStoredResults(resultsRes.data?.items || []);
       setHeatTrend(trendRes.data);
       setForecast(forecastRes.data);
       setSummary(summaryRes.data);
+      setReviewItems(reviewRes.data?.items || []);
+      setModelStatus(modelStatusRes.data || null);
+      setModelVersions(modelVersionsRes.data?.items || []);
       setLastUpdated(new Date().toISOString());
       setError(null);
     } catch (err) {
@@ -128,6 +175,55 @@ const Sentiment: React.FC = () => {
       setError(getErrorMessage(err));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const exportReport = useCallback(async () => {
+    try {
+      setExporting(true);
+      await exportSentimentReportPdf({ topic_limit: 12 });
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setExporting(false);
+    }
+  }, []);
+
+  const updateReview = async (item: SentimentReviewItem, status: 'reviewed' | 'ignored', correctedLabel?: string) => {
+    try {
+      setReviewingId(item.id);
+      await updateSentimentReviewItem(item.id, {
+        status,
+        corrected_label: status === 'reviewed' ? correctedLabel || item.suggested_label : undefined,
+      });
+      const response = await getSentimentReviewQueue({ status: 'pending', threshold: 0.6, page: 1, page_size: 12 });
+      setReviewItems(response.data?.items || []);
+      setLastUpdated(new Date().toISOString());
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setReviewingId(null);
+    }
+  };
+
+  const activateVersion = async (item: ModelVersion, trafficPercent = 100) => {
+    try {
+      setActivatingVersionId(item.id);
+      await activateModelVersion(item.id, { traffic_percent: trafficPercent });
+      const [statusRes, versionsRes] = await Promise.all([
+        getModelStatus(),
+        getModelVersions(),
+      ]);
+      setModelStatus(statusRes.data || null);
+      setModelVersions(versionsRes.data?.items || []);
+      setLastUpdated(new Date().toISOString());
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setActivatingVersionId(null);
     }
   };
 
@@ -260,6 +356,178 @@ const Sentiment: React.FC = () => {
       );
     }
 
+    if (activeView === 'review') {
+      return (
+        <div className="psa-grid two-one">
+          <Panel title="低置信复核队列" className="tall" eyebrow={`待复核 ${reviewItems.length}`}>
+            <DataState loading={pageLoading} error={error} empty={reviewItems.length === 0} emptyTitle="暂无待复核样本">
+              <Table<SentimentReviewItem>
+                className="psa-table"
+                size="small"
+                rowKey="id"
+                pagination={{ pageSize: 8, size: 'small' }}
+                dataSource={reviewItems}
+                columns={[
+                  { title: '话题', dataIndex: 'topic_title', ellipsis: true, render: (value) => value || '未命名话题' },
+                  { title: '平台', dataIndex: 'platform_name', render: (value) => value || '未知平台' },
+                  {
+                    title: '模型判断',
+                    render: (_, record) => (
+                      <SentimentBadge label={record.suggested_label} confidence={record.confidence_snapshot} />
+                    ),
+                  },
+                  {
+                    title: '人工标签',
+                    render: (_, record) => (
+                      <Select
+                        size="small"
+                        defaultValue={record.suggested_label}
+                        style={{ width: 90 }}
+                        options={reviewLabelOptions}
+                        onChange={(value) => updateReview(record, 'reviewed', value)}
+                        disabled={reviewingId === record.id}
+                      />
+                    ),
+                  },
+                  {
+                    title: '操作',
+                    render: (_, record) => (
+                      <div className="psa-inline-tools">
+                        <Button
+                          size="small"
+                          icon={<CheckCircleOutlined />}
+                          loading={reviewingId === record.id}
+                          onClick={() => updateReview(record, 'reviewed', record.suggested_label)}
+                        >
+                          通过
+                        </Button>
+                        <Button
+                          size="small"
+                          icon={<StopOutlined />}
+                          loading={reviewingId === record.id}
+                          onClick={() => updateReview(record, 'ignored')}
+                        >
+                          忽略
+                        </Button>
+                      </div>
+                    ),
+                  },
+                ]}
+              />
+            </DataState>
+          </Panel>
+          <Panel title="复核说明">
+            <div className="psa-detail-list">
+              <div className="psa-detail-item">
+                <span>入队条件</span>
+                <strong>置信度低于 60%</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>处理方式</span>
+                <strong>人工确认或忽略</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>状态</span>
+                <StatusBadge status={reviewItems.length > 0 ? 'pending' : 'success'} />
+              </div>
+              <p className="psa-page-note">复核结果会写入审计日志，保留原始模型判断和人工校正标签。</p>
+            </div>
+          </Panel>
+        </div>
+      );
+    }
+
+    if (activeView === 'models') {
+      const activeVersions = modelStatus?.active_versions || modelVersions.filter((item) => item.is_active);
+
+      return (
+        <div className="psa-grid two-one">
+          <Panel title="模型版本" className="tall" eyebrow={`活跃 ${activeVersions.length}`}>
+            <DataState loading={pageLoading} error={error} empty={modelVersions.length === 0} emptyTitle="暂无模型版本">
+              <Table<ModelVersion>
+                className="psa-table"
+                size="small"
+                rowKey="id"
+                pagination={false}
+                dataSource={modelVersions}
+                columns={[
+                  { title: '版本', dataIndex: 'version', ellipsis: true },
+                  { title: '模型', dataIndex: 'model_name', ellipsis: true },
+                  { title: 'Provider', dataIndex: 'provider', render: (value) => value || 'classic' },
+                  {
+                    title: '流量',
+                    render: (_, record) => `${record.traffic_percent ?? 0}%`,
+                  },
+                  {
+                    title: '状态',
+                    render: (_, record) => <StatusBadge status={record.is_active} />,
+                  },
+                  {
+                    title: '操作',
+                    render: (_, record) => (
+                      <div className="psa-inline-tools">
+                        <Button
+                          size="small"
+                          type={record.is_active && (record.traffic_percent ?? 0) >= 100 ? 'primary' : 'default'}
+                          icon={<SettingOutlined />}
+                          loading={activatingVersionId === record.id}
+                          disabled={record.is_active && (record.traffic_percent ?? 0) >= 100}
+                          onClick={() => activateVersion(record, 100)}
+                        >
+                          主用
+                        </Button>
+                        {!record.is_active && (
+                          <Button
+                            size="small"
+                            loading={activatingVersionId === record.id}
+                            onClick={() => activateVersion(record, 20)}
+                          >
+                            20%
+                          </Button>
+                        )}
+                      </div>
+                    ),
+                  },
+                ]}
+              />
+            </DataState>
+          </Panel>
+          <Panel title="当前路由" eyebrow={modelStatus?.status || 'unknown'}>
+            <div className="psa-detail-list">
+              <div className="psa-detail-item">
+                <span>当前版本</span>
+                <strong>{modelStatus?.model?.version || '未加载'}</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>Provider</span>
+                <strong>{modelStatus?.model?.provider || 'classic'}</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>流量比例</span>
+                <strong>{modelStatus?.model?.traffic_percent ?? 0}%</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>24h 分析</span>
+                <strong>{modelStatus?.recent_analyzed ?? 0}</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>平均置信</span>
+                <strong>{((modelStatus?.avg_confidence || 0) * 100).toFixed(1)}%</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>待复核</span>
+                <strong>{modelStatus?.pending_review ?? reviewItems.length}</strong>
+              </div>
+              <div className="psa-detail-item">
+                <span>运行状态</span>
+                <StatusBadge status={modelStatus?.status || 'unknown'} />
+              </div>
+            </div>
+          </Panel>
+        </div>
+      );
+    }
+
     if (activeView === 'forecast') {
       return (
         <div className="psa-grid two-one">
@@ -269,12 +537,35 @@ const Sentiment: React.FC = () => {
             </DataState>
           </Panel>
           <div className="psa-grid">
-            <Panel title="分析摘要">
+            <Panel
+              title="分析摘要"
+              extra={<Button size="small" icon={<DownloadOutlined />} onClick={exportReport} loading={exporting}>导出报告</Button>}
+            >
               <DataState loading={pageLoading} error={error} empty={!summary} emptyTitle="暂无分析摘要">
                 <div className="psa-detail-list">
                   <div className="psa-detail-item">
+                    <span>预测模型</span>
+                    <strong>{forecast?.model || '未生成'}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>当前热度</span>
+                    <strong>{formatNumber(forecast?.current_heat)}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>回测 MAE</span>
+                    <strong>{forecast?.metrics?.mae != null ? formatNumber(forecast.metrics.mae) : '暂无'}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>回测 MAPE</span>
+                    <strong>{forecast?.metrics?.mape != null ? `${(forecast.metrics.mape * 100).toFixed(1)}%` : '暂无'}</strong>
+                  </div>
+                  <div className="psa-detail-item">
                     <span>今日分析</span>
                     <strong>{summary?.today_analyzed ?? 0}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>入库结果</span>
+                    <strong>{storedResults.length}</strong>
                   </div>
                   <div className="psa-detail-item">
                     <span>低置信</span>
@@ -291,19 +582,19 @@ const Sentiment: React.FC = () => {
                 </div>
               </DataState>
             </Panel>
-            <Panel title="已入库情感结果">
-              <DataState loading={pageLoading} error={error} empty={storedResults.length === 0} emptyTitle="暂无入库情感结果">
+            <Panel title="预测信号">
+              <DataState loading={pageLoading} error={error} empty={!forecast?.signals?.length} emptyTitle="暂无预测信号">
                 <div className="psa-list">
-                  {storedResults.slice(0, 6).map((item) => (
-                    <div className="psa-row" key={item.id}>
+                  {(forecast?.signals || []).map((item) => (
+                    <div className="psa-row" key={item.name}>
                       <div>
-                        <p className="psa-row-title">Topic #{item.topic_id}</p>
+                        <p className="psa-row-title">{forecastSignalLabels[item.name] || item.name}</p>
                         <div className="psa-row-meta">
-                          <span>{formatDateTime(item.analyzed_at)}</span>
-                          <span>{item.model_version || '未标注模型'}</span>
+                          <span>{item.description || '预测特征'}</span>
+                          <span>变化 {item.change_rate != null ? `${(item.change_rate * 100).toFixed(1)}%` : '暂无'}</span>
                         </div>
                       </div>
-                      <SentimentBadge label={item.sentiment_label} confidence={item.confidence} />
+                      <strong>{forecastDirectionLabels[item.direction] || item.direction}</strong>
                     </div>
                   ))}
                 </div>

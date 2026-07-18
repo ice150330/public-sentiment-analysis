@@ -23,8 +23,10 @@ import httpx
 repo_root = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(repo_root))
 sys.path.insert(0, str(repo_root / "backend"))
+sys.path.insert(0, str(repo_root / "backend" / "tests"))
 
 from app.main import app
+from auth_test_utils import make_auth_headers
 
 
 class ASGITestClient:
@@ -33,6 +35,7 @@ class ASGITestClient:
     async def _request(self, method: str, path: str, **kwargs):
         transport = httpx.ASGITransport(app=app)
         async with httpx.AsyncClient(transport=transport, base_url="http://test") as client:
+            client.headers.update(make_auth_headers())
             return await client.request(method, path, **kwargs)
 
     def get(self, path: str, **kwargs):
