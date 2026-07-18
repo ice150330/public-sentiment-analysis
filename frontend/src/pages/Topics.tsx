@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, Input, Pagination, Select } from 'antd';
 import {
   BranchesOutlined,
+  DownloadOutlined,
   FireOutlined,
   PartitionOutlined,
   ProfileOutlined,
@@ -10,7 +11,12 @@ import {
 import ReactECharts from 'echarts-for-react';
 import {
   getErrorMessage,
+  exportTopicsCsv,
   getPlatforms,
+  getPropagationPath,
+  getPropagationPaths,
+  getTopicCluster,
+  getTopicClusters,
   getRelatedTopics,
   getTopicPropagation,
   getTopicSamples,
@@ -18,6 +24,12 @@ import {
   HotTopic,
   Pagination as PageInfo,
   Platform,
+  analyzePropagation,
+  PropagationPathDetail,
+  PropagationPathSummary,
+  runClustering,
+  TopicClusterDetail,
+  TopicClusterSummary,
   TopicPropagation,
   TopicRelation,
   TopicSample,
@@ -29,6 +41,7 @@ import {
   ModuleFrame,
   Panel,
   PlatformBadge,
+  SentimentBadge,
   SubView,
 } from '../components/DesignSystem';
 
@@ -45,12 +58,31 @@ const Topics: React.FC = () => {
   const [platforms, setPlatforms] = useState<Platform[]>([]);
   const [pagination, setPagination] = useState<PageInfo | null>(null);
   const [selectedTopicId, setSelectedTopicId] = useState<number | null>(null);
+  const [topicClusters, setTopicClusters] = useState<TopicClusterSummary[]>([]);
+  const [clusterPagination, setClusterPagination] = useState<PageInfo | null>(null);
+  const [selectedClusterId, setSelectedClusterId] = useState<number | null>(null);
+  const [clusterDetail, setClusterDetail] = useState<TopicClusterDetail | null>(null);
+  const [clusterAlgorithm, setClusterAlgorithm] = useState<'kmeans' | 'hdbscan' | 'dbscan'>('kmeans');
+  const [clusterCount, setClusterCount] = useState(5);
+  const [clusterWindow, setClusterWindow] = useState(24);
+  const [propagationPaths, setPropagationPaths] = useState<PropagationPathSummary[]>([]);
+  const [selectedPropagationId, setSelectedPropagationId] = useState<number | null>(null);
+  const [propagationDetail, setPropagationDetail] = useState<PropagationPathDetail | null>(null);
+  const [propagationWindow, setPropagationWindow] = useState(24);
+  const [similarityThreshold, setSimilarityThreshold] = useState(0.18);
   const [keyword, setKeyword] = useState('');
   const [platform, setPlatform] = useState<string | undefined>();
   const [sortBy, setSortBy] = useState('heat_score');
   const [page, setPage] = useState(1);
   const [loading, setLoading] = useState(true);
+  const [clusterLoading, setClusterLoading] = useState(true);
+  const [clusterRunning, setClusterRunning] = useState(false);
+  const [propagationLoading, setPropagationLoading] = useState(true);
+  const [propagationAnalyzing, setPropagationAnalyzing] = useState(false);
+  const [exporting, setExporting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [clusterError, setClusterError] = useState<string | null>(null);
+  const [propagationError, setPropagationError] = useState<string | null>(null);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
 
   const selectedTopic = topics.find((topic) => topic.id === selectedTopicId) || null;
@@ -91,17 +123,96 @@ const Topics: React.FC = () => {
     fetchData();
   }, [fetchData]);
 
-  const clusters = useMemo(() => {
-    const map = new Map<string, { name: string; count: number; heat: number }>();
-    topics.forEach((topic) => {
-      const key = topic.category || '未分类';
-      const current = map.get(key) || { name: key, count: 0, heat: 0 };
-      current.count += 1;
-      current.heat += topic.heat_score || 0;
-      map.set(key, current);
-    });
-    return Array.from(map.values()).sort((a, b) => b.heat - a.heat);
-  }, [topics]);
+  const fetchClusters = useCallback(async () => {
+    try {
+      setClusterLoading(true);
+      const response = await getTopicClusters({ page: 1, page_size: 12 });
+      const items = response.data?.items || [];
+      setTopicClusters(items);
+      setClusterPagination(response.data?.pagination || null);
+      setSelectedClusterId((current) => {
+        if (current && items.some((item) => item.id === current)) return current;
+        return items[0]?.id ?? null;
+      });
+      setClusterError(null);
+      setLastUpdated(new Date().toISOString());
+    } catch (err) {
+      setClusterError(getErrorMessage(err));
+    } finally {
+      setClusterLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchClusters();
+  }, [fetchClusters]);
+
+  useEffect(() => {
+    if (!selectedClusterId) {
+      setClusterDetail(null);
+      return;
+    }
+    let mounted = true;
+    getTopicCluster(selectedClusterId, { page: 1, page_size: 8 })
+      .then((response) => {
+        if (!mounted) return;
+        setClusterDetail(response.data);
+        setClusterError(null);
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        setClusterError(getErrorMessage(err));
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedClusterId]);
+
+  const fetchPropagationPaths = useCallback(async () => {
+    try {
+      setPropagationLoading(true);
+      const response = await getPropagationPaths({ page: 1, page_size: 10 });
+      const items = response.data?.items || [];
+      setPropagationPaths(items);
+      setSelectedPropagationId((current) => {
+        if (current && items.some((item) => item.id === current)) return current;
+        return items[0]?.id ?? null;
+      });
+      setPropagationError(null);
+      setLastUpdated(new Date().toISOString());
+    } catch (err) {
+      setPropagationError(getErrorMessage(err));
+    } finally {
+      setPropagationLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchPropagationPaths();
+  }, [fetchPropagationPaths]);
+
+  useEffect(() => {
+    if (!selectedPropagationId) {
+      setPropagationDetail(null);
+      return;
+    }
+    let mounted = true;
+    getPropagationPath(selectedPropagationId)
+      .then((response) => {
+        if (!mounted) return;
+        setPropagationDetail(response.data);
+        setPropagationError(null);
+      })
+      .catch((err) => {
+        if (!mounted) return;
+        setPropagationError(getErrorMessage(err));
+      });
+
+    return () => {
+      mounted = false;
+    };
+  }, [selectedPropagationId]);
 
   const platformStats = useMemo(() => {
     const map = new Map<string, { name: string; count: number; heat: number }>();
@@ -116,38 +227,56 @@ const Topics: React.FC = () => {
   }, [topics]);
 
   const clusterChart = useMemo(() => {
-    if (clusters.length === 0) return null;
+    if (topicClusters.length === 0) return null;
     return {
       tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
       grid: { left: 92, right: 18, top: 16, bottom: 28 },
       xAxis: { type: 'value', splitLine: { lineStyle: { color: '#E7EEF7' } } },
-      yAxis: { type: 'category', data: clusters.map((item) => item.name), axisLabel: { color: '#64748B' } },
+      yAxis: { type: 'category', data: topicClusters.map((item) => item.cluster_name), axisLabel: { color: '#64748B' } },
       series: [
         {
           type: 'bar',
           barWidth: 12,
           itemStyle: { color: '#2563EB', borderRadius: 999 },
-          data: clusters.map((item) => item.heat),
+          data: topicClusters.map((item) => item.topic_count),
         },
       ],
     };
-  }, [clusters]);
+  }, [topicClusters]);
 
   const spreadChart = useMemo(() => {
-    if (platformStats.length === 0) return null;
+    if (!propagationDetail || propagationDetail.nodes.length === 0) return null;
     return {
-      tooltip: { trigger: 'item' },
-      color: ['#F43F5E', '#111827', '#EF4444', '#2563EB', '#0EA5E9', '#3B82F6'],
+      tooltip: {
+        trigger: 'item',
+        formatter: (params: { data?: { name?: string; value?: number; similarity?: number } }) => {
+          if (params.data?.similarity !== undefined) {
+            return `相似度 ${(params.data.similarity * 100).toFixed(1)}%`;
+          }
+          return params.data?.name || '';
+        },
+      },
       series: [
         {
-          type: 'pie',
-          radius: ['44%', '72%'],
-          itemStyle: { borderRadius: 8, borderColor: '#fff', borderWidth: 2 },
-          data: platformStats.map((item) => ({ name: item.name, value: item.count })),
+          type: 'sankey',
+          layout: 'none',
+          nodeGap: 12,
+          emphasis: { focus: 'adjacency' },
+          data: propagationDetail.nodes.map((node) => ({
+            name: `${node.id}`,
+            label: { formatter: node.platform_name || node.topic_title || `#${node.topic_id}` },
+            value: node.influence_score || 1,
+          })),
+          links: propagationDetail.edges.map((edge) => ({
+            source: `${edge.source}`,
+            target: `${edge.target}`,
+            value: Math.max(1, Math.round((edge.similarity_score || 0.1) * 10)),
+            similarity: edge.similarity_score || 0,
+          })),
         },
       ],
     };
-  }, [platformStats]);
+  }, [propagationDetail]);
 
   const resetFilters = () => {
     setKeyword('');
@@ -156,63 +285,326 @@ const Topics: React.FC = () => {
     setPage(1);
   };
 
+  const refreshAll = useCallback(() => {
+    fetchData();
+    fetchClusters();
+    fetchPropagationPaths();
+  }, [fetchClusters, fetchData, fetchPropagationPaths]);
+
+  const handleRunClustering = useCallback(async () => {
+    try {
+      setClusterRunning(true);
+      const response = await runClustering({
+        algorithm: clusterAlgorithm,
+        n_clusters: clusterCount,
+        time_window_hours: clusterWindow,
+      });
+      if (response.code !== 200) {
+        setClusterError(response.message);
+        return;
+      }
+      await fetchClusters();
+      setClusterError(null);
+    } catch (err) {
+      setClusterError(getErrorMessage(err));
+    } finally {
+      setClusterRunning(false);
+    }
+  }, [clusterAlgorithm, clusterCount, clusterWindow, fetchClusters]);
+
+  const handleAnalyzePropagation = useCallback(async () => {
+    if (!selectedTopic) return;
+    try {
+      setPropagationAnalyzing(true);
+      const response = await analyzePropagation(selectedTopic.id, {
+        time_window_hours: propagationWindow,
+        similarity_threshold: similarityThreshold,
+        max_nodes: 30,
+      });
+      setSelectedPropagationId(response.data.path_id);
+      setPropagationDetail({
+        path: response.data.path,
+        tree: response.data.tree,
+        nodes: response.data.nodes,
+        edges: response.data.edges,
+      });
+      await fetchPropagationPaths();
+      setPropagationError(null);
+    } catch (err) {
+      setPropagationError(getErrorMessage(err));
+    } finally {
+      setPropagationAnalyzing(false);
+    }
+  }, [fetchPropagationPaths, propagationWindow, selectedTopic, similarityThreshold]);
+
+  const handleExport = useCallback(async () => {
+    try {
+      setExporting(true);
+      await exportTopicsCsv({
+        keyword: keyword.trim() || undefined,
+        platform,
+        sort_by: sortBy,
+        sort_order: 'desc',
+        limit: 5000,
+      });
+      setError(null);
+    } catch (err) {
+      setError(getErrorMessage(err));
+    } finally {
+      setExporting(false);
+    }
+  }, [keyword, platform, sortBy]);
+
   const renderContent = () => {
     if (activeView === 'clusters') {
+      const selectedCluster = clusterDetail?.cluster || topicClusters.find((item) => item.id === selectedClusterId) || null;
+      const keywords = selectedCluster?.keywords || [];
       return (
-        <DataState loading={loading} error={error} empty={topics.length === 0} emptyTitle="暂无可聚类话题">
-          <div className="psa-grid two-one">
-            <Panel title="聚类主题" eyebrow="按真实分类字段聚合">
-              <DataState empty={!clusterChart} emptyTitle="暂无分类聚合">
-                <ReactECharts option={clusterChart || {}} className="psa-chart large" />
-              </DataState>
-            </Panel>
-            <Panel title="主题簇列表">
-              <div className="psa-list">
-                {clusters.map((cluster) => (
-                  <div className="psa-row" key={cluster.name}>
-                    <div>
-                      <p className="psa-row-title">{cluster.name}</p>
-                      <div className="psa-row-meta">
-                        <span>{cluster.count} 个话题</span>
-                        <span>热度 {formatNumber(cluster.heat)}</span>
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Panel>
+        <>
+          <div className="psa-filter-bar">
+            <Select
+              value={clusterAlgorithm}
+              onChange={(value) => setClusterAlgorithm(value)}
+              style={{ width: 150 }}
+              options={[
+                { value: 'kmeans', label: 'K-Means' },
+                { value: 'hdbscan', label: 'HDBSCAN' },
+                { value: 'dbscan', label: 'DBSCAN' },
+              ]}
+            />
+            <Select
+              value={clusterCount}
+              onChange={setClusterCount}
+              style={{ width: 130 }}
+              options={[3, 5, 8, 12].map((value) => ({ value, label: `${value} 簇` }))}
+            />
+            <Select
+              value={clusterWindow}
+              onChange={setClusterWindow}
+              style={{ width: 150 }}
+              options={[
+                { value: 24, label: '近 24 小时' },
+                { value: 72, label: '近 3 天' },
+                { value: 168, label: '近 7 天' },
+              ]}
+            />
+            <Button
+              type="primary"
+              icon={<PartitionOutlined />}
+              onClick={handleRunClustering}
+              loading={clusterRunning}
+            >
+              运行聚类
+            </Button>
+            <Button icon={<ReloadOutlined />} onClick={fetchClusters} loading={clusterLoading}>
+              刷新
+            </Button>
           </div>
-        </DataState>
+          <DataState loading={clusterLoading} error={clusterError} empty={topicClusters.length === 0} emptyTitle="暂无聚类结果">
+            <div className="psa-grid two-one" style={{ marginTop: 16 }}>
+              <Panel title="主题簇分布" eyebrow={selectedCluster?.embedding_provider || '未生成'}>
+                <DataState empty={!clusterChart} emptyTitle="暂无聚类分布">
+                  <ReactECharts option={clusterChart || {}} className="psa-chart large" />
+                </DataState>
+              </Panel>
+              <Panel title="主题簇列表" eyebrow={clusterPagination ? `${clusterPagination.total} 个` : undefined}>
+                <div className="psa-list">
+                  {topicClusters.map((cluster) => (
+                    <button
+                      type="button"
+                      className="psa-row"
+                      key={cluster.id}
+                      onClick={() => setSelectedClusterId(cluster.id)}
+                    >
+                      <div>
+                        <p className="psa-row-title">{cluster.cluster_name}</p>
+                        <div className="psa-row-meta">
+                          <span>{cluster.topic_count} 个话题</span>
+                          <span>{cluster.algorithm}</span>
+                          <span>{cluster.embedding_provider || 'tfidf'}</span>
+                        </div>
+                      </div>
+                      <SentimentBadge label={cluster.dominant_sentiment || 'neutral'} />
+                    </button>
+                  ))}
+                </div>
+              </Panel>
+            </div>
+            <div className="psa-grid two-one" style={{ marginTop: 16 }}>
+              <Panel title="代表话题" className="tall" eyebrow={selectedCluster?.cluster_name}>
+                <DataState empty={!clusterDetail || clusterDetail.members.length === 0} emptyTitle="暂无簇成员">
+                  <div className="psa-list">
+                    {(clusterDetail?.members || []).map((member) => (
+                      <div className="psa-row" key={member.id}>
+                        <div>
+                          <p className="psa-row-title">{member.topic_title || `话题 #${member.topic_id}`}</p>
+                          <div className="psa-row-meta">
+                            <PlatformBadge name={member.platform_name} />
+                            <span>权重 {(member.weight || 0).toFixed(3)}</span>
+                            <span>距离 {(member.distance_to_center || 0).toFixed(3)}</span>
+                          </div>
+                        </div>
+                        <strong>{formatNumber(member.heat_score)}</strong>
+                      </div>
+                    ))}
+                  </div>
+                </DataState>
+              </Panel>
+              <Panel title="关键词与情感">
+                <div className="psa-detail-list">
+                  <div className="psa-keyword-list">
+                    {keywords.map((item) => (
+                      <span className="psa-keyword-pill" key={item}>{item}</span>
+                    ))}
+                    {keywords.length === 0 && <span className="psa-page-note">暂无关键词</span>}
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>主导情感</span>
+                    <SentimentBadge label={selectedCluster?.dominant_sentiment || 'neutral'} />
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>平均情感</span>
+                    <strong>{((selectedCluster?.avg_sentiment ?? 0.5) * 100).toFixed(1)}%</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>时间窗口</span>
+                    <strong>{selectedCluster?.start_time ? formatDateTime(selectedCluster.start_time) : '未生成'}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>算法</span>
+                    <strong>{selectedCluster?.algorithm || clusterAlgorithm}</strong>
+                  </div>
+                </div>
+              </Panel>
+            </div>
+          </DataState>
+        </>
       );
     }
 
     if (activeView === 'spread') {
       return (
-        <DataState loading={loading} error={error} empty={topics.length === 0} emptyTitle="暂无传播数据">
-          <div className="psa-grid two-one">
-            <Panel title="平台传播占比">
-              <DataState empty={!spreadChart} emptyTitle="暂无平台占比">
-                <ReactECharts option={spreadChart || {}} className="psa-chart large" />
-              </DataState>
-            </Panel>
-            <Panel title="传播来源">
-              <div className="psa-list">
-                {platformStats.map((item) => (
-                  <div className="psa-row" key={item.name}>
-                    <div>
-                      <p className="psa-row-title">{item.name}</p>
-                      <div className="psa-row-meta">
-                        <span>{item.count} 条话题</span>
-                        <span>累计热度 {formatNumber(item.heat)}</span>
-                      </div>
-                    </div>
-                    <PlatformBadge name={item.name} />
-                  </div>
-                ))}
-              </div>
-            </Panel>
+        <>
+          <div className="psa-filter-bar">
+            <Select
+              value={propagationWindow}
+              onChange={setPropagationWindow}
+              style={{ width: 150 }}
+              options={[
+                { value: 24, label: '近 24 小时' },
+                { value: 72, label: '近 3 天' },
+                { value: 168, label: '近 7 天' },
+              ]}
+            />
+            <Select
+              value={similarityThreshold}
+              onChange={setSimilarityThreshold}
+              style={{ width: 150 }}
+              options={[
+                { value: 0.12, label: '相似 12%' },
+                { value: 0.18, label: '相似 18%' },
+                { value: 0.28, label: '相似 28%' },
+              ]}
+            />
+            <Button
+              type="primary"
+              icon={<BranchesOutlined />}
+              onClick={handleAnalyzePropagation}
+              loading={propagationAnalyzing}
+              disabled={!selectedTopic}
+            >
+              分析当前话题
+            </Button>
+            <Button icon={<ReloadOutlined />} onClick={fetchPropagationPaths} loading={propagationLoading}>
+              刷新
+            </Button>
           </div>
-        </DataState>
+          <DataState
+            loading={propagationLoading}
+            error={propagationError}
+            empty={propagationPaths.length === 0}
+            emptyTitle="暂无传播路径"
+          >
+            <div className="psa-grid two-one" style={{ marginTop: 16 }}>
+              <Panel title="传播路径图" eyebrow={propagationDetail?.path.root_topic_title || selectedTopic?.title}>
+                <DataState empty={!spreadChart} emptyTitle="暂无路径图">
+                  <ReactECharts option={spreadChart || {}} className="psa-chart large" />
+                </DataState>
+              </Panel>
+              <Panel title="路径列表" eyebrow={`${propagationPaths.length} 条`}>
+                <div className="psa-list">
+                  {propagationPaths.map((path) => (
+                    <button
+                      type="button"
+                      className="psa-row"
+                      key={path.id}
+                      onClick={() => setSelectedPropagationId(path.id)}
+                    >
+                      <div>
+                        <p className="psa-row-title">{path.root_topic_title || `话题 #${path.root_topic_id}`}</p>
+                        <div className="psa-row-meta">
+                          <span>{path.total_nodes} 节点</span>
+                          <span>{path.platform_transitions} 次跨平台</span>
+                          <span>{path.platforms_involved?.join(' / ') || '未知平台'}</span>
+                        </div>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </Panel>
+            </div>
+            <div className="psa-grid two-one" style={{ marginTop: 16 }}>
+              <Panel title="传播节点" className="tall" eyebrow={propagationDetail ? `${propagationDetail.path.depth} 层` : undefined}>
+                <DataState empty={!propagationDetail || propagationDetail.nodes.length === 0} emptyTitle="暂无传播节点">
+                  <div className="psa-list">
+                    {(propagationDetail?.nodes || []).map((node) => (
+                      <div className="psa-row" key={node.id}>
+                        <div>
+                          <p className="psa-row-title">{node.topic_title || `话题 #${node.topic_id}`}</p>
+                          <div className="psa-row-meta">
+                            <PlatformBadge name={node.platform_name} />
+                            <span>L{node.level}</span>
+                            <span>相似 {((node.similarity_score ?? 1) * 100).toFixed(1)}%</span>
+                            <span>{formatDateTime(node.discovered_at)}</span>
+                          </div>
+                        </div>
+                        <SentimentBadge label={node.sentiment_label || 'neutral'} />
+                      </div>
+                    ))}
+                  </div>
+                </DataState>
+              </Panel>
+              <Panel title="传播指标">
+                <div className="psa-detail-list">
+                  <div className="psa-detail-item">
+                    <span>节点总数</span>
+                    <strong>{propagationDetail?.path.total_nodes ?? 0}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>传播深度</span>
+                    <strong>{propagationDetail?.path.depth ?? 0}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>最大广度</span>
+                    <strong>{propagationDetail?.path.max_breadth ?? 0}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>跨平台</span>
+                    <strong>{propagationDetail?.path.platform_transitions ?? 0}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>首次出现</span>
+                    <strong>{formatDateTime(propagationDetail?.path.first_seen_at)}</strong>
+                  </div>
+                  <div className="psa-detail-item">
+                    <span>最后出现</span>
+                    <strong>{formatDateTime(propagationDetail?.path.last_seen_at)}</strong>
+                  </div>
+                </div>
+              </Panel>
+            </div>
+          </DataState>
+        </>
       );
     }
 
@@ -238,7 +630,9 @@ const Topics: React.FC = () => {
           }}
           onReset={resetFilters}
           onRefresh={fetchData}
+          onExport={handleExport}
           loading={loading}
+          exporting={exporting}
         />
         <DataState loading={loading} error={error} empty={topics.length === 0} emptyTitle="暂无热榜数据">
           <div className="psa-grid main-side" style={{ marginTop: 16 }}>
@@ -320,8 +714,8 @@ const Topics: React.FC = () => {
         setKeyword(value);
         setPage(1);
       }}
-      onRefresh={fetchData}
-      refreshing={loading}
+      onRefresh={refreshAll}
+      refreshing={loading || clusterLoading || clusterRunning || propagationLoading || propagationAnalyzing}
       lastUpdated={lastUpdated}
     >
       {renderContent()}
@@ -335,12 +729,14 @@ const FilterBar: React.FC<{
   sortBy: string;
   platforms: Platform[];
   loading: boolean;
+  exporting: boolean;
   onKeyword: (value: string) => void;
   onPlatform: (value?: string) => void;
   onSort: (value: string) => void;
   onReset: () => void;
   onRefresh: () => void;
-}> = ({ keyword, platform, sortBy, platforms, loading, onKeyword, onPlatform, onSort, onReset, onRefresh }) => (
+  onExport: () => void;
+}> = ({ keyword, platform, sortBy, platforms, loading, exporting, onKeyword, onPlatform, onSort, onReset, onRefresh, onExport }) => (
   <div className="psa-filter-bar">
     <Input
       allowClear
@@ -370,6 +766,9 @@ const FilterBar: React.FC<{
     <Button onClick={onReset}>重置</Button>
     <Button icon={<ReloadOutlined />} onClick={onRefresh} loading={loading}>
       刷新
+    </Button>
+    <Button icon={<DownloadOutlined />} onClick={onExport} loading={exporting}>
+      导出
     </Button>
   </div>
 );

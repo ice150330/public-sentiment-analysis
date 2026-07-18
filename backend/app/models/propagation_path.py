@@ -59,6 +59,7 @@ class PropagationNode(Base):
     heat_score = Column(Integer, comment="热度值")
     sentiment_label = Column(String(16), comment="情感标签")
     influence_score = Column(Float, comment="影响力分数")
+    features_json = Column(Text, comment="传播匹配特征(JSON)")
     
     # 时间
     discovered_at = Column(DateTime, comment="发现时间")

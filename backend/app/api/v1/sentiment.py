@@ -13,6 +13,7 @@ from sqlalchemy.orm import Session
 from sqlalchemy import desc
 
 from app.core.database import get_db
+from app.ml.sentiment_transformers import get_analyzer
 from app.models import HotTopic, SentimentResult, Platform
 from app.schemas import (
     SentimentAnalyzeRequest,
@@ -22,6 +23,7 @@ from app.schemas import (
     SentimentQueryParams,
     UnifiedResponse,
 )
+from app.services.model_registry_service import model_version_payload, select_sentiment_model_version
 from app.services.sentiment_service import SentimentService
 
 router = APIRouter()
@@ -30,6 +32,7 @@ router = APIRouter()
 @router.post("/analyze", response_model=UnifiedResponse[SentimentAnalyzeResponse])
 async def analyze_text(
     request: SentimentAnalyzeRequest,
+    db: Session = Depends(get_db),
 ):
     """
     分析单条文本的情感倾向
@@ -37,17 +40,37 @@ async def analyze_text(
     Args:
         request: 包含待分析文本
     """
-    service = SentimentService(db=None)  # 纯文本分析不需要数据库
-    result = service.analyze_text(request.text)
+    model_version = select_sentiment_model_version(db)
+    model_payload = model_version_payload(model_version)
+    if model_payload["provider"] == "transformers":
+        raw = await get_analyzer().analyze_async(request.text)
+        positive = float(raw.get("positive_score") or 0)
+        negative = float(raw.get("negative_score") or 0)
+        neutral = float(raw.get("neutral_score") or max(0.0, 1 - positive - negative))
+        label = raw.get("sentiment") or "neutral"
+        result = {
+            "sentiment_label": label if label in {"positive", "negative", "neutral"} else "neutral",
+            "confidence": float(raw.get("confidence") or max(positive, negative, neutral)),
+            "scores": {
+                "positive": round(max(0.0, min(1.0, positive)), 4),
+                "negative": round(max(0.0, min(1.0, negative)), 4),
+                "neutral": round(max(0.0, min(1.0, neutral)), 4),
+            },
+        }
+    else:
+        service = SentimentService(db=None)  # 纯文本分析不需要数据库写入
+        result = service.analyze_text(request.text)
+
+    label = result.get("sentiment_label") or result.get("label")
 
     return {
         "code": 200,
         "data": {
             "text": request.text,
-            "sentiment_label": result["label"],
+            "sentiment_label": label,
             "confidence": result["confidence"],
             "scores": result["scores"],
-            "model_version": result.get("model_version", "mock-v1"),
+            "model_version": model_version.version,
             "analyzed_at": datetime.now(),
         },
         "message": "success",
@@ -57,19 +80,40 @@ async def analyze_text(
 @router.post("/analyze/batch", response_model=UnifiedResponse[List[SentimentAnalyzeResponse]])
 async def analyze_batch(
     request: SentimentAnalyzeBatchRequest,
+    db: Session = Depends(get_db),
 ):
     """批量分析文本情感"""
-    service = SentimentService(db=None)
-    results = service.analyze_batch(request.texts)
+    model_version = select_sentiment_model_version(db)
+    model_payload = model_version_payload(model_version)
+    if model_payload["provider"] == "transformers":
+        raw_results = await get_analyzer().analyze_batch_async(request.texts)
+        results = []
+        for raw in raw_results:
+            positive = float(raw.get("positive_score") or 0)
+            negative = float(raw.get("negative_score") or 0)
+            neutral = float(raw.get("neutral_score") or max(0.0, 1 - positive - negative))
+            label = raw.get("sentiment") or "neutral"
+            results.append({
+                "sentiment_label": label if label in {"positive", "negative", "neutral"} else "neutral",
+                "confidence": float(raw.get("confidence") or max(positive, negative, neutral)),
+                "scores": {
+                    "positive": round(max(0.0, min(1.0, positive)), 4),
+                    "negative": round(max(0.0, min(1.0, negative)), 4),
+                    "neutral": round(max(0.0, min(1.0, neutral)), 4),
+                },
+            })
+    else:
+        service = SentimentService(db=None)
+        results = service.analyze_batch(request.texts)
 
     data = []
     for text, result in zip(request.texts, results):
         data.append({
             "text": text,
-            "sentiment_label": result["label"],
+            "sentiment_label": result.get("sentiment_label") or result.get("label"),
             "confidence": result["confidence"],
             "scores": result["scores"],
-            "model_version": result.get("model_version", "mock-v1"),
+            "model_version": model_version.version,
             "analyzed_at": datetime.now(),
         })
 

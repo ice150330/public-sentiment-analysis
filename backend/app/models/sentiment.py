@@ -5,7 +5,7 @@
 模块职责: 情感分析结果 ORM 模型
 """
 
-from sqlalchemy import Column, Integer, String, Float, DateTime, func, ForeignKey, UniqueConstraint
+from sqlalchemy import Column, DateTime, Float, ForeignKey, Index, Integer, String, UniqueConstraint, func
 from sqlalchemy.orm import relationship
 
 from app.core.database import Base
@@ -29,10 +29,14 @@ class SentimentResult(Base):
     # 每条话题只分析一次
     __table_args__ = (
         UniqueConstraint("topic_id", name="uix_topic_sentiment"),
+        Index("idx_sentiment_label_analyzed_at", "sentiment_label", "analyzed_at"),
+        Index("idx_sentiment_analyzed_at", "analyzed_at"),
+        Index("idx_sentiment_confidence", "confidence"),
     )
     
     # 关系
     hot_topic = relationship("HotTopic", back_populates="sentiment_result")
+    review_item = relationship("SentimentReviewItem", back_populates="sentiment_result", uselist=False)
     
     def __repr__(self) -> str:
         return f"<SentimentResult(id={self.id}, label={self.sentiment_label}, confidence={self.confidence:.2f})>"

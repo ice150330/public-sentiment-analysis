@@ -56,3 +56,5 @@ from app.schemas.auth import (
     UserUpdateRequest,
     UserResponse,
 )
+from app.schemas.model_review import SentimentReviewUpdateRequest
+from app.schemas.model_version import ModelActivationRequest
