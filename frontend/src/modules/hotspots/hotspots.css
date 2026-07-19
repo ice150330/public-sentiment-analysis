@@ -1,0 +1,221 @@
+/* 热点模块独有样式（.hs-* 前缀），与 index.css 的 psa 体系配合使用 */
+
+.hs-side-stack {
+  display: grid;
+  gap: 16px;
+  align-content: start;
+}
+
+/* 三段式行：排名徽标 + 主内容 + 热度数字 */
+.psa-row.hs-row-3 {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+/* 热榜排名徽标（前 3 名彩色） */
+.hs-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xs);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.hs-rank.top-1 {
+  background: var(--negative-soft);
+  color: var(--negative);
+}
+
+.hs-rank.top-2 {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.hs-rank.top-3 {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* 热度大数字 */
+.hs-heat {
+  color: var(--primary-deep);
+  font-family: var(--font-data);
+  font-size: 18px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.hs-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 14px;
+}
+
+/* 聚类卡片网格 */
+.hs-cluster-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.hs-cluster-card {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  text-align: left;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
+}
+
+.hs-cluster-card:hover {
+  border-color: #c9d8e8;
+  box-shadow: 0 16px 32px -28px rgba(32, 70, 111, 0.34);
+  transform: translateY(-2px);
+}
+
+.hs-cluster-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.hs-cluster-name {
+  margin: 0;
+  color: var(--text-primary);
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}
+
+.hs-cluster-count {
+  color: var(--primary);
+  font-family: var(--font-data);
+  font-size: 20px;
+  font-weight: 900;
+  font-variant-numeric: tabular-nums;
+}
+
+.hs-cluster-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+/* 传播节点缩进树 */
+.hs-tree-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.hs-tree-node {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 1px solid #e2eaf4;
+  border-radius: var(--radius-md);
+  background: #fff;
+}
+
+.hs-tree-level {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 30px;
+  height: 20px;
+  padding: 0 6px;
+  border-radius: var(--radius-pill);
+  background: var(--primary-soft);
+  color: var(--primary-deep);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+/* Drawer 内的链接 */
+.hs-drawer-link {
+  color: var(--primary);
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+/* 话题详情页概览头 */
+.hs-detail-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+}
+
+.hs-detail-title {
+  margin: 0 0 8px;
+  color: var(--text-primary);
+  font-size: 18px;
+  font-weight: 900;
+  line-height: 1.4;
+  overflow-wrap: anywhere;
+}
+
+.hs-detail-heat {
+  text-align: right;
+}
+
+.hs-detail-heat .value {
+  color: var(--negative);
+  font-family: var(--font-data);
+  font-size: 30px;
+  font-weight: 900;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+
+.hs-detail-heat .label {
+  margin-top: 4px;
+  color: var(--text-tertiary);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+@media (max-width: 1240px) {
+  .hs-cluster-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 900px) {
+  .hs-cluster-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .hs-detail-hero {
+    grid-template-columns: 1fr;
+  }
+
+  .hs-detail-heat {
+    text-align: left;
+  }
+}
