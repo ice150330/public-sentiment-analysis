@@ -25,10 +25,11 @@
   --warning-soft: #fef3c7;
   --weibo: #f43f5e;
   --zhihu: #3b82f6;
-  --radius-lg: 8px;
-  --radius-md: 8px;
-  --radius-sm: 6px;
-  --radius-xs: 4px;
+  --radius-lg: 18px;
+  --radius-md: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 6px;
+  --radius-pill: 999px;
   --space-lg: 24px;
   --space-md: 16px;
   --space-sm: 10px;
@@ -349,51 +350,134 @@ code {
 
 .psa-auth-shell {
   display: grid;
-  grid-template-columns: minmax(260px, 420px) minmax(320px, 420px);
-  width: min(880px, 100%);
-  gap: 24px;
-  align-items: center;
+  grid-template-columns: minmax(0, 1.08fr) minmax(360px, 0.92fr);
+  width: min(960px, 100%);
+  overflow: hidden;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  background: var(--bg-surface);
+  box-shadow: 0 24px 48px -30px rgba(32, 70, 111, 0.32);
 }
 
-.psa-auth-brand {
+.psa-auth-hero {
   display: flex;
-  align-items: flex-start;
-  gap: 16px;
+  flex-direction: column;
+  gap: 18px;
+  padding: 36px;
+  color: #fff;
+  background:
+    radial-gradient(420px 260px at 88% -10%, rgba(14, 165, 233, 0.55), transparent 60%),
+    linear-gradient(158deg, #1e3a8a 0%, #2563eb 58%, #155eef 100%);
 }
 
-.psa-auth-mark {
+.psa-auth-hero-mark {
   display: grid;
   width: 52px;
   height: 52px;
-  flex: 0 0 auto;
   place-items: center;
-  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.36);
   border-radius: 16px;
-  background: #155eef;
-  box-shadow: 0 16px 28px -18px rgba(21, 94, 239, 0.6);
+  background: rgba(255, 255, 255, 0.16);
+  font-size: 24px;
 }
 
-.psa-auth-brand h1 {
+.psa-auth-hero h1 {
   margin: 0;
-  font-size: 28px;
-  line-height: 1.22;
+  font-size: 26px;
+  font-weight: 900;
+  line-height: 1.25;
 }
 
-.psa-auth-brand p {
-  margin: 10px 0 0;
-  color: var(--text-secondary);
-  font-size: 14px;
+.psa-auth-hero > p {
+  margin: 0;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+.psa-auth-features {
+  display: grid;
+  gap: 14px;
+  margin: 4px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.psa-auth-features li {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.psa-auth-features .dot {
+  flex: 0 0 auto;
+  width: 8px;
+  height: 8px;
+  margin-top: 6px;
+  border-radius: 50%;
+  background: #7dd3fc;
+}
+
+.psa-auth-features strong {
+  display: block;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.psa-auth-features p {
+  margin: 3px 0 0;
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.psa-auth-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: auto;
+}
+
+.psa-auth-metrics > div {
+  padding: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.psa-auth-metrics .value {
+  display: block;
+  font-family: var(--font-data);
+  font-size: 20px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+
+.psa-auth-metrics .label {
+  font-size: 11px;
   font-weight: 700;
+  color: rgba(255, 255, 255, 0.78);
 }
 
 .psa-auth-panel {
   display: grid;
+  align-content: center;
   gap: 16px;
-  padding: 22px;
-  border: 1px solid #d8e4f2;
-  border-radius: 8px;
-  background: rgba(255, 255, 255, 0.96);
-  box-shadow: 0 20px 44px -28px rgba(32, 70, 111, 0.28), 0 1px 0 #fff;
+  padding: 32px;
+}
+
+.psa-auth-panel-head h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 900;
+}
+
+.psa-auth-panel-head p {
+  margin: 6px 0 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 600;
 }
 
 .psa-reset-token {
@@ -661,7 +745,7 @@ code {
   align-items: center;
   padding: 12px;
   border: 1px solid #e2eaf4;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   background: #fff;
   transition:
     border-color 160ms ease,
@@ -1025,7 +1109,7 @@ button.psa-row {
 
 .psa-textarea.ant-input {
   min-height: 112px;
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   font-weight: 600;
 }
 
@@ -1193,15 +1277,15 @@ button.psa-row {
 
   .psa-auth-shell {
     grid-template-columns: 1fr;
-    max-width: 520px;
+    max-width: 480px;
   }
-}
 
-@media (min-width: 641px) {
-  .psa-floating-dock {
+  .psa-auth-hero {
     display: none;
   }
 }
+
+/* Floating Dock 全端可见（对齐 pen 桌面稿），移动端尺寸在 max-width:640px 中收紧 */
 
 @media (max-width: 640px) {
   .psa-screen {
@@ -1210,8 +1294,11 @@ button.psa-row {
 
   .psa-topbar {
     display: flex;
-    height: 58px;
-    padding: 0 12px;
+    flex-wrap: wrap;
+    height: auto;
+    min-height: 58px;
+    padding: 8px 12px;
+    row-gap: 10px;
     border-radius: 22px;
   }
 
@@ -1229,8 +1316,28 @@ button.psa-row {
     font-size: 11px;
   }
 
-  .psa-view-tabs,
+  .psa-view-tabs {
+    display: flex;
+    order: 3;
+    width: 100%;
+    padding: 4px;
+    overflow-x: auto;
+    justify-content: flex-start;
+  }
+
+  .psa-view-tab {
+    flex: 0 0 auto;
+    min-width: 0;
+  }
+
   .psa-top-actions {
+    display: flex;
+    margin-left: auto;
+  }
+
+  .psa-top-actions .psa-search,
+  .psa-top-actions .psa-sync-badge,
+  .psa-top-actions .psa-dark-action {
     display: none;
   }
 
@@ -1263,22 +1370,12 @@ button.psa-row {
     padding: 18px;
   }
 
-  .psa-auth-brand {
-    gap: 12px;
-  }
-
-  .psa-auth-mark {
-    width: 44px;
-    height: 44px;
-    border-radius: 14px;
-  }
-
-  .psa-auth-brand h1 {
-    font-size: 22px;
+  .psa-auth-shell {
+    border-radius: var(--radius-md);
   }
 
   .psa-auth-panel {
-    padding: 16px;
+    padding: 18px;
   }
 
   .psa-metric-value {
@@ -1328,4 +1425,111 @@ button.psa-row {
   .psa-brand:hover .psa-brand-mark {
     transform: none;
   }
+}
+
+/* ===== P0 新增：预警铃铛面板 ===== */
+.psa-notify-popover .ant-popover-inner {
+  padding: 12px;
+  border-radius: var(--radius-md);
+}
+
+.psa-notify-panel {
+  display: grid;
+  width: 320px;
+  gap: 10px;
+}
+
+.psa-notify-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.psa-notify-head strong {
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.psa-notify-count {
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.psa-notify-list {
+  display: grid;
+  max-height: 300px;
+  gap: 8px;
+  overflow-y: auto;
+}
+
+.psa-notify-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 18px 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.psa-notify-empty .anticon {
+  color: var(--positive);
+}
+
+.psa-notify-item {
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  padding: 10px;
+  text-align: left;
+  cursor: pointer;
+  border: 1px solid #e2eaf4;
+  border-radius: var(--radius-md);
+  background: #fff;
+  font: inherit;
+  transition:
+    border-color 160ms ease,
+    background-color 160ms ease;
+}
+
+.psa-notify-item:hover {
+  border-color: #d0deed;
+  background: #fbfdff;
+}
+
+.psa-notify-item.danger {
+  border-color: #fecdd3;
+  background: #fff7f8;
+}
+
+.psa-notify-item.warning {
+  border-color: #fde68a;
+  background: #fffdf5;
+}
+
+.psa-notify-item .title {
+  overflow: hidden;
+  color: var(--text-primary);
+  font-size: 12px;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.psa-notify-item .meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-weight: 600;
+}
+
+/* ===== 响应式补充：表格横向滚动 ===== */
+.psa-table .ant-table-content,
+.psa-table .ant-table-container {
+  overflow-x: auto;
 }

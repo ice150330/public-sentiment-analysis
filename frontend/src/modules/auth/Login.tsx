@@ -1,11 +1,24 @@
 import React, { useMemo, useState } from 'react';
 import { Alert, Button, Form, Input, Segmented } from 'antd';
-import { LockOutlined, LoginOutlined, MailOutlined, RadarChartOutlined, UserAddOutlined, UserOutlined } from '@ant-design/icons';
+import {
+  LockOutlined,
+  LoginOutlined,
+  MailOutlined,
+  RadarChartOutlined,
+  UserAddOutlined,
+  UserOutlined,
+} from '@ant-design/icons';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { useAuth } from '../auth/AuthContext';
-import { confirmPasswordReset, getErrorMessage, requestPasswordReset } from '../services/api';
+import { useAuth } from '../../auth/AuthContext';
+import { confirmPasswordReset, getErrorMessage, requestPasswordReset } from '../../services/api';
 
 type AuthMode = 'login' | 'register' | 'reset';
+
+const modeCopy: Record<AuthMode, { title: string; subtitle: string }> = {
+  login: { title: '欢迎回来', subtitle: '登录后进入实时舆情工作台' },
+  register: { title: '创建账号', subtitle: '注册即可访问热榜与分析能力' },
+  reset: { title: '重置密码', subtitle: '使用一次性令牌重置账号密码' },
+};
 
 const Login: React.FC<{ mode?: AuthMode }> = ({ mode = 'login' }) => {
   const [activeMode, setActiveMode] = useState<AuthMode>(mode);
@@ -59,20 +72,63 @@ const Login: React.FC<{ mode?: AuthMode }> = ({ mode = 'login' }) => {
     }
   };
 
+  const copy = modeCopy[activeMode];
+
   return (
     <main className="psa-auth-screen">
       <section className="psa-auth-shell">
-        <div className="psa-auth-brand">
-          <div className="psa-auth-mark">
+        <div className="psa-auth-hero">
+          <div className="psa-auth-hero-mark">
             <RadarChartOutlined />
           </div>
           <div>
             <h1>公众情绪智能分析系统</h1>
-            <p>{activeMode === 'reset' ? '使用一次性令牌重置账号密码' : activeMode === 'login' ? '登录后访问实时舆情数据' : '创建账号并进入安全工作台'}</p>
+            <p>覆盖微博、抖音、头条、百度、B 站、知乎的实时舆情监测、情感研判与预警处置工作台。</p>
+          </div>
+          <ul className="psa-auth-features">
+            <li>
+              <span className="dot" />
+              <div>
+                <strong>多平台热榜聚合</strong>
+                <p>六大平台热榜分钟级采集、去重与归一化</p>
+              </div>
+            </li>
+            <li>
+              <span className="dot" />
+              <div>
+                <strong>双模型情感引擎</strong>
+                <p>快速 / 增强双模型对比分析，支持批量与低置信复核</p>
+              </div>
+            </li>
+            <li>
+              <span className="dot" />
+              <div>
+                <strong>规则化预警处置</strong>
+                <p>P1–P4 分级规则引擎，实时推送与闭环处置</p>
+              </div>
+            </li>
+          </ul>
+          <div className="psa-auth-metrics">
+            <div>
+              <span className="value">6</span>
+              <span className="label">监测平台</span>
+            </div>
+            <div>
+              <span className="value">P1–P4</span>
+              <span className="label">预警分级</span>
+            </div>
+            <div>
+              <span className="value">2</span>
+              <span className="label">情感模型</span>
+            </div>
           </div>
         </div>
 
         <div className="psa-auth-panel">
+          <div className="psa-auth-panel-head">
+            <h2>{copy.title}</h2>
+            <p>{copy.subtitle}</p>
+          </div>
           <Segmented
             block
             value={activeMode}
@@ -97,16 +153,9 @@ const Login: React.FC<{ mode?: AuthMode }> = ({ mode = 'login' }) => {
             />
           )}
           <Form layout="vertical" onFinish={handleFinish} requiredMark={false}>
-            {activeMode !== 'reset' && (
-              <Form.Item name="username" label="用户名" rules={[{ required: true, message: '请输入用户名' }]}>
-                <Input prefix={<UserOutlined />} autoComplete="username" placeholder="username" />
-              </Form.Item>
-            )}
-            {activeMode === 'reset' && (
-              <Form.Item name="username" label="用户名" rules={[{ required: true, message: '请输入用户名' }]}>
-                <Input prefix={<UserOutlined />} autoComplete="username" placeholder="username" />
-              </Form.Item>
-            )}
+            <Form.Item name="username" label="用户名" rules={[{ required: true, message: '请输入用户名' }]}>
+              <Input prefix={<UserOutlined />} autoComplete="username" placeholder="username" />
+            </Form.Item>
             {activeMode === 'register' && (
               <Form.Item name="email" label="邮箱">
                 <Input prefix={<MailOutlined />} autoComplete="email" placeholder="name@example.com" />
