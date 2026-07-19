@@ -1,0 +1,74 @@
+/* 管理模块独有样式（.ad-* 前缀），与 index.css 的 psa 体系配合使用 */
+
+.ad-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.ad-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* 行内代码片段（条件表达式 / 任务 ID 等） */
+.ad-code {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--text-secondary);
+  word-break: break-all;
+}
+
+/* 平台配置 JSON 编辑框 */
+.ad-json-input.ant-input {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.7;
+  background: var(--bg-muted);
+  border-radius: var(--radius-sm);
+}
+
+/* 采集状态秒表读数 */
+.ad-elapsed {
+  font-size: 22px;
+  font-weight: 900;
+  color: var(--primary);
+  font-variant-numeric: tabular-nums;
+}
+
+/* 复核队列置信度横条 */
+.ad-confidence {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 52px;
+  align-items: center;
+  gap: 8px;
+  min-width: 140px;
+}
+
+.ad-confidence strong {
+  font-size: 12px;
+  color: var(--text-secondary);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+/* 系统健康组件状态行（覆盖 psa-row 的网格为三列） */
+.psa-row.ad-health-row {
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+}
+
+.ad-health-message {
+  font-size: 12px;
+  color: var(--text-tertiary);
+  max-width: 260px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 1240px) {
+  .ad-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
