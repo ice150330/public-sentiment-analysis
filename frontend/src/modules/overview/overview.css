@@ -1,0 +1,107 @@
+/* 总览模块独有样式（.ov-* 前缀），与 index.css 的 psa 体系配合使用 */
+
+.ov-stack {
+  display: grid;
+  gap: 16px;
+}
+
+.ov-grid-3 {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 16px;
+}
+
+/* 需要更宽首列的 psa-score-line（如处理漏斗的阶段名） */
+.psa-score-line.ov-wide {
+  grid-template-columns: 88px minmax(0, 1fr) 56px;
+}
+
+/* 三段式行：前置元素（排名/级别）+ 主内容 + 尾部 */
+.psa-row.ov-row-3 {
+  grid-template-columns: auto minmax(0, 1fr) auto;
+}
+
+/* 热榜排名徽标 */
+.ov-rank {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  flex-shrink: 0;
+  border-radius: var(--radius-xs);
+  background: var(--bg-muted);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.ov-rank.top-1 {
+  background: var(--negative-soft);
+  color: var(--negative);
+}
+
+.ov-rank.top-2 {
+  background: var(--warning-soft);
+  color: var(--warning);
+}
+
+.ov-rank.top-3 {
+  background: var(--primary-soft);
+  color: var(--primary);
+}
+
+/* 平台健康状态圆点 */
+.ov-health {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ov-health-dot {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: var(--radius-pill);
+}
+
+.ov-health-dot.ok {
+  background: var(--positive);
+  box-shadow: 0 0 0 3px var(--positive-soft);
+}
+
+.ov-health-dot.bad {
+  background: var(--negative);
+  box-shadow: 0 0 0 3px var(--negative-soft);
+}
+
+/* 预警事件行内操作区 */
+.ov-alert-actions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+/* 预警筛选行 */
+.ov-filter-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.ov-filter-row .ant-segmented {
+  font-weight: 700;
+}
+
+@media (max-width: 1240px) {
+  .ov-grid-3 {
+    grid-template-columns: 1fr;
+  }
+}
