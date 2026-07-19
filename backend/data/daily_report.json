@@ -1,113 +1,113 @@
 {
-  "date": "2026-07-18",
-  "generated_at": "2026-07-18T10:00:38.345729",
+  "date": "2026-07-19",
+  "generated_at": "2026-07-19T10:00:58.966978",
   "summary": {
-    "total_topics": 519,
-    "sentiment_analyzed": 519,
+    "total_topics": 564,
+    "sentiment_analyzed": 564,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 50
+      "count": 63
     },
     {
       "platform": "今日头条",
-      "count": 109
+      "count": 125
     },
     {
       "platform": "微博",
-      "count": 140
+      "count": 150
     },
     {
       "platform": "抖音",
-      "count": 81
+      "count": 77
     },
     {
       "platform": "百度",
-      "count": 102
+      "count": 107
     },
     {
       "platform": "知乎",
-      "count": 37
+      "count": 42
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 15,
-      "percentage": 2.9
+      "count": 25,
+      "percentage": 4.4
     },
     {
       "label": "neutral",
-      "count": 75,
-      "percentage": 14.5
+      "count": 66,
+      "percentage": 11.7
     },
     {
       "label": "positive",
-      "count": 429,
-      "percentage": 82.7
+      "count": 473,
+      "percentage": 83.9
     }
   ],
   "top_10_topics": [
     {
-      "title": "T1战胜HLE数据雷达图",
-      "heat_score": 90914882,
+      "title": "世界杯季军战",
+      "heat_score": 37907214,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "英法大战变英法小战了",
+      "heat_score": 36852913,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "驻阿使馆提醒中国公民理性观看世界杯",
+      "heat_score": 35451561,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "投喂流浪狗15年烤鸭店婉拒网购订单",
+      "heat_score": 34299865,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "KC战胜T1赛后数据",
+      "heat_score": 34197523,
       "category": "其他",
       "platform": "B站"
     },
     {
-      "title": "重庆山体崩塌已致8死34失联",
-      "heat_score": 46724579,
+      "title": "媒体：足协终身禁令为何形同虚设",
+      "heat_score": 34010892,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "杭州女老板赴河南老家加价收滞销西瓜",
+      "heat_score": 33345895,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "莎头组合无缘决赛",
+      "heat_score": 31791273,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "飞天茅台再涨价",
-      "heat_score": 44619400,
-      "category": "new",
-      "platform": "今日头条"
+      "title": "世界杯季军赛，法国 4-6 英格兰，萨卡戴帽，姆巴佩双响创纪录，如何评价本场比赛？",
+      "heat_score": 28530000,
+      "category": "问答",
+      "platform": "知乎"
     },
     {
-      "title": "店主回应送老顾客彩票中508万",
-      "heat_score": 42278148,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "我国服务出口快速增长",
-      "heat_score": 38254850,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "世界杯三四名决赛有没有存在的必要",
-      "heat_score": 36531275,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "国防部：望各方理性看待中俄军事合作",
-      "heat_score": 34614420,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "蔡磊牵线研发国产渐冻症药有望上市",
-      "heat_score": 31320422,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "VG战胜Falcons晋级四强",
-      "heat_score": 29227668,
-      "category": "其他",
-      "platform": "B站"
-    },
-    {
-      "title": "80后女子吐槽断崖式衰老被喊奶奶",
-      "heat_score": 28339890,
-      "category": "其他",
+      "title": "姆巴佩苦笑",
+      "heat_score": 28082354,
+      "category": "hot",
       "platform": "今日头条"
     }
   ],
