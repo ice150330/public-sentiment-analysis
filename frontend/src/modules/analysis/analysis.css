@@ -1,0 +1,342 @@
+/* 分析模块独有样式（.an-* 前缀），与 index.css 的 psa 体系配合使用 */
+
+.an-stack {
+  display: grid;
+  gap: 16px;
+}
+
+/* 输入面板底部元信息行（字数统计 / 条数统计 + 开关或轻量操作） */
+.an-input-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.an-input-meta .an-over {
+  color: var(--negative);
+}
+
+.an-compare-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* 结果卡（文本分析：单模型一张 / 对比模式并排两张） */
+.an-compare-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.an-result-card {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-cool);
+}
+
+.an-result-card.warn {
+  border-color: var(--warning);
+  box-shadow: 0 0 0 3px var(--warning-soft);
+}
+
+.an-result-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.an-result-head .psa-tag {
+  margin-inline-end: 0;
+  padding: 4px 12px;
+  font-size: 14px;
+}
+
+.an-model-name {
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.an-confidence {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
+.an-confidence strong {
+  color: var(--text-primary);
+  font-family: var(--font-data);
+  font-size: 34px;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.an-confidence span {
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.an-result-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 被分析的原文摘录 */
+.an-source-text {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface-cool);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.7;
+}
+
+/* 批量分析：左输入右表格 */
+.an-batch-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 320px) minmax(0, 1fr);
+  gap: 16px;
+  align-items: start;
+}
+
+/* 筛选条内的文字标签 */
+.an-filter-label {
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+/* 预测信号卡 */
+.an-signal-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.an-signal-card {
+  display: grid;
+  gap: 6px;
+  padding: 12px 14px;
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-md);
+  background: var(--bg-surface-cool);
+}
+
+.an-signal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.an-signal-card > strong {
+  color: var(--text-primary);
+  font-family: var(--font-data);
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.an-signal-card.up .an-signal-head .anticon {
+  color: var(--positive);
+}
+
+.an-signal-card.down .an-signal-head .anticon {
+  color: var(--negative);
+}
+
+.an-signal-card.stable .an-signal-head .anticon {
+  color: var(--neutral);
+}
+
+.an-signal-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* 预测指标小字行 */
+.an-metrics-line {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 18px;
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed var(--border-subtle);
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.an-metrics-line strong {
+  margin-left: 4px;
+  color: var(--text-primary);
+}
+
+/* 解释输入的字段行 */
+.an-field-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.an-field-label {
+  width: 76px;
+  flex-shrink: 0;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+/* token 贡献度：图例 + 高亮文本流 */
+.an-token-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  color: var(--text-tertiary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.an-token-legend i {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 6px;
+  border-radius: 3px;
+}
+
+.an-token-legend .pos {
+  background: rgba(22, 163, 74, 0.45);
+}
+
+.an-token-legend .neg {
+  background: rgba(225, 29, 72, 0.45);
+}
+
+.an-token-flow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  line-height: 1.9;
+}
+
+.an-token {
+  padding: 2px 7px;
+  border-radius: var(--radius-xs);
+  color: var(--text-primary);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: default;
+}
+
+/* token 贡献度：正负双向横向条形 */
+.an-token-bars {
+  display: grid;
+  gap: 8px;
+}
+
+.an-token-bar-row {
+  display: grid;
+  grid-template-columns: 96px minmax(0, 1fr) 64px;
+  align-items: center;
+  gap: 10px;
+  font-size: 12px;
+}
+
+.an-token-bar-label {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.an-token-bar-track {
+  position: relative;
+  height: 14px;
+  border-radius: var(--radius-xs);
+  background: var(--bg-muted);
+}
+
+.an-token-bar-track::before {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 50%;
+  width: 1px;
+  background: var(--border-subtle);
+  content: '';
+}
+
+.an-token-bar-fill {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  border-radius: var(--radius-xs);
+}
+
+.an-token-bar-fill.pos {
+  left: 50%;
+  background: var(--positive);
+}
+
+.an-token-bar-fill.neg {
+  right: 50%;
+  background: var(--negative);
+}
+
+.an-token-bar-row > strong {
+  font-family: var(--font-data);
+  text-align: right;
+}
+
+.an-token-bar-row > strong.pos {
+  color: var(--positive);
+}
+
+.an-token-bar-row > strong.neg {
+  color: var(--negative);
+}
+
+/* 历史列表分页 */
+.an-pagination {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+@media (max-width: 1240px) {
+  .an-compare-grid,
+  .an-batch-grid {
+    grid-template-columns: 1fr;
+  }
+}
