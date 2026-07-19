@@ -2,12 +2,14 @@ import React from 'react';
 import { BrowserRouter as Router, Navigate, Route, Routes, useLocation } from 'react-router-dom';
 import { Spin } from 'antd';
 import { AuthProvider, useAuth } from './auth/AuthContext';
-import Dashboard from './pages/Dashboard';
-import Login from './pages/Login';
-import Profile from './pages/Profile';
-import Topics from './pages/Topics';
-import Sentiment from './pages/Sentiment';
-import Stats from './pages/Stats';
+import OverviewModule from './modules/overview/OverviewModule';
+import BigScreen from './modules/screen/BigScreen';
+import HotspotsModule from './modules/hotspots/HotspotsModule';
+import TopicDetailPage from './modules/hotspots/TopicDetailPage';
+import AnalysisModule from './modules/analysis/AnalysisModule';
+import AdminModule from './modules/admin/AdminModule';
+import Login from './modules/auth/Login';
+import Profile from './modules/profile/Profile';
 import { RealtimeNotifier } from './components/RealtimeNotifier';
 import './index.css';
 
@@ -47,13 +49,15 @@ const App: React.FC = () => {
         <Routes>
           <Route path="/login" element={<Login mode="login" />} />
           <Route path="/register" element={<Login mode="register" />} />
-          <Route path="/" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
-          <Route path="/topics" element={<ProtectedRoute><Topics /></ProtectedRoute>} />
-          <Route path="/analysis" element={<ProtectedRoute><Sentiment /></ProtectedRoute>} />
+          <Route path="/" element={<ProtectedRoute><OverviewModule /></ProtectedRoute>} />
+          <Route path="/topics" element={<ProtectedRoute><HotspotsModule /></ProtectedRoute>} />
+          <Route path="/topics/:id" element={<ProtectedRoute><TopicDetailPage /></ProtectedRoute>} />
+          <Route path="/analysis" element={<ProtectedRoute><AnalysisModule /></ProtectedRoute>} />
           <Route path="/sentiment" element={<Navigate to="/analysis" replace />} />
-          <Route path="/management" element={<ProtectedRoute minRole="admin"><Stats /></ProtectedRoute>} />
+          <Route path="/management" element={<ProtectedRoute minRole="admin"><AdminModule /></ProtectedRoute>} />
           <Route path="/stats" element={<Navigate to="/management" replace />} />
-          <Route path="/monitor" element={<ProtectedRoute><Dashboard initialView="visual" /></ProtectedRoute>} />
+          <Route path="/screen" element={<ProtectedRoute><BigScreen /></ProtectedRoute>} />
+          <Route path="/monitor" element={<Navigate to="/screen" replace />} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>

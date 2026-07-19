@@ -1,9 +1,15 @@
 import React, { useState } from 'react';
-import { Alert, Button, Form, Input, Table } from 'antd';
-import { LockOutlined, SaveOutlined, UserOutlined } from '@ant-design/icons';
-import { useAuth } from '../auth/AuthContext';
-import { AuditLogRecord, changePassword, getErrorMessage, getMyAuditLogs } from '../services/api';
-import { formatDateTime, ModuleFrame, Panel, StatusBadge } from '../components/DesignSystem';
+import { Alert, Button, Form, Input, Table, Tag } from 'antd';
+import { LockOutlined, MailOutlined, SaveOutlined, UserOutlined } from '@ant-design/icons';
+import { useAuth } from '../../auth/AuthContext';
+import { AuditLogRecord, changePassword, getErrorMessage, getMyAuditLogs } from '../../services/api';
+import { formatDateTime, ModuleFrame, Panel, StatusBadge } from '../../components/DesignSystem';
+
+const roleMeta: Record<string, { label: string; className: string }> = {
+  admin: { label: '管理员', className: 'psa-tag warning' },
+  analyst: { label: '分析师', className: 'psa-tag success' },
+  visitor: { label: '访客', className: 'psa-tag muted' },
+};
 
 const Profile: React.FC = () => {
   const { user, refresh } = useAuth();
@@ -47,6 +53,8 @@ const Profile: React.FC = () => {
     }
   };
 
+  const role = user ? roleMeta[user.role] || { label: user.role, className: 'psa-tag muted' } : null;
+
   return (
     <ModuleFrame
       moduleLabel="个人中心"
@@ -55,15 +63,24 @@ const Profile: React.FC = () => {
       onViewChange={() => undefined}
     >
       <div className="psa-grid two-one">
-        <Panel title="账号信息">
+        <Panel title="账号信息" eyebrow="由 /auth/me 返回">
           <div className="psa-detail-list">
             <div className="psa-detail-item">
               <span>用户名</span>
               <strong>{user?.username}</strong>
             </div>
+            {user?.email && (
+              <div className="psa-detail-item">
+                <span>邮箱</span>
+                <strong>
+                  <MailOutlined style={{ marginRight: 6 }} />
+                  {user.email}
+                </strong>
+              </div>
+            )}
             <div className="psa-detail-item">
               <span>角色</span>
-              <StatusBadge status={user?.role} />
+              {role && <Tag className={role.className}>{role.label}</Tag>}
             </div>
             <div className="psa-detail-item">
               <span>平台权限</span>

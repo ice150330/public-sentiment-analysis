@@ -1,0 +1,812 @@
+/* ============================================================
+   数据大屏 —— 公众情绪监测指挥舱（暗色，1920×1080 设计画布）
+   仅服务 BigScreen.tsx，全部类名 .bs-*，与浅色工作台样式隔离
+   ============================================================ */
+
+.bs-screen {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: linear-gradient(160deg, #0b1220 0%, #0f1b2d 58%, #0b1220 100%);
+  color: #e2e8f0;
+  font-family: "Noto Sans SC", "Microsoft YaHei", "PingFang SC", sans-serif;
+}
+
+/* 细网格纹理 */
+.bs-screen::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(rgba(59, 130, 246, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(59, 130, 246, 0.05) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* 顶部/底部辉光点缀 */
+.bs-screen::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(1100px 520px at 72% -12%, rgba(37, 99, 235, 0.22), transparent 62%),
+    radial-gradient(860px 460px at 8% 112%, rgba(34, 211, 238, 0.12), transparent 58%);
+}
+
+/* 设计画布：尺寸/缩放/居中由 useScreenAdapt 内联控制 */
+.bs-canvas {
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  box-sizing: border-box;
+  padding: 20px 24px;
+}
+
+/* ---------- 头部条 ---------- */
+
+.bs-header {
+  position: relative;
+  flex: none;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 0 20px;
+  background: rgba(15, 27, 45, 0.72);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.bs-header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -1px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, rgba(34, 211, 238, 0.7), rgba(59, 130, 246, 0.7), transparent);
+}
+
+.bs-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+
+.bs-brand-mark {
+  position: relative;
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #22d3ee, #2563eb);
+  box-shadow: 0 0 16px rgba(34, 211, 238, 0.5), inset 0 0 8px rgba(255, 255, 255, 0.25);
+}
+
+.bs-brand-mark::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 2px solid rgba(255, 255, 255, 0.75);
+  border-top-color: transparent;
+  border-radius: 4px;
+  transform: rotate(45deg);
+}
+
+.bs-brand-text h1 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 800;
+  letter-spacing: 2px;
+  background: linear-gradient(90deg, #f1f5f9, #7dd3fc);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.bs-brand-text p {
+  margin: 2px 0 0;
+  font-size: 10px;
+  letter-spacing: 3px;
+  color: #64748b;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.bs-header-platforms {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.bs-platform-dots {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.bs-platform-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.bs-platform-count {
+  font-size: 12px;
+  color: #94a3b8;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.bs-header-right {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.bs-ws {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.bs-ws-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #475569;
+}
+
+.bs-ws-dot.is-on {
+  background: #22c55e;
+  box-shadow: 0 0 10px rgba(34, 197, 94, 0.9);
+  animation: bsBlink 2s ease-in-out infinite;
+}
+
+.bs-ws-text {
+  font-size: 12px;
+  color: #94a3b8;
+}
+
+.bs-clock {
+  text-align: right;
+  line-height: 1.2;
+}
+
+.bs-clock-time {
+  display: block;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #7dd3fc;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+  text-shadow: 0 0 12px rgba(56, 189, 248, 0.45);
+}
+
+.bs-clock-date {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.bs-back-btn {
+  height: 32px;
+  padding: 0 14px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #7dd3fc;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+
+.bs-back-btn:hover {
+  background: rgba(37, 99, 235, 0.28);
+  box-shadow: 0 0 14px rgba(59, 130, 246, 0.4);
+}
+
+/* ---------- KPI 指标带 ---------- */
+
+.bs-kpis {
+  flex: none;
+  height: 110px;
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 14px;
+}
+
+.bs-kpi {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  padding: 0 18px;
+  background: rgba(15, 27, 45, 0.72);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.bs-kpi::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 14px;
+  bottom: 14px;
+  width: 3px;
+  border-radius: 2px;
+  background: linear-gradient(180deg, #22d3ee, #2563eb);
+}
+
+.bs-kpi-label {
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #94a3b8;
+}
+
+.bs-kpi-value {
+  font-size: 30px;
+  font-weight: 800;
+  line-height: 1.1;
+  color: #f1f5f9;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.bs-kpi-value em {
+  margin-left: 4px;
+  font-size: 13px;
+  font-style: normal;
+  font-weight: 500;
+  color: #64748b;
+}
+
+.bs-kpi-sub {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* 待处理预警 > 0：红色呼吸强调 */
+.bs-kpi--alert {
+  border-color: rgba(244, 63, 94, 0.55);
+  animation: bsPulse 1.8s ease-in-out infinite;
+}
+
+.bs-kpi--alert::before {
+  background: linear-gradient(180deg, #fb7185, #e11d48);
+}
+
+.bs-kpi--alert .bs-kpi-value {
+  color: #fb7185;
+}
+
+/* 健康度仪表卡 */
+.bs-kpi--gauge {
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-right: 10px;
+}
+
+.bs-kpi-text {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.bs-kpi-band {
+  font-size: 13px;
+  font-weight: 700;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.bs-kpi-gauge {
+  flex: none;
+  width: 96px;
+  height: 88px;
+}
+
+/* ---------- 主区三列 ---------- */
+
+.bs-main {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 320px 1fr 360px;
+  gap: 16px;
+}
+
+.bs-col {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  min-width: 0;
+  min-height: 0;
+}
+
+.bs-col > .bs-panel {
+  flex: 1;
+}
+
+/* 左列：热榜略大；中列：热度主线约 55%；右列：预警流略大 */
+.bs-col-left > .bs-panel:first-child {
+  flex: 1.12;
+}
+
+.bs-col-center > .bs-panel:first-child {
+  flex: 1.25;
+}
+
+.bs-col-right > .bs-panel:last-child {
+  flex: 1.35;
+}
+
+/* ---------- 玻璃拟态面板 ---------- */
+
+.bs-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  background: rgba(15, 27, 45, 0.72);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 16px 36px -22px rgba(2, 6, 23, 0.85), inset 0 1px 0 rgba(148, 197, 255, 0.05);
+}
+
+.bs-panel-head {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 14px 8px;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.12);
+}
+
+.bs-panel-eyebrow {
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #475569;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.bs-panel-title {
+  margin: 2px 0 0;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  color: #e2e8f0;
+}
+
+.bs-panel-corner {
+  flex: none;
+  width: 22px;
+  height: 14px;
+  border-top: 2px solid rgba(34, 211, 238, 0.6);
+  border-right: 2px solid rgba(34, 211, 238, 0.6);
+  border-radius: 0 4px 0 0;
+  opacity: 0.8;
+}
+
+.bs-panel-body {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  padding: 10px 12px;
+}
+
+/* 图表填充面板体（绝对定位保证拿到确定尺寸） */
+.bs-chart {
+  position: absolute;
+  inset: 0;
+}
+
+/* ---------- 状态视图（加载/错误/空态） ---------- */
+
+.bs-state {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: 12px;
+  letter-spacing: 1px;
+  color: #64748b;
+}
+
+.bs-state-spinner {
+  width: 22px;
+  height: 22px;
+  border: 2px solid rgba(59, 130, 246, 0.25);
+  border-top-color: #38bdf8;
+  border-radius: 50%;
+  animation: bsSpin 0.9s linear infinite;
+}
+
+.bs-state-error {
+  color: #fb7185;
+}
+
+.bs-state-retry {
+  padding: 4px 14px;
+  font-size: 12px;
+  font-family: inherit;
+  color: #7dd3fc;
+  background: rgba(37, 99, 235, 0.12);
+  border: 1px solid rgba(59, 130, 246, 0.45);
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.bs-state-retry:hover {
+  background: rgba(37, 99, 235, 0.28);
+}
+
+/* ---------- 热榜 TOP10 ---------- */
+
+.bs-rank-list {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  height: 100%;
+  overflow: hidden;
+}
+
+.bs-rank-item {
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 24px;
+  padding: 0 8px;
+  border-radius: 6px;
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.bs-rank-item.is-active {
+  background: linear-gradient(90deg, rgba(37, 99, 235, 0.28), rgba(34, 211, 238, 0.06));
+  box-shadow: inset 0 0 0 1px rgba(59, 130, 246, 0.25);
+}
+
+.bs-rank-badge {
+  flex: none;
+  width: 18px;
+  height: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 5px;
+  font-size: 11px;
+  font-weight: 800;
+  color: #94a3b8;
+  background: rgba(59, 130, 246, 0.12);
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+/* 金 / 银 / 铜 */
+.bs-rank-badge.r1 {
+  color: #0b1220;
+  background: linear-gradient(135deg, #fde68a, #f59e0b);
+  box-shadow: 0 0 10px rgba(245, 158, 11, 0.55);
+}
+
+.bs-rank-badge.r2 {
+  color: #0b1220;
+  background: linear-gradient(135deg, #e2e8f0, #94a3b8);
+}
+
+.bs-rank-badge.r3 {
+  color: #0b1220;
+  background: linear-gradient(135deg, #fdba74, #d97706);
+}
+
+.bs-rank-dot {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.bs-rank-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 12px;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bs-rank-item.is-active .bs-rank-title {
+  color: #f1f5f9;
+}
+
+.bs-rank-heat {
+  flex: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: #7dd3fc;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+/* ---------- 情感分布环形图 ---------- */
+
+.bs-donut-wrap {
+  position: absolute;
+  inset: 0;
+}
+
+.bs-donut-center {
+  position: absolute;
+  left: 50%;
+  top: 42%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  pointer-events: none;
+}
+
+.bs-donut-center strong {
+  display: block;
+  font-size: 24px;
+  font-weight: 800;
+  color: #f1f5f9;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.bs-donut-center span {
+  font-size: 11px;
+  color: #64748b;
+}
+
+/* ---------- 平台监测矩阵 ---------- */
+
+.bs-matrix {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+.bs-matrix-row {
+  flex: 1;
+  min-height: 26px;
+  display: grid;
+  grid-template-columns: 1.3fr 0.9fr 1fr 1fr 0.9fr;
+  align-items: center;
+  gap: 6px;
+  padding: 0 8px;
+  border-radius: 6px;
+}
+
+.bs-matrix-row:not(.bs-matrix-head):nth-of-type(odd) {
+  background: rgba(59, 130, 246, 0.05);
+}
+
+.bs-matrix-head {
+  flex: none;
+  font-size: 11px;
+  letter-spacing: 1px;
+  color: #475569;
+  border-bottom: 1px solid rgba(59, 130, 246, 0.14);
+  border-radius: 0;
+}
+
+.bs-matrix-head .bs-matrix-num,
+.bs-matrix-head .bs-matrix-status {
+  color: #475569;
+  font-weight: 400;
+}
+
+.bs-matrix-name {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #cbd5e1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bs-matrix-name i {
+  flex: none;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.bs-matrix-num {
+  text-align: right;
+  color: #94a3b8;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.bs-matrix-num.is-danger {
+  color: #fb7185;
+  font-weight: 700;
+}
+
+.bs-matrix-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 5px;
+  font-size: 11px;
+  color: #64748b;
+}
+
+.bs-matrix-status i {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+}
+
+.bs-matrix-status i.ok {
+  background: #22c55e;
+  box-shadow: 0 0 6px rgba(34, 197, 94, 0.8);
+}
+
+.bs-matrix-status i.bad {
+  background: #f43f5e;
+  box-shadow: 0 0 6px rgba(244, 63, 94, 0.8);
+  animation: bsBlink 1.2s ease-in-out infinite;
+}
+
+/* ---------- 实时预警流 ---------- */
+
+.bs-alert-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  height: 100%;
+  overflow-y: auto;
+  padding-right: 4px;
+  -webkit-mask-image: linear-gradient(180deg, #000 88%, transparent);
+  mask-image: linear-gradient(180deg, #000 88%, transparent);
+}
+
+.bs-alert-list::-webkit-scrollbar {
+  width: 4px;
+}
+
+.bs-alert-list::-webkit-scrollbar-thumb {
+  background: rgba(59, 130, 246, 0.35);
+  border-radius: 2px;
+}
+
+.bs-alert-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.bs-alert-item {
+  position: relative;
+  flex: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 10px 7px 14px;
+  background: rgba(11, 18, 32, 0.55);
+  border: 1px solid rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+}
+
+/* 严重程度左侧 4px 色条（颜色由内联 style 注入） */
+.bs-alert-sev {
+  position: absolute;
+  left: 0;
+  top: 6px;
+  bottom: 6px;
+  width: 4px;
+  border-radius: 2px;
+}
+
+.bs-alert-main {
+  flex: 1;
+  min-width: 0;
+}
+
+.bs-alert-title {
+  font-size: 12px;
+  color: #e2e8f0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bs-alert-meta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-top: 3px;
+}
+
+.bs-alert-sev-tag {
+  flex: none;
+  padding: 0 5px;
+  font-size: 10px;
+  line-height: 1.5;
+  border: 1px solid;
+  border-radius: 4px;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+.bs-alert-rule {
+  font-size: 11px;
+  color: #64748b;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bs-alert-time {
+  flex: none;
+  font-size: 11px;
+  color: #64748b;
+  font-family: "JetBrains Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+/* 新预警插入顶部时短暂闪烁 */
+.bs-alert-item.is-flash {
+  animation: bsFlash 1s ease-out 3;
+}
+
+/* ---------- 底部带 ---------- */
+
+.bs-bottom {
+  flex: none;
+  height: 180px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* ---------- 动效 ---------- */
+
+@keyframes bsSpin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes bsBlink {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.35;
+  }
+}
+
+@keyframes bsPulse {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 rgba(244, 63, 94, 0), inset 0 1px 0 rgba(148, 197, 255, 0.05);
+  }
+  50% {
+    box-shadow: 0 0 22px 2px rgba(244, 63, 94, 0.35), inset 0 1px 0 rgba(148, 197, 255, 0.05);
+  }
+}
+
+@keyframes bsFlash {
+  0% {
+    background: rgba(244, 63, 94, 0.4);
+    border-color: rgba(244, 63, 94, 0.8);
+  }
+  100% {
+    background: rgba(11, 18, 32, 0.55);
+    border-color: rgba(59, 130, 246, 0.1);
+  }
+}

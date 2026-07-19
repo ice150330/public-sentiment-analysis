@@ -38,7 +38,7 @@
 ### 技术架构
 
 ```
-前端层 (React 19 + TypeScript 5 + ECharts 5 + Ant Design 5)
+前端层 (React 18 + TypeScript + ECharts 5 + Ant Design 5)
                     ↑ REST API / WebSocket
 后端层 (FastAPI 0.115 + Celery 5 + SQLAlchemy 2)
                     ↑
@@ -150,16 +150,19 @@ public-sentiment-analysis/
 │   ├── tests/                  # 单元测试
 │   └── requirements.txt        # Python 依赖
 │
-├── frontend/                   # 前端代码
+├── frontend/                   # 前端代码 (CRA + react-app-rewired)
 │   ├── src/                    # 源代码
-│   │   ├── components/         # 公共组件
-│   │   ├── pages/              # 页面组件
-│   │   ├── stores/             # 状态管理
+│   │   ├── layouts/            # 应用壳层（顶栏/悬浮 Dock/预警铃铛）
+│   │   ├── modules/            # 业务模块（overview/hotspots/analysis/admin/screen/auth/profile）
+│   │   ├── components/         # 公共组件与图表
+│   │   ├── theme/              # antd / ECharts 主题令牌
 │   │   ├── services/           # API 服务
-│   │   ├── types/              # TypeScript 类型
-│   │   └── App.tsx             # 应用入口
+│   │   ├── hooks/              # 通用 hooks
+│   │   ├── auth/               # 认证上下文
+│   │   ├── utils/              # 格式化与图表数据工具
+│   │   └── App.tsx             # 路由入口
 │   ├── package.json            # Node 依赖
-│   └── vite.config.ts          # 构建配置
+│   └── config-overrides.js     # CRA 构建覆盖（@ 别名）
 │
 ├── crawler/                    # 数据采集
 │   ├── spiders/                # 各平台爬虫
