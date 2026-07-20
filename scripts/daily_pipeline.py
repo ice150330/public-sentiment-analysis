@@ -72,11 +72,14 @@ def run_crawl():
                 pipeline = CrawlPipeline(db)
                 results = pipeline.crawl_platform(platform, use_mock=True)
                 
+                # 保存到数据库
+                saved = pipeline.save_results(results)
+                
                 # 计算实际入库数
-                new_count = len(results)
+                new_count = saved if saved else 0
                 total_new += new_count
                 
-                logger.info(f"  ✅ {platform:10s} | 采集 {new_count:3d} 条")
+                logger.info(f"  ✅ {platform:10s} | 采集 {len(results):3d} 条 | 入库 {new_count:3d} 条")
                 
             except Exception as e:
                 logger.error(f"  ❌ {platform:10s} | 失败: {e}")

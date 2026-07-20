@@ -2,6 +2,7 @@ import logging
 import os
 import sys
 from datetime import datetime, timedelta
+from zoneinfo import ZoneInfo
 from typing import Dict, List, Optional
 
 from sqlalchemy.exc import SQLAlchemyError
@@ -111,7 +112,9 @@ class CrawlPipeline:
         count = 0
         skipped = 0
         updated = 0
-        crawl_time = datetime.now()
+        # 使用北京时间（Asia/Shanghai）
+        TZ_SH = ZoneInfo("Asia/Shanghai")
+        crawl_time = datetime.now(TZ_SH)
         
         # 去重时间窗口：当天（同一标题在同一天内不重复）
         dedup_window = crawl_time.replace(hour=0, minute=0, second=0, microsecond=0)
