@@ -1,16 +1,102 @@
 {
   "date": "2026-07-20",
-  "generated_at": "2026-07-20T10:00:33.069547",
+  "generated_at": "2026-07-20T11:14:07.713334",
   "summary": {
-    "total_topics": 0,
+    "total_topics": 39,
     "sentiment_analyzed": 0,
-    "coverage_rate": 0
+    "coverage_rate": 0.0
   },
-  "platform_distribution": [],
+  "platform_distribution": [
+    {
+      "platform": "B站",
+      "count": 7
+    },
+    {
+      "platform": "今日头条",
+      "count": 5
+    },
+    {
+      "platform": "微博",
+      "count": 8
+    },
+    {
+      "platform": "抖音",
+      "count": 8
+    },
+    {
+      "platform": "百度",
+      "count": 6
+    },
+    {
+      "platform": "知乎",
+      "count": 5
+    }
+  ],
   "sentiment_distribution": [],
-  "top_10_topics": [],
+  "top_10_topics": [
+    {
+      "title": "知识热门话题 #6",
+      "heat_score": 4914827,
+      "category": "娱乐",
+      "platform": "B站"
+    },
+    {
+      "title": "[bilibili] 科技热门话题 #5",
+      "heat_score": 4897604,
+      "category": "时政",
+      "platform": "B站"
+    },
+    {
+      "title": "[baidu] 房产热门话题 #6",
+      "heat_score": 4844568,
+      "category": "体育",
+      "platform": "百度"
+    },
+    {
+      "title": "[bilibili] 生活热门话题 #3",
+      "heat_score": 4632638,
+      "category": "时政",
+      "platform": "B站"
+    },
+    {
+      "title": "汽车热门话题 #3",
+      "heat_score": 4627342,
+      "category": "时政",
+      "platform": "百度"
+    },
+    {
+      "title": "[douyin] 音乐热门话题 #4",
+      "heat_score": 4572471,
+      "category": "时政",
+      "platform": "抖音"
+    },
+    {
+      "title": "网红热门话题 #1",
+      "heat_score": 4528276,
+      "category": "娱乐",
+      "platform": "抖音"
+    },
+    {
+      "title": "科技新品热门话题 #1",
+      "heat_score": 4470412,
+      "category": "娱乐",
+      "platform": "微博"
+    },
+    {
+      "title": "科普热门话题 #2",
+      "heat_score": 4334262,
+      "category": "科技",
+      "platform": "知乎"
+    },
+    {
+      "title": "情感热门话题 #4",
+      "heat_score": 4243463,
+      "category": "时政",
+      "platform": "知乎"
+    }
+  ],
   "data_quality": {
-    "issues_found": 25,
+    "issues_found": 18,
     "status": "completed"
   }
 }
