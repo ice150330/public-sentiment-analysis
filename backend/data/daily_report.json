@@ -1,38 +1,44 @@
 {
   "date": "2026-07-21",
-  "generated_at": "2026-07-21T10:00:11.009495",
+  "generated_at": "2026-07-21T10:47:12.260524",
   "summary": {
-    "total_topics": 178,
-    "sentiment_analyzed": 0,
-    "coverage_rate": 0.0
+    "total_topics": 209,
+    "sentiment_analyzed": 209,
+    "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 31
+      "count": 35
     },
     {
       "platform": "今日头条",
-      "count": 30
+      "count": 35
     },
     {
       "platform": "微博",
-      "count": 32
+      "count": 38
     },
     {
       "platform": "抖音",
-      "count": 31
+      "count": 37
     },
     {
       "platform": "百度",
-      "count": 24
+      "count": 28
     },
     {
       "platform": "知乎",
-      "count": 30
+      "count": 36
     }
   ],
-  "sentiment_distribution": [],
+  "sentiment_distribution": [
+    {
+      "label": "neutral",
+      "count": 209,
+      "percentage": 100.0
+    }
+  ],
   "top_10_topics": [
     {
       "title": "明星热门话题 #3",
@@ -77,26 +83,26 @@
       "platform": "B站"
     },
     {
+      "title": "情感热门话题 #3",
+      "heat_score": 4937812,
+      "category": "科技",
+      "platform": "知乎"
+    },
+    {
+      "title": "新闻热门话题 #8",
+      "heat_score": 4908414,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
       "title": "明星热门话题 #2",
       "heat_score": 4896658,
       "category": "时政",
       "platform": "微博"
-    },
-    {
-      "title": "明星热门话题 #9",
-      "heat_score": 4889062,
-      "category": "时政",
-      "platform": "微博"
-    },
-    {
-      "title": "游戏热门话题 #4",
-      "heat_score": 4878561,
-      "category": "时政",
-      "platform": "百度"
     }
   ],
   "data_quality": {
-    "issues_found": 0,
+    "issues_found": 1,
     "status": "completed"
   }
 }
