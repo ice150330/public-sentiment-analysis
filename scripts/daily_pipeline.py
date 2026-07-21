@@ -93,6 +93,15 @@ def run_crawl():
         except Exception as e:
             logger.warning(f"  ⚠️ 质量检查失败: {e}")
         
+        # 对新入库的数据进行情感分析
+        try:
+            from app.services.sentiment_service import SentimentService
+            sentiment_service = SentimentService(db)
+            analyzed_count = sentiment_service.analyze_unprocessed_topics(limit=500)
+            logger.info(f"  💡 情感分析完成 | 处理: {analyzed_count} 条")
+        except Exception as e:
+            logger.warning(f"  ⚠️ 情感分析失败: {e}")
+        
         db.close()
         
         logger.info(f"\n📈 本轮采集汇总: 新增 {total_new} 条")
