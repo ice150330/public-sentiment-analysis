@@ -1,31 +1,31 @@
 {
-  "date": "2026-07-25",
-  "generated_at": "2026-07-25T10:01:12.409978",
+  "date": "2026-07-26",
+  "generated_at": "2026-07-26T10:01:06.462882",
   "summary": {
-    "total_topics": 200,
-    "sentiment_analyzed": 200,
+    "total_topics": 199,
+    "sentiment_analyzed": 199,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 35
-    },
-    {
-      "platform": "今日头条",
-      "count": 37
-    },
-    {
-      "platform": "微博",
       "count": 30
     },
     {
-      "platform": "抖音",
+      "platform": "今日头条",
       "count": 33
     },
     {
+      "platform": "微博",
+      "count": 34
+    },
+    {
+      "platform": "抖音",
+      "count": 39
+    },
+    {
       "platform": "百度",
-      "count": 33
+      "count": 31
     },
     {
       "platform": "知乎",
@@ -35,69 +35,69 @@
   "sentiment_distribution": [
     {
       "label": "neutral",
-      "count": 200,
+      "count": 199,
       "percentage": 100.0
     }
   ],
   "top_10_topics": [
     {
-      "title": "[baidu] 搜索热点热门话题 #4",
-      "heat_score": 4983824,
+      "title": "讨论热门话题 #3",
+      "heat_score": 4996556,
+      "category": "科技",
+      "platform": "知乎"
+    },
+    {
+      "title": "财经热门话题 #7",
+      "heat_score": 4975536,
+      "category": "财经",
+      "platform": "今日头条"
+    },
+    {
+      "title": "科技热门话题 #1",
+      "heat_score": 4942706,
+      "category": "娱乐",
+      "platform": "B站"
+    },
+    {
+      "title": "[zhihu] 科普热门话题 #2",
+      "heat_score": 4942438,
+      "category": "其他",
+      "platform": "知乎"
+    },
+    {
+      "title": "职场热门话题 #1",
+      "heat_score": 4932390,
       "category": "体育",
-      "platform": "百度"
-    },
-    {
-      "title": "房产热门话题 #5",
-      "heat_score": 4966151,
-      "category": "科技",
-      "platform": "百度"
-    },
-    {
-      "title": "健康热门话题 #7",
-      "heat_score": 4955464,
-      "category": "时政",
-      "platform": "今日头条"
-    },
-    {
-      "title": "明星热门话题 #2",
-      "heat_score": 4936106,
-      "category": "其他",
-      "platform": "微博"
-    },
-    {
-      "title": "[zhihu] 科普热门话题 #5",
-      "heat_score": 4925613,
-      "category": "时政",
       "platform": "知乎"
     },
     {
-      "title": "电影热门话题 #4",
-      "heat_score": 4916162,
-      "category": "娱乐",
-      "platform": "微博"
+      "title": "[bilibili] 知识热门话题 #8",
+      "heat_score": 4929654,
+      "category": "其他",
+      "platform": "B站"
     },
     {
-      "title": "国际热门话题 #2",
-      "heat_score": 4909441,
+      "title": "游戏热门话题 #2",
+      "heat_score": 4924799,
+      "category": "时政",
+      "platform": "B站"
+    },
+    {
+      "title": "新闻热门话题 #6",
+      "heat_score": 4882880,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "职场热门话题 #5",
-      "heat_score": 4891637,
-      "category": "娱乐",
-      "platform": "知乎"
-    },
-    {
-      "title": "[toutiao] 财经热门话题 #1",
-      "heat_score": 4891126,
-      "category": "时政",
-      "platform": "今日头条"
-    },
-    {
-      "title": "[weibo] 科技新品热门话题 #2",
-      "heat_score": 4888135,
+      "title": "搞笑热门话题 #4",
+      "heat_score": 4864477,
       "category": "科技",
+      "platform": "抖音"
+    },
+    {
+      "title": "[weibo] 综艺热门话题 #6",
+      "heat_score": 4854957,
+      "category": "财经",
       "platform": "微博"
     }
   ],
