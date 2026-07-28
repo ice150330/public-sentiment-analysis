@@ -1,108 +1,118 @@
 {
-  "date": "2026-07-27",
-  "generated_at": "2026-07-27T10:00:12.025250",
+  "date": "2026-07-28",
+  "generated_at": "2026-07-28T10:00:34.929123",
   "summary": {
-    "total_topics": 185,
-    "sentiment_analyzed": 185,
+    "total_topics": 465,
+    "sentiment_analyzed": 465,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 28
+      "count": 45
     },
     {
       "platform": "今日头条",
-      "count": 22
+      "count": 104
     },
     {
       "platform": "微博",
-      "count": 33
+      "count": 122
     },
     {
       "platform": "抖音",
-      "count": 35
+      "count": 66
     },
     {
       "platform": "百度",
-      "count": 31
+      "count": 89
     },
     {
       "platform": "知乎",
-      "count": 36
+      "count": 39
     }
   ],
   "sentiment_distribution": [
     {
+      "label": "negative",
+      "count": 40,
+      "percentage": 8.6
+    },
+    {
       "label": "neutral",
-      "count": 185,
-      "percentage": 100.0
+      "count": 80,
+      "percentage": 17.2
+    },
+    {
+      "label": "positive",
+      "count": 345,
+      "percentage": 74.2
     }
   ],
   "top_10_topics": [
     {
-      "title": "[toutiao] 健康热门话题 #2",
-      "heat_score": 4956808,
-      "category": "科技",
+      "title": "美股迎芯片风暴 苹果重返市值第一",
+      "heat_score": 27646953,
+      "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "健康热门话题 #1",
-      "heat_score": 4944271,
-      "category": "财经",
+      "title": "台湾为何会爆发大规模抗议",
+      "heat_score": 27230660,
+      "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "汽车热门话题 #2",
-      "heat_score": 4943387,
-      "category": "娱乐",
-      "platform": "百度"
-    },
-    {
-      "title": "[zhihu] 职场热门话题 #2",
-      "heat_score": 4943383,
-      "category": "财经",
-      "platform": "知乎"
-    },
-    {
-      "title": "挑战赛热门话题 #3",
-      "heat_score": 4923434,
-      "category": "财经",
-      "platform": "抖音"
-    },
-    {
-      "title": "[toutiao] 财经热门话题 #4",
-      "heat_score": 4913473,
-      "category": "时政",
+      "title": "女孩和男友吵架闹分手从18层坠楼",
+      "heat_score": 25975059,
+      "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "音乐热门话题 #5",
-      "heat_score": 4899426,
-      "category": "社会",
-      "platform": "抖音"
+      "title": "普京谈快速恢复精力的秘诀",
+      "heat_score": 24639320,
+      "category": "new",
+      "platform": "今日头条"
     },
     {
-      "title": "[zhihu] 讨论热门话题 #5",
-      "heat_score": 4892555,
-      "category": "体育",
-      "platform": "知乎"
+      "title": "朝鲜若向俄派遣3万援军有何影响",
+      "heat_score": 23503206,
+      "category": "interpretation",
+      "platform": "今日头条"
     },
     {
-      "title": "知识热门话题 #5",
-      "heat_score": 4890579,
-      "category": "体育",
-      "platform": "B站"
+      "title": "展望“十五五”时期残疾人事业新局面",
+      "heat_score": 21266580,
+      "category": "其他",
+      "platform": "今日头条"
     },
     {
-      "title": "科技热门话题 #1",
-      "heat_score": 4878456,
-      "category": "时政",
-      "platform": "B站"
+      "title": "尹锡悦当选韩国总统或无效",
+      "heat_score": 19242797,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "长鑫上市首日雷军浮盈7个多亿",
+      "heat_score": 17641958,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "敬一丹公众号疑似辟谣脑溢血传闻",
+      "heat_score": 17411603,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "比跑步更护心的运动找到了",
+      "heat_score": 15754670,
+      "category": "其他",
+      "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 1,
+    "issues_found": 11,
     "status": "completed"
   }
 }
