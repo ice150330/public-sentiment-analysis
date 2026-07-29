@@ -1,118 +1,118 @@
 {
-  "date": "2026-07-28",
-  "generated_at": "2026-07-28T10:00:34.929123",
+  "date": "2026-07-29",
+  "generated_at": "2026-07-29T10:01:37.329086",
   "summary": {
-    "total_topics": 465,
-    "sentiment_analyzed": 465,
+    "total_topics": 450,
+    "sentiment_analyzed": 450,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 45
+      "count": 53
     },
     {
       "platform": "今日头条",
-      "count": 104
+      "count": 74
     },
     {
       "platform": "微博",
-      "count": 122
+      "count": 110
     },
     {
       "platform": "抖音",
-      "count": 66
+      "count": 73
     },
     {
       "platform": "百度",
-      "count": 89
+      "count": 96
     },
     {
       "platform": "知乎",
-      "count": 39
+      "count": 44
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 40,
-      "percentage": 8.6
+      "count": 26,
+      "percentage": 5.8
     },
     {
       "label": "neutral",
-      "count": 80,
-      "percentage": 17.2
+      "count": 75,
+      "percentage": 16.7
     },
     {
       "label": "positive",
-      "count": 345,
-      "percentage": 74.2
+      "count": 349,
+      "percentage": 77.6
     }
   ],
   "top_10_topics": [
     {
-      "title": "美股迎芯片风暴 苹果重返市值第一",
-      "heat_score": 27646953,
+      "title": "日本强震致神社完全垮塌列车脱轨",
+      "heat_score": 13892268,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "台湾为何会爆发大规模抗议",
-      "heat_score": 27230660,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "女孩和男友吵架闹分手从18层坠楼",
-      "heat_score": 25975059,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "普京谈快速恢复精力的秘诀",
-      "heat_score": 24639320,
+      "title": "基辅无人机展遭导弹突袭11名高官身亡",
+      "heat_score": 13636716,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "朝鲜若向俄派遣3万援军有何影响",
-      "heat_score": 23503206,
-      "category": "interpretation",
+      "title": "抖音乒乓百分大战再现里约对决",
+      "heat_score": 12001387,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "把旅行做成一本zine",
+      "heat_score": 11760568,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "上半年我国工业生产稳中有进",
+      "heat_score": 11577819,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "日本强震时天空出现巨型蘑菇云",
+      "heat_score": 11249003,
+      "category": "onSite",
       "platform": "今日头条"
     },
     {
-      "title": "展望“十五五”时期残疾人事业新局面",
-      "heat_score": 21266580,
+      "title": "日本熊本7.1级地震",
+      "heat_score": 11204794,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "上半年全国空气和地表水环境质量改善",
+      "heat_score": 11164799,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "尹锡悦当选韩国总统或无效",
-      "heat_score": 19242797,
+      "title": "挑战夏日穿搭一周不重样",
+      "heat_score": 11115058,
       "category": "其他",
-      "platform": "今日头条"
+      "platform": "抖音"
     },
     {
-      "title": "长鑫上市首日雷军浮盈7个多亿",
-      "heat_score": 17641958,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "敬一丹公众号疑似辟谣脑溢血传闻",
-      "heat_score": 17411603,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "比跑步更护心的运动找到了",
-      "heat_score": 15754670,
+      "title": "17万新能源车开3年电池故障更换要5万",
+      "heat_score": 10777451,
       "category": "其他",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 11,
+    "issues_found": 10,
     "status": "completed"
   }
 }
