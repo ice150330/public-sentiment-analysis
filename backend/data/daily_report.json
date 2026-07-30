@@ -1,31 +1,31 @@
 {
-  "date": "2026-07-29",
-  "generated_at": "2026-07-29T10:01:37.329086",
+  "date": "2026-07-30",
+  "generated_at": "2026-07-30T10:00:16.337167",
   "summary": {
-    "total_topics": 450,
-    "sentiment_analyzed": 450,
+    "total_topics": 459,
+    "sentiment_analyzed": 459,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 53
+      "count": 48
     },
     {
       "platform": "今日头条",
-      "count": 74
+      "count": 92
     },
     {
       "platform": "微博",
-      "count": 110
+      "count": 125
     },
     {
       "platform": "抖音",
-      "count": 73
+      "count": 61
     },
     {
       "platform": "百度",
-      "count": 96
+      "count": 89
     },
     {
       "platform": "知乎",
@@ -36,83 +36,83 @@
     {
       "label": "negative",
       "count": 26,
-      "percentage": 5.8
+      "percentage": 5.7
     },
     {
       "label": "neutral",
-      "count": 75,
-      "percentage": 16.7
+      "count": 73,
+      "percentage": 15.9
     },
     {
       "label": "positive",
-      "count": 349,
-      "percentage": 77.6
+      "count": 360,
+      "percentage": 78.4
     }
   ],
   "top_10_topics": [
     {
-      "title": "日本强震致神社完全垮塌列车脱轨",
-      "heat_score": 13892268,
+      "title": "感受下昆明小炒的滇味暴击",
+      "heat_score": 12103283,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "五颜六色是中国的夏日底色",
+      "heat_score": 11970747,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "美联储维持利率不变",
+      "heat_score": 11554568,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "执戟报国永不言退",
+      "heat_score": 11548616,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "赵心童6:2战胜丁俊晖晋级八强",
+      "heat_score": 11216684,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "记者用两个非常惨烈形容日本震后现场",
+      "heat_score": 10675116,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "基辅无人机展遭导弹突袭11名高官身亡",
-      "heat_score": 13636716,
+      "title": "汉服魅力不分国界",
+      "heat_score": 10624517,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "半个抖音的知识博主都去四川了",
+      "heat_score": 10617893,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "枣庄造氢能电动车一满瓶跑100公里",
+      "heat_score": 9659244,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "抖音乒乓百分大战再现里约对决",
-      "heat_score": 12001387,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "把旅行做成一本zine",
-      "heat_score": 11760568,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "上半年我国工业生产稳中有进",
-      "heat_score": 11577819,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "日本强震时天空出现巨型蘑菇云",
-      "heat_score": 11249003,
-      "category": "onSite",
-      "platform": "今日头条"
-    },
-    {
-      "title": "日本熊本7.1级地震",
-      "heat_score": 11204794,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "上半年全国空气和地表水环境质量改善",
-      "heat_score": 11164799,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "挑战夏日穿搭一周不重样",
-      "heat_score": 11115058,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "17万新能源车开3年电池故障更换要5万",
-      "heat_score": 10777451,
-      "category": "其他",
+      "title": "美联储宣布维持利率不变",
+      "heat_score": 9468366,
+      "category": "new",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 10,
+    "issues_found": 11,
     "status": "completed"
   }
 }
