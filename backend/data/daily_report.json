@@ -1,31 +1,31 @@
 {
-  "date": "2026-07-30",
-  "generated_at": "2026-07-30T10:00:16.337167",
+  "date": "2026-07-31",
+  "generated_at": "2026-07-31T10:00:54.894009",
   "summary": {
-    "total_topics": 459,
-    "sentiment_analyzed": 459,
+    "total_topics": 476,
+    "sentiment_analyzed": 476,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 48
+      "count": 54
     },
     {
       "platform": "今日头条",
-      "count": 92
+      "count": 100
     },
     {
       "platform": "微博",
-      "count": 125
+      "count": 107
     },
     {
       "platform": "抖音",
-      "count": 61
+      "count": 66
     },
     {
       "platform": "百度",
-      "count": 89
+      "count": 105
     },
     {
       "platform": "知乎",
@@ -35,84 +35,84 @@
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 26,
-      "percentage": 5.7
+      "count": 40,
+      "percentage": 8.4
     },
     {
       "label": "neutral",
-      "count": 73,
-      "percentage": 15.9
+      "count": 79,
+      "percentage": 16.6
     },
     {
       "label": "positive",
-      "count": 360,
-      "percentage": 78.4
+      "count": 357,
+      "percentage": 75.0
     }
   ],
   "top_10_topics": [
     {
-      "title": "感受下昆明小炒的滇味暴击",
-      "heat_score": 12103283,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "小米澎程技术发布会上发布了什么值得关注的新技术？有哪些亮点？",
+      "heat_score": 18500000,
+      "category": "问答",
+      "platform": "知乎"
     },
     {
-      "title": "五颜六色是中国的夏日底色",
-      "heat_score": 11970747,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "美联储维持利率不变",
-      "heat_score": 11554568,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "执戟报国永不言退",
-      "heat_score": 11548616,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "赵心童6:2战胜丁俊晖晋级八强",
-      "heat_score": 11216684,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "记者用两个非常惨烈形容日本震后现场",
-      "heat_score": 10675116,
+      "title": "解放军喊话菲军机不要抵近否则遭拦截",
+      "heat_score": 15046296,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "汉服魅力不分国界",
-      "heat_score": 10624517,
+      "title": "基金已经在抄底了",
+      "heat_score": 13570194,
       "category": "其他",
-      "platform": "抖音"
+      "platform": "今日头条"
     },
     {
-      "title": "半个抖音的知识博主都去四川了",
-      "heat_score": 10617893,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "枣庄造氢能电动车一满瓶跑100公里",
-      "heat_score": 9659244,
+      "title": "美股收盘：微软创近18年最大单日涨幅",
+      "heat_score": 13011892,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "美联储宣布维持利率不变",
-      "heat_score": 9468366,
-      "category": "new",
+      "title": "杨振宁遗孀翁帆赴新疆喀什看望老兵",
+      "heat_score": 12672066,
+      "category": "其他",
       "platform": "今日头条"
+    },
+    {
+      "title": "国文清主动投案被查",
+      "heat_score": 12436107,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "解放军两次警告日方不能自称海军",
+      "heat_score": 12278819,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "吴宜泽6:5战胜墨菲",
+      "heat_score": 12107479,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "一组数据读懂我国能源转型新趋势",
+      "heat_score": 11110335,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "韩国股市大涨13%触发熔断",
+      "heat_score": 11104471,
+      "category": "其他",
+      "platform": "抖音"
     }
   ],
   "data_quality": {
-    "issues_found": 11,
+    "issues_found": 10,
     "status": "completed"
   }
 }
