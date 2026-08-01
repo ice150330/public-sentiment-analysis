@@ -1,118 +1,118 @@
 {
-  "date": "2026-07-31",
-  "generated_at": "2026-07-31T10:00:54.894009",
+  "date": "2026-08-01",
+  "generated_at": "2026-08-01T10:01:06.609408",
   "summary": {
-    "total_topics": 476,
-    "sentiment_analyzed": 476,
+    "total_topics": 463,
+    "sentiment_analyzed": 463,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 54
+      "count": 56
     },
     {
       "platform": "今日头条",
-      "count": 100
+      "count": 109
     },
     {
       "platform": "微博",
-      "count": 107
+      "count": 99
     },
     {
       "platform": "抖音",
-      "count": 66
+      "count": 70
     },
     {
       "platform": "百度",
-      "count": 105
+      "count": 84
     },
     {
       "platform": "知乎",
-      "count": 44
+      "count": 45
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 40,
-      "percentage": 8.4
+      "count": 27,
+      "percentage": 5.8
     },
     {
       "label": "neutral",
-      "count": 79,
-      "percentage": 16.6
+      "count": 70,
+      "percentage": 15.1
     },
     {
       "label": "positive",
-      "count": 357,
-      "percentage": 75.0
+      "count": 366,
+      "percentage": 79.0
     }
   ],
   "top_10_topics": [
     {
-      "title": "小米澎程技术发布会上发布了什么值得关注的新技术？有哪些亮点？",
-      "heat_score": 18500000,
-      "category": "问答",
-      "platform": "知乎"
-    },
-    {
-      "title": "解放军喊话菲军机不要抵近否则遭拦截",
-      "heat_score": 15046296,
+      "title": "警方对捐日本侵华罪证少年启动保护",
+      "heat_score": 16646576,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "基金已经在抄底了",
-      "heat_score": 13570194,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "美股收盘：微软创近18年最大单日涨幅",
-      "heat_score": 13011892,
+      "title": "6万非法移民登陆西班牙8万人口城市",
+      "heat_score": 16260142,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "杨振宁遗孀翁帆赴新疆喀什看望老兵",
-      "heat_score": 12672066,
+      "title": "蔡崇信离婚",
+      "heat_score": 14712785,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "50℃高温来了",
+      "heat_score": 14150624,
+      "category": "depth",
+      "platform": "今日头条"
+    },
+    {
+      "title": "054B护卫舰首次亮相黄岩岛",
+      "heat_score": 13961340,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "国文清主动投案被查",
-      "heat_score": 12436107,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "解放军两次警告日方不能自称海军",
-      "heat_score": 12278819,
+      "title": "国家电网原董事长辛保安被查",
+      "heat_score": 12804014,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "吴宜泽6:5战胜墨菲",
-      "heat_score": 12107479,
+      "title": "主任医师“10级美颜”证件照火了",
+      "heat_score": 12332087,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "吴宜泽无缘上海大师赛决赛",
+      "heat_score": 12101807,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "一组数据读懂我国能源转型新趋势",
-      "heat_score": 11110335,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "韩国股市大涨13%触发熔断",
-      "heat_score": 11104471,
+      "title": "八一建军节之际致敬中国军人",
+      "heat_score": 11757533,
       "category": "其他",
       "platform": "抖音"
+    },
+    {
+      "title": "北斗卫星导航系统全面完成在轨升级",
+      "heat_score": 11585551,
+      "category": "其他",
+      "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 10,
+    "issues_found": 11,
     "status": "completed"
   }
 }
