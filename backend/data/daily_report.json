@@ -1,118 +1,118 @@
 {
-  "date": "2026-08-01",
-  "generated_at": "2026-08-01T10:01:06.609408",
+  "date": "2026-08-02",
+  "generated_at": "2026-08-02T10:00:33.982989",
   "summary": {
-    "total_topics": 463,
-    "sentiment_analyzed": 463,
+    "total_topics": 444,
+    "sentiment_analyzed": 444,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 56
+      "count": 52
     },
     {
       "platform": "今日头条",
-      "count": 109
+      "count": 96
     },
     {
       "platform": "微博",
-      "count": 99
+      "count": 109
     },
     {
       "platform": "抖音",
-      "count": 70
+      "count": 73
     },
     {
       "platform": "百度",
-      "count": 84
+      "count": 79
     },
     {
       "platform": "知乎",
-      "count": 45
+      "count": 35
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 27,
-      "percentage": 5.8
+      "count": 26,
+      "percentage": 5.9
     },
     {
       "label": "neutral",
-      "count": 70,
-      "percentage": 15.1
+      "count": 59,
+      "percentage": 13.3
     },
     {
       "label": "positive",
-      "count": 366,
-      "percentage": 79.0
+      "count": 359,
+      "percentage": 80.9
     }
   ],
   "top_10_topics": [
     {
-      "title": "警方对捐日本侵华罪证少年启动保护",
-      "heat_score": 16646576,
+      "title": "超5万非法移民闯西班牙后4.8万人返程",
+      "heat_score": 16614239,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "6万非法移民登陆西班牙8万人口城市",
-      "heat_score": 16260142,
+      "title": "媒体评小伙贷100万开制冰厂月赚30万",
+      "heat_score": 15033185,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "蔡崇信离婚",
-      "heat_score": 14712785,
+      "title": "越来越多中国人不去日本旅游",
+      "heat_score": 14297139,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "50℃高温来了",
-      "heat_score": 14150624,
-      "category": "depth",
-      "platform": "今日头条"
-    },
-    {
-      "title": "054B护卫舰首次亮相黄岩岛",
-      "heat_score": 13961340,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "国家电网原董事长辛保安被查",
-      "heat_score": 12804014,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "主任医师“10级美颜”证件照火了",
-      "heat_score": 12332087,
+      "title": "国防部部长：当好祖国统一的稳固底牌",
+      "heat_score": 12308131,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "吴宜泽无缘上海大师赛决赛",
-      "heat_score": 12101807,
+      "title": "女子退房把酒店用品搬空只剩电视",
+      "heat_score": 12027464,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "威姆斯100:81战胜卡米然",
+      "heat_score": 11914194,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "八一建军节之际致敬中国军人",
-      "heat_score": 11757533,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "北斗卫星导航系统全面完成在轨升级",
-      "heat_score": 11585551,
+      "title": "致敬最可爱的人",
+      "heat_score": 11870245,
       "category": "其他",
       "platform": "今日头条"
+    },
+    {
+      "title": "俄罗斯轰炸利沃夫 北约会下场吗",
+      "heat_score": 11819209,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "董路上台领奖面向观众脱帽致谢",
+      "heat_score": 11705507,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "赵心童8:10威尔逊无缘决赛",
+      "heat_score": 11100381,
+      "category": "其他",
+      "platform": "抖音"
     }
   ],
   "data_quality": {
-    "issues_found": 11,
+    "issues_found": 10,
     "status": "completed"
   }
 }
