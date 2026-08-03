@@ -1,114 +1,114 @@
 {
-  "date": "2026-08-02",
-  "generated_at": "2026-08-02T10:00:33.982989",
+  "date": "2026-08-03",
+  "generated_at": "2026-08-03T10:00:11.995054",
   "summary": {
-    "total_topics": 444,
-    "sentiment_analyzed": 444,
+    "total_topics": 482,
+    "sentiment_analyzed": 482,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 52
+      "count": 65
     },
     {
       "platform": "今日头条",
-      "count": 96
+      "count": 103
     },
     {
       "platform": "微博",
-      "count": 109
+      "count": 105
     },
     {
       "platform": "抖音",
-      "count": 73
+      "count": 75
     },
     {
       "platform": "百度",
-      "count": 79
+      "count": 93
     },
     {
       "platform": "知乎",
-      "count": 35
+      "count": 41
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 26,
-      "percentage": 5.9
+      "count": 27,
+      "percentage": 5.6
     },
     {
       "label": "neutral",
-      "count": 59,
-      "percentage": 13.3
+      "count": 92,
+      "percentage": 19.1
     },
     {
       "label": "positive",
-      "count": 359,
-      "percentage": 80.9
+      "count": 363,
+      "percentage": 75.3
     }
   ],
   "top_10_topics": [
     {
-      "title": "超5万非法移民闯西班牙后4.8万人返程",
-      "heat_score": 16614239,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "媒体评小伙贷100万开制冰厂月赚30万",
-      "heat_score": 15033185,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "越来越多中国人不去日本旅游",
-      "heat_score": 14297139,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "国防部部长：当好祖国统一的稳固底牌",
-      "heat_score": 12308131,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "女子退房把酒店用品搬空只剩电视",
-      "heat_score": 12027464,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "威姆斯100:81战胜卡米然",
-      "heat_score": 11914194,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "致敬最可爱的人",
-      "heat_score": 11870245,
+      "title": "胖东来将大量占用直饮水列为不文明行为",
+      "heat_score": 18687646,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "俄罗斯轰炸利沃夫 北约会下场吗",
-      "heat_score": 11819209,
+      "title": "超10万亿住房公积金迎来全面激活",
+      "heat_score": 16909282,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "董路上台领奖面向观众脱帽致谢",
-      "heat_score": 11705507,
+      "title": "多重优势支撑中国经济向新向优",
+      "heat_score": 15300151,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "7名赛里木湖工作人员打司机被行拘",
+      "heat_score": 15230488,
+      "category": "recentProgress",
+      "platform": "今日头条"
+    },
+    {
+      "title": "四川宜宾高县发生4.8级地震",
+      "heat_score": 14713481,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "赵心童8:10威尔逊无缘决赛",
-      "heat_score": 11100381,
+      "title": "特朗普再称委内瑞拉为美国第51州",
+      "heat_score": 14267292,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "“年龄不是免罪金牌”新规发布",
+      "heat_score": 14141416,
       "category": "其他",
-      "platform": "抖音"
+      "platform": "今日头条"
+    },
+    {
+      "title": "中国芯片从底层开始“围攻”",
+      "heat_score": 14050999,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "小伙立遗嘱把氪金10万账号给游戏搭子",
+      "heat_score": 13844149,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "利润最高涨700倍 半导体产业全线爆发",
+      "heat_score": 13102442,
+      "category": "其他",
+      "platform": "今日头条"
     }
   ],
   "data_quality": {
