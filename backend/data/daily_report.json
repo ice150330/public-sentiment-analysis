@@ -1,114 +1,114 @@
 {
-  "date": "2026-08-03",
-  "generated_at": "2026-08-03T10:00:11.995054",
+  "date": "2026-08-04",
+  "generated_at": "2026-08-04T10:00:14.396267",
   "summary": {
-    "total_topics": 482,
-    "sentiment_analyzed": 482,
+    "total_topics": 453,
+    "sentiment_analyzed": 453,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 65
+      "count": 60
     },
     {
       "platform": "今日头条",
-      "count": 103
+      "count": 98
     },
     {
       "platform": "微博",
-      "count": 105
+      "count": 107
     },
     {
       "platform": "抖音",
-      "count": 75
+      "count": 65
     },
     {
       "platform": "百度",
-      "count": 93
+      "count": 85
     },
     {
       "platform": "知乎",
-      "count": 41
+      "count": 38
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 27,
-      "percentage": 5.6
+      "count": 21,
+      "percentage": 4.6
     },
     {
       "label": "neutral",
-      "count": 92,
-      "percentage": 19.1
+      "count": 78,
+      "percentage": 17.2
     },
     {
       "label": "positive",
-      "count": 363,
-      "percentage": 75.3
+      "count": 354,
+      "percentage": 78.1
     }
   ],
   "top_10_topics": [
     {
-      "title": "胖东来将大量占用直饮水列为不文明行为",
-      "heat_score": 18687646,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "超10万亿住房公积金迎来全面激活",
-      "heat_score": 16909282,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "多重优势支撑中国经济向新向优",
-      "heat_score": 15300151,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "7名赛里木湖工作人员打司机被行拘",
-      "heat_score": 15230488,
-      "category": "recentProgress",
-      "platform": "今日头条"
-    },
-    {
-      "title": "四川宜宾高县发生4.8级地震",
-      "heat_score": 14713481,
+      "title": "媒体：中国不会任由谁在家门口撒野",
+      "heat_score": 13785423,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "特朗普再称委内瑞拉为美国第51州",
-      "heat_score": 14267292,
+      "title": "少年考取国防科大 高中校长送2万奖金",
+      "heat_score": 12473567,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "“年龄不是免罪金牌”新规发布",
-      "heat_score": 14141416,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "中国芯片从底层开始“围攻”",
-      "heat_score": 14050999,
+      "title": "律师谈玩具“竹知了”视频被投诉下架",
+      "heat_score": 12143824,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "小伙立遗嘱把氪金10万账号给游戏搭子",
-      "heat_score": 13844149,
+      "title": "研究：每天1-2杯咖啡可降低肝病风险",
+      "heat_score": 11650881,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "利润最高涨700倍 半导体产业全线爆发",
-      "heat_score": 13102442,
+      "title": "美国制裁洽洽瓜子等中国品牌",
+      "heat_score": 11523665,
       "category": "其他",
-      "platform": "今日头条"
+      "platform": "抖音"
+    },
+    {
+      "title": "“速成车”正在被叫停",
+      "heat_score": 11448392,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "U17国足3:2绝杀阿森纳U17",
+      "heat_score": 11421230,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "台风“白海豚”两种路径公布",
+      "heat_score": 11416818,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "上半年海洋生产总值5.5万亿",
+      "heat_score": 11290593,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "台风白海豚周四起影响我国",
+      "heat_score": 11253821,
+      "category": "其他",
+      "platform": "抖音"
     }
   ],
   "data_quality": {
