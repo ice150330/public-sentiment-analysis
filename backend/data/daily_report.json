@@ -1,31 +1,31 @@
 {
-  "date": "2026-08-04",
-  "generated_at": "2026-08-04T10:00:14.396267",
+  "date": "2026-08-05",
+  "generated_at": "2026-08-05T10:00:50.909297",
   "summary": {
-    "total_topics": 453,
-    "sentiment_analyzed": 453,
+    "total_topics": 457,
+    "sentiment_analyzed": 457,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 60
+      "count": 53
     },
     {
       "platform": "今日头条",
-      "count": 98
+      "count": 97
     },
     {
       "platform": "微博",
-      "count": 107
+      "count": 106
     },
     {
       "platform": "抖音",
-      "count": 65
+      "count": 67
     },
     {
       "platform": "百度",
-      "count": 85
+      "count": 96
     },
     {
       "platform": "知乎",
@@ -35,84 +35,84 @@
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 21,
-      "percentage": 4.6
+      "count": 35,
+      "percentage": 7.7
     },
     {
       "label": "neutral",
-      "count": 78,
-      "percentage": 17.2
+      "count": 64,
+      "percentage": 14.0
     },
     {
       "label": "positive",
-      "count": 354,
-      "percentage": 78.1
+      "count": 358,
+      "percentage": 78.3
     }
   ],
   "top_10_topics": [
     {
-      "title": "媒体：中国不会任由谁在家门口撒野",
-      "heat_score": 13785423,
+      "title": "20多名中国乘客被泰航无理由拒载",
+      "heat_score": 12617210,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "少年考取国防科大 高中校长送2万奖金",
-      "heat_score": 12473567,
+      "title": "瑙鲁正式更改国名 中文译名不变",
+      "heat_score": 12066744,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "白海豚再次变成超强台风",
+      "heat_score": 12045392,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "曝美拟禁止进口中国新型号光模块",
+      "heat_score": 11746181,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "律师谈玩具“竹知了”视频被投诉下架",
-      "heat_score": 12143824,
-      "category": "new",
+      "title": "国家邮政局对申通立案调查",
+      "heat_score": 11545743,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "中欧班列高质量发展取得显著成效",
+      "heat_score": 11474524,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "山西菜申请出战暑期美食展",
+      "heat_score": 11460232,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "国务院成立重庆山体崩塌调查评估组",
+      "heat_score": 11446084,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "菲律宾一纸海图换来中国“四箭齐发”",
+      "heat_score": 11412738,
+      "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "研究：每天1-2杯咖啡可降低肝病风险",
-      "heat_score": 11650881,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "美国制裁洽洽瓜子等中国品牌",
-      "heat_score": 11523665,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "“速成车”正在被叫停",
-      "heat_score": 11448392,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "U17国足3:2绝杀阿森纳U17",
-      "heat_score": 11421230,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "台风“白海豚”两种路径公布",
-      "heat_score": 11416818,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "上半年海洋生产总值5.5万亿",
-      "heat_score": 11290593,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "台风白海豚周四起影响我国",
-      "heat_score": 11253821,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "「精神小伙」一篇《致我十年未见的妈妈》获赞 200 万，看完这篇文章你有哪些感触？",
+      "heat_score": 11130000,
+      "category": "问答",
+      "platform": "知乎"
     }
   ],
   "data_quality": {
-    "issues_found": 10,
+    "issues_found": 11,
     "status": "completed"
   }
 }
