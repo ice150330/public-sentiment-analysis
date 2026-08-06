@@ -1,114 +1,114 @@
 {
-  "date": "2026-08-05",
-  "generated_at": "2026-08-05T10:00:50.909297",
+  "date": "2026-08-06",
+  "generated_at": "2026-08-06T10:00:59.922713",
   "summary": {
-    "total_topics": 457,
-    "sentiment_analyzed": 457,
+    "total_topics": 464,
+    "sentiment_analyzed": 464,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 53
+      "count": 51
     },
     {
       "platform": "今日头条",
-      "count": 97
-    },
-    {
-      "platform": "微博",
-      "count": 106
-    },
-    {
-      "platform": "抖音",
-      "count": 67
-    },
-    {
-      "platform": "百度",
       "count": 96
     },
     {
+      "platform": "微博",
+      "count": 117
+    },
+    {
+      "platform": "抖音",
+      "count": 65
+    },
+    {
+      "platform": "百度",
+      "count": 101
+    },
+    {
       "platform": "知乎",
-      "count": 38
+      "count": 34
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 35,
-      "percentage": 7.7
+      "count": 20,
+      "percentage": 4.3
     },
     {
       "label": "neutral",
-      "count": 64,
-      "percentage": 14.0
+      "count": 74,
+      "percentage": 15.9
     },
     {
       "label": "positive",
-      "count": 358,
-      "percentage": 78.3
+      "count": 370,
+      "percentage": 79.7
     }
   ],
   "top_10_topics": [
     {
-      "title": "20多名中国乘客被泰航无理由拒载",
-      "heat_score": 12617210,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "瑙鲁正式更改国名 中文译名不变",
-      "heat_score": 12066744,
+      "title": "中方对6家美国实体采取反制措施",
+      "heat_score": 12053120,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "白海豚再次变成超强台风",
-      "heat_score": 12045392,
+      "title": "这世界大得让你很难不旅游",
+      "heat_score": 11482884,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "曝美拟禁止进口中国新型号光模块",
-      "heat_score": 11746181,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "国家邮政局对申通立案调查",
-      "heat_score": 11545743,
+      "title": "凉资源激活夏日经济热流量",
+      "heat_score": 11067268,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "中欧班列高质量发展取得显著成效",
-      "heat_score": 11474524,
+      "title": "人贩子“梅姨”真实姓名曝光",
+      "heat_score": 11042816,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "山西菜申请出战暑期美食展",
-      "heat_score": 11460232,
+      "title": "首届早餐烘焙大师赛",
+      "heat_score": 10479372,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "国务院成立重庆山体崩塌调查评估组",
-      "heat_score": 11446084,
+      "title": "趁夏天赴一场八大古镇之约",
+      "heat_score": 10366186,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "菲律宾一纸海图换来中国“四箭齐发”",
-      "heat_score": 11412738,
+      "title": "无畏巡回成都站开赛",
+      "heat_score": 9249382,
       "category": "其他",
-      "platform": "今日头条"
+      "platform": "抖音"
     },
     {
-      "title": "「精神小伙」一篇《致我十年未见的妈妈》获赞 200 万，看完这篇文章你有哪些感触？",
-      "heat_score": 11130000,
-      "category": "问答",
-      "platform": "知乎"
+      "title": "2026抖音创作者大会来了",
+      "heat_score": 9177923,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "难忘童年经典场景",
+      "heat_score": 9166873,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "2026年的夏天要结束了",
+      "heat_score": 9035460,
+      "category": "其他",
+      "platform": "抖音"
     }
   ],
   "data_quality": {
