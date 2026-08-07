@@ -1,112 +1,112 @@
 {
-  "date": "2026-08-06",
-  "generated_at": "2026-08-06T10:00:59.922713",
+  "date": "2026-08-07",
+  "generated_at": "2026-08-07T10:00:11.171202",
   "summary": {
-    "total_topics": 464,
-    "sentiment_analyzed": 464,
+    "total_topics": 452,
+    "sentiment_analyzed": 452,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 51
+      "count": 43
     },
     {
       "platform": "今日头条",
-      "count": 96
+      "count": 92
     },
     {
       "platform": "微博",
-      "count": 117
+      "count": 113
     },
     {
       "platform": "抖音",
-      "count": 65
+      "count": 61
     },
     {
       "platform": "百度",
-      "count": 101
+      "count": 106
     },
     {
       "platform": "知乎",
-      "count": 34
+      "count": 37
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 20,
-      "percentage": 4.3
+      "count": 35,
+      "percentage": 7.7
     },
     {
       "label": "neutral",
-      "count": 74,
-      "percentage": 15.9
+      "count": 76,
+      "percentage": 16.8
     },
     {
       "label": "positive",
-      "count": 370,
-      "percentage": 79.7
+      "count": 341,
+      "percentage": 75.4
     }
   ],
   "top_10_topics": [
     {
-      "title": "中方对6家美国实体采取反制措施",
-      "heat_score": 12053120,
+      "title": "宇树科技8月10日开启网上申购",
+      "heat_score": 12099637,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "这世界大得让你很难不旅游",
-      "heat_score": 11482884,
+      "title": "今日立秋",
+      "heat_score": 11713013,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "凉资源激活夏日经济热流量",
-      "heat_score": 11067268,
+      "title": "请收下这份火把节攻略",
+      "heat_score": 11099389,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "人贩子“梅姨”真实姓名曝光",
-      "heat_score": 11042816,
+      "title": "产业创新活力持续提升",
+      "heat_score": 11074421,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "首届早餐烘焙大师赛",
-      "heat_score": 10479372,
+      "title": "国际足联致歉",
+      "heat_score": 11053736,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "趁夏天赴一场八大古镇之约",
-      "heat_score": 10366186,
+      "title": "藏在火把节里的非遗美学",
+      "heat_score": 10573364,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "无畏巡回成都站开赛",
-      "heat_score": 9249382,
+      "title": "给老外安排上ChinaCool攻略",
+      "heat_score": 10261064,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "2026抖音创作者大会来了",
-      "heat_score": 9177923,
+      "title": "秋天的第一套奶茶风穿搭",
+      "heat_score": 10084611,
       "category": "其他",
       "platform": "抖音"
     },
     {
       "title": "难忘童年经典场景",
-      "heat_score": 9166873,
+      "heat_score": 8391521,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "2026年的夏天要结束了",
-      "heat_score": 9035460,
+      "title": "挑战100个小时举办一场婚礼",
+      "heat_score": 8365142,
       "category": "其他",
       "platform": "抖音"
     }
