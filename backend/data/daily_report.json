@@ -1,15 +1,15 @@
 {
-  "date": "2026-08-07",
-  "generated_at": "2026-08-07T10:00:11.171202",
+  "date": "2026-08-08",
+  "generated_at": "2026-08-08T10:00:12.858862",
   "summary": {
-    "total_topics": 452,
-    "sentiment_analyzed": 452,
+    "total_topics": 464,
+    "sentiment_analyzed": 464,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 43
+      "count": 50
     },
     {
       "platform": "今日头条",
@@ -17,98 +17,98 @@
     },
     {
       "platform": "微博",
-      "count": 113
+      "count": 101
     },
     {
       "platform": "抖音",
-      "count": 61
+      "count": 69
     },
     {
       "platform": "百度",
-      "count": 106
+      "count": 99
     },
     {
       "platform": "知乎",
-      "count": 37
+      "count": 53
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 35,
-      "percentage": 7.7
+      "count": 24,
+      "percentage": 5.2
     },
     {
       "label": "neutral",
-      "count": 76,
-      "percentage": 16.8
+      "count": 105,
+      "percentage": 22.6
     },
     {
       "label": "positive",
-      "count": 341,
-      "percentage": 75.4
+      "count": 335,
+      "percentage": 72.2
     }
   ],
   "top_10_topics": [
     {
-      "title": "宇树科技8月10日开启网上申购",
-      "heat_score": 12099637,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "台风白海豚已进入24小时警戒线",
+      "heat_score": 22401552,
+      "category": "new",
+      "platform": "今日头条"
     },
     {
-      "title": "今日立秋",
-      "heat_score": 11713013,
+      "title": "一些民办高校招不到学生了",
+      "heat_score": 21477496,
       "category": "其他",
-      "platform": "抖音"
+      "platform": "今日头条"
     },
     {
-      "title": "请收下这份火把节攻略",
-      "heat_score": 11099389,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "大雨将至一家老小6分钟收完1千斤稻谷",
+      "heat_score": 20962128,
+      "category": "new",
+      "platform": "今日头条"
     },
     {
-      "title": "产业创新活力持续提升",
-      "heat_score": 11074421,
+      "title": "越来越多高分考生放弃985选警校",
+      "heat_score": 20212524,
       "category": "其他",
-      "platform": "抖音"
+      "platform": "今日头条"
     },
     {
-      "title": "国际足联致歉",
-      "heat_score": 11053736,
+      "title": "2名小孩玩手机低头幅度近乎折叠",
+      "heat_score": 19815553,
       "category": "其他",
-      "platform": "抖音"
+      "platform": "今日头条"
     },
     {
-      "title": "藏在火把节里的非遗美学",
-      "heat_score": 10573364,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "台风白海豚实时路径",
+      "heat_score": 19433642,
+      "category": "hot",
+      "platform": "今日头条"
     },
     {
-      "title": "给老外安排上ChinaCool攻略",
-      "heat_score": 10261064,
+      "title": "我国外贸延续良好增长态势",
+      "heat_score": 17584287,
       "category": "其他",
-      "platform": "抖音"
+      "platform": "今日头条"
     },
     {
-      "title": "秋天的第一套奶茶风穿搭",
-      "heat_score": 10084611,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "美总统冷淡回应基辅遭袭：没掺和",
+      "heat_score": 16906509,
+      "category": "new",
+      "platform": "今日头条"
     },
     {
-      "title": "难忘童年经典场景",
-      "heat_score": 8391521,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "男子工地坠亡百万赔偿金妻女仅得3万",
+      "heat_score": 16595478,
+      "category": "new",
+      "platform": "今日头条"
     },
     {
-      "title": "挑战100个小时举办一场婚礼",
-      "heat_score": 8365142,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "土耳其总统签防务协议竖大拇指",
+      "heat_score": 15297642,
+      "category": "new",
+      "platform": "今日头条"
     }
   ],
   "data_quality": {
