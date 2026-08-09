@@ -1,112 +1,112 @@
 {
-  "date": "2026-08-08",
-  "generated_at": "2026-08-08T10:00:12.858862",
+  "date": "2026-08-09",
+  "generated_at": "2026-08-09T10:00:59.280116",
   "summary": {
-    "total_topics": 464,
-    "sentiment_analyzed": 464,
+    "total_topics": 456,
+    "sentiment_analyzed": 456,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 50
+      "count": 54
     },
     {
       "platform": "今日头条",
-      "count": 92
+      "count": 90
     },
     {
       "platform": "微博",
-      "count": 101
+      "count": 115
     },
     {
       "platform": "抖音",
-      "count": 69
+      "count": 65
     },
     {
       "platform": "百度",
-      "count": 99
+      "count": 93
     },
     {
       "platform": "知乎",
-      "count": 53
+      "count": 39
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 24,
-      "percentage": 5.2
+      "count": 39,
+      "percentage": 8.6
     },
     {
       "label": "neutral",
-      "count": 105,
-      "percentage": 22.6
+      "count": 71,
+      "percentage": 15.6
     },
     {
       "label": "positive",
-      "count": 335,
-      "percentage": 72.2
+      "count": 346,
+      "percentage": 75.9
     }
   ],
   "top_10_topics": [
     {
-      "title": "台风白海豚已进入24小时警戒线",
-      "heat_score": 22401552,
+      "title": "以军士兵把枪口对准中国记者",
+      "heat_score": 45100613,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "一些民办高校招不到学生了",
-      "heat_score": 21477496,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "大雨将至一家老小6分钟收完1千斤稻谷",
-      "heat_score": 20962128,
+      "title": "台风将至有超市叶菜肉3小时售罄",
+      "heat_score": 44276099,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "越来越多高分考生放弃985选警校",
-      "heat_score": 20212524,
+      "title": "伊媒发布伊朗最高领袖视频",
+      "heat_score": 41467160,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "2名小孩玩手机低头幅度近乎折叠",
-      "heat_score": 19815553,
-      "category": "其他",
+      "title": "原北京军区副司令员李永金逝世",
+      "heat_score": 39191326,
+      "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "台风白海豚实时路径",
-      "heat_score": 19433642,
+      "title": "白海豚将正面袭击贯穿浙江",
+      "heat_score": 35287442,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "我国外贸延续良好增长态势",
-      "heat_score": 17584287,
+      "title": "游客西湖边突遭暴雨蹲地列阵",
+      "heat_score": 32087144,
+      "category": "onSite",
+      "platform": "今日头条"
+    },
+    {
+      "title": "一周“靓”数",
+      "heat_score": 31929398,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "美总统冷淡回应基辅遭袭：没掺和",
-      "heat_score": 16906509,
-      "category": "new",
+      "title": "浙江沿海狂风暴雨摄像头剧烈震颤",
+      "heat_score": 29679157,
+      "category": "onSite",
       "platform": "今日头条"
     },
     {
-      "title": "男子工地坠亡百万赔偿金妻女仅得3万",
-      "heat_score": 16595478,
-      "category": "new",
+      "title": "伊总统：伊朗要学中国做好自己的事",
+      "heat_score": 29428952,
+      "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "土耳其总统签防务协议竖大拇指",
-      "heat_score": 15297642,
+      "title": "拜登癌症已扩散",
+      "heat_score": 29033649,
       "category": "new",
       "platform": "今日头条"
     }
