@@ -1,19 +1,19 @@
 {
-  "date": "2026-08-09",
-  "generated_at": "2026-08-09T10:00:59.280116",
+  "date": "2026-08-10",
+  "generated_at": "2026-08-10T10:00:25.013844",
   "summary": {
-    "total_topics": 456,
-    "sentiment_analyzed": 456,
+    "total_topics": 468,
+    "sentiment_analyzed": 468,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 54
+      "count": 53
     },
     {
       "platform": "今日头条",
-      "count": 90
+      "count": 99
     },
     {
       "platform": "微博",
@@ -21,98 +21,98 @@
     },
     {
       "platform": "抖音",
-      "count": 65
+      "count": 74
     },
     {
       "platform": "百度",
-      "count": 93
+      "count": 90
     },
     {
       "platform": "知乎",
-      "count": 39
+      "count": 37
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 39,
-      "percentage": 8.6
+      "count": 29,
+      "percentage": 6.2
     },
     {
       "label": "neutral",
-      "count": 71,
-      "percentage": 15.6
+      "count": 69,
+      "percentage": 14.7
     },
     {
       "label": "positive",
-      "count": 346,
-      "percentage": 75.9
+      "count": 370,
+      "percentage": 79.1
     }
   ],
   "top_10_topics": [
     {
-      "title": "以军士兵把枪口对准中国记者",
-      "heat_score": 45100613,
+      "title": "台风白海豚最新路径",
+      "heat_score": 30828361,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "台风将至有超市叶菜肉3小时售罄",
-      "heat_score": 44276099,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "伊媒发布伊朗最高领袖视频",
-      "heat_score": 41467160,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "原北京军区副司令员李永金逝世",
-      "heat_score": 39191326,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "白海豚将正面袭击贯穿浙江",
-      "heat_score": 35287442,
+      "title": "“绕不开”的霍尔木兹海峡",
+      "heat_score": 27886469,
       "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "游客西湖边突遭暴雨蹲地列阵",
-      "heat_score": 32087144,
+      "title": "上海地铁4条线路全线停运",
+      "heat_score": 26922781,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "台风来袭上海一广场遭雨水倒灌",
+      "heat_score": 25232720,
       "category": "onSite",
       "platform": "今日头条"
     },
     {
-      "title": "一周“靓”数",
-      "heat_score": 31929398,
+      "title": "台风白海豚正式登陆",
+      "heat_score": 24635736,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "马斯克凭什么建全球最大的芯片厂",
+      "heat_score": 24451788,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "Chinamaxxing全球出圈！是啥意思",
+      "heat_score": 24360739,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "浙江沿海狂风暴雨摄像头剧烈震颤",
-      "heat_score": 29679157,
-      "category": "onSite",
+      "title": "伊朗最高领袖与总统会谈",
+      "heat_score": 22291336,
+      "category": "hot",
       "platform": "今日头条"
     },
     {
-      "title": "伊总统：伊朗要学中国做好自己的事",
-      "heat_score": 29428952,
-      "category": "其他",
+      "title": "美国以经济施压替代对伊军事行动",
+      "heat_score": 20664868,
+      "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "拜登癌症已扩散",
-      "heat_score": 29033649,
+      "title": "蛇捕蛙瞬间：蛙会爬杆蛇能翘头",
+      "heat_score": 18698346,
       "category": "new",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 11,
+    "issues_found": 10,
     "status": "completed"
   }
 }
