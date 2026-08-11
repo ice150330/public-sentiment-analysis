@@ -1,118 +1,118 @@
 {
-  "date": "2026-08-10",
-  "generated_at": "2026-08-10T10:00:25.013844",
+  "date": "2026-08-11",
+  "generated_at": "2026-08-11T10:00:45.092440",
   "summary": {
-    "total_topics": 468,
-    "sentiment_analyzed": 468,
+    "total_topics": 459,
+    "sentiment_analyzed": 459,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 53
+      "count": 47
     },
     {
       "platform": "今日头条",
-      "count": 99
+      "count": 94
     },
     {
       "platform": "微博",
-      "count": 115
+      "count": 102
     },
     {
       "platform": "抖音",
-      "count": 74
+      "count": 75
     },
     {
       "platform": "百度",
-      "count": 90
+      "count": 95
     },
     {
       "platform": "知乎",
-      "count": 37
+      "count": 46
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 29,
-      "percentage": 6.2
+      "count": 36,
+      "percentage": 7.8
     },
     {
       "label": "neutral",
-      "count": 69,
-      "percentage": 14.7
+      "count": 78,
+      "percentage": 17.0
     },
     {
       "label": "positive",
-      "count": 370,
-      "percentage": 79.1
+      "count": 345,
+      "percentage": 75.2
     }
   ],
   "top_10_topics": [
     {
-      "title": "台风白海豚最新路径",
-      "heat_score": 30828361,
+      "title": "委内瑞拉强震死亡人数上升至6301人",
+      "heat_score": 38397138,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "“绕不开”的霍尔木兹海峡",
-      "heat_score": 27886469,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "上海地铁4条线路全线停运",
-      "heat_score": 26922781,
+      "title": "多地公安机关打掉1000多个犯罪团伙",
+      "heat_score": 36780298,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "台风来袭上海一广场遭雨水倒灌",
-      "heat_score": 25232720,
-      "category": "onSite",
-      "platform": "今日头条"
-    },
-    {
-      "title": "台风白海豚正式登陆",
-      "heat_score": 24635736,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "马斯克凭什么建全球最大的芯片厂",
-      "heat_score": 24451788,
+      "title": "伊朗总统称最高领袖健康状况很好",
+      "heat_score": 34743168,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "Chinamaxxing全球出圈！是啥意思",
-      "heat_score": 24360739,
+      "title": "江苏一商场积水展车随水漂动",
+      "heat_score": 33280190,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "外交部：藏南地区是中国领土",
+      "heat_score": 32673958,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "伊朗最高领袖与总统会谈",
-      "heat_score": 22291336,
-      "category": "hot",
+      "title": "24岁网红姜小柔去世",
+      "heat_score": 32495678,
+      "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "美国以经济施压替代对伊军事行动",
-      "heat_score": 20664868,
+      "title": "李嘉诚又要售卖海外资产",
+      "heat_score": 27918600,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "蛇捕蛙瞬间：蛙会爬杆蛇能翘头",
-      "heat_score": 18698346,
+      "title": "我国民营企业创新动能持续增强",
+      "heat_score": 26751174,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "百花奖获奖全名单",
+      "heat_score": 25939132,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "哥伦比亚因强震进入国家灾难状态",
+      "heat_score": 25738371,
       "category": "new",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 10,
+    "issues_found": 11,
     "status": "completed"
   }
 }
