@@ -1,114 +1,114 @@
 {
-  "date": "2026-08-12",
-  "generated_at": "2026-08-12T10:00:34.745557",
+  "date": "2026-08-13",
+  "generated_at": "2026-08-13T10:00:20.414722",
   "summary": {
-    "total_topics": 456,
-    "sentiment_analyzed": 456,
+    "total_topics": 451,
+    "sentiment_analyzed": 451,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 53
+      "count": 46
     },
     {
       "platform": "今日头条",
-      "count": 91
+      "count": 100
     },
     {
       "platform": "微博",
-      "count": 114
+      "count": 92
     },
     {
       "platform": "抖音",
-      "count": 67
+      "count": 73
     },
     {
       "platform": "百度",
-      "count": 99
+      "count": 101
     },
     {
       "platform": "知乎",
-      "count": 32
+      "count": 39
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 20,
-      "percentage": 4.4
+      "count": 30,
+      "percentage": 6.7
     },
     {
       "label": "neutral",
-      "count": 82,
-      "percentage": 18.0
+      "count": 93,
+      "percentage": 20.6
     },
     {
       "label": "positive",
-      "count": 354,
-      "percentage": 77.6
+      "count": 328,
+      "percentage": 72.7
     }
   ],
   "top_10_topics": [
     {
-      "title": "《我的祖国》演唱者郭兰英逝世",
-      "heat_score": 16574449,
+      "title": "朱镕基同志逝世",
+      "heat_score": 59035985,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "胖东来许昌老店关闭周边商户发声",
+      "heat_score": 55115047,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "女子3万全款购入宝鸡40平米住宅",
-      "heat_score": 15577088,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "租金从800降到450房东决定不租了",
-      "heat_score": 14332862,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "984.5高校火了",
-      "heat_score": 14094732,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "全方位培养、引进、用好人才",
-      "heat_score": 12753441,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "河南暴雨",
-      "heat_score": 12625869,
+      "title": "威少宣布退役",
+      "heat_score": 53417968,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "抗癌博主“江小鱼”去世",
-      "heat_score": 11539791,
+      "title": "新能源汽车新车销量占比首超60%",
+      "heat_score": 48334576,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "北京暴雨",
-      "heat_score": 11424359,
+      "title": "朱镕基同志遗像发布",
+      "heat_score": 43968733,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "机器人手机发布首日官网商城售罄",
+      "heat_score": 42060644,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "河南暴雨",
-      "heat_score": 11407891,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "中共中央 全国人大常委会 国务院 全国政协讣告 朱镕基同志逝世",
+      "heat_score": 39960000,
+      "category": "问答",
+      "platform": "知乎"
     },
     {
-      "title": "台风白海豚停止编号",
-      "heat_score": 11206338,
+      "title": "DeepSeek V4 Pro 正式版发布，如何评价该模型？",
+      "heat_score": 37950000,
+      "category": "问答",
+      "platform": "知乎"
+    },
+    {
+      "title": "梁文锋打新宇树科技有望浮盈超7亿",
+      "heat_score": 36818976,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "《新闻联播》播发朱镕基逝世",
+      "heat_score": 35998554,
       "category": "其他",
-      "platform": "抖音"
+      "platform": "今日头条"
     }
   ],
   "data_quality": {
