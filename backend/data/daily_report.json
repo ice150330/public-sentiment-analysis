@@ -1,118 +1,118 @@
 {
-  "date": "2026-08-13",
-  "generated_at": "2026-08-13T10:00:20.414722",
+  "date": "2026-08-14",
+  "generated_at": "2026-08-14T10:00:12.524208",
   "summary": {
-    "total_topics": 451,
-    "sentiment_analyzed": 451,
+    "total_topics": 483,
+    "sentiment_analyzed": 483,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 46
+      "count": 58
     },
     {
       "platform": "今日头条",
-      "count": 100
+      "count": 97
     },
     {
       "platform": "微博",
-      "count": 92
+      "count": 118
     },
     {
       "platform": "抖音",
-      "count": 73
+      "count": 67
     },
     {
       "platform": "百度",
-      "count": 101
+      "count": 105
     },
     {
       "platform": "知乎",
-      "count": 39
+      "count": 38
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 30,
-      "percentage": 6.7
+      "count": 25,
+      "percentage": 5.2
     },
     {
       "label": "neutral",
-      "count": 93,
-      "percentage": 20.6
+      "count": 84,
+      "percentage": 17.4
     },
     {
       "label": "positive",
-      "count": 328,
-      "percentage": 72.7
+      "count": 374,
+      "percentage": 77.4
     }
   ],
   "top_10_topics": [
     {
-      "title": "朱镕基同志逝世",
-      "heat_score": 59035985,
-      "category": "其他",
-      "platform": "今日头条"
+      "title": "怎么看 DeepSeek 8 月 17 日涨价后的价格，这个峰谷定价你接受吗？",
+      "heat_score": 13660000,
+      "category": "问答",
+      "platform": "知乎"
     },
     {
-      "title": "胖东来许昌老店关闭周边商户发声",
-      "heat_score": 55115047,
-      "category": "new",
-      "platform": "今日头条"
+      "title": "白海豚对河南的影响有多大",
+      "heat_score": 11707410,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "想和你一起去海边看晚霞",
+      "heat_score": 11706303,
+      "category": "其他",
+      "platform": "抖音"
+    },
+    {
+      "title": "TI2026开赛",
+      "heat_score": 11101895,
+      "category": "其他",
+      "platform": "抖音"
     },
     {
       "title": "威少宣布退役",
-      "heat_score": 53417968,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "新能源汽车新车销量占比首超60%",
-      "heat_score": 48334576,
+      "heat_score": 11100413,
       "category": "其他",
-      "platform": "今日头条"
+      "platform": "抖音"
     },
     {
-      "title": "朱镕基同志遗像发布",
-      "heat_score": 43968733,
+      "title": "中国制造再添全球之最",
+      "heat_score": 11100176,
       "category": "其他",
-      "platform": "今日头条"
+      "platform": "抖音"
     },
     {
-      "title": "机器人手机发布首日官网商城售罄",
-      "heat_score": 42060644,
-      "category": "new",
-      "platform": "今日头条"
+      "title": "谢震业全国田径锦标赛百米夺冠",
+      "heat_score": 11098374,
+      "category": "其他",
+      "platform": "抖音"
     },
     {
-      "title": "中共中央 全国人大常委会 国务院 全国政协讣告 朱镕基同志逝世",
-      "heat_score": 39960000,
+      "title": "如何评价在 8 月 13 日发布的 DeepSeek Harness？",
+      "heat_score": 11090000,
       "category": "问答",
       "platform": "知乎"
     },
     {
-      "title": "DeepSeek V4 Pro 正式版发布，如何评价该模型？",
-      "heat_score": 37950000,
-      "category": "问答",
-      "platform": "知乎"
-    },
-    {
-      "title": "梁文锋打新宇树科技有望浮盈超7亿",
-      "heat_score": 36818976,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "《新闻联播》播发朱镕基逝世",
-      "heat_score": 35998554,
+      "title": "白海豚残涡回马枪杀到江苏",
+      "heat_score": 11080869,
       "category": "其他",
-      "platform": "今日头条"
+      "platform": "抖音"
+    },
+    {
+      "title": "看看我拍到的英仙座流星雨吧",
+      "heat_score": 10914764,
+      "category": "其他",
+      "platform": "抖音"
     }
   ],
   "data_quality": {
-    "issues_found": 11,
+    "issues_found": 10,
     "status": "completed"
   }
 }
