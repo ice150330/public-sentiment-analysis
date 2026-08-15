@@ -1,15 +1,15 @@
 {
-  "date": "2026-08-14",
-  "generated_at": "2026-08-14T10:00:12.524208",
+  "date": "2026-08-15",
+  "generated_at": "2026-08-15T10:01:00.471461",
   "summary": {
-    "total_topics": 483,
-    "sentiment_analyzed": 483,
+    "total_topics": 447,
+    "sentiment_analyzed": 447,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 58
+      "count": 56
     },
     {
       "platform": "今日头条",
@@ -17,102 +17,102 @@
     },
     {
       "platform": "微博",
-      "count": 118
+      "count": 107
     },
     {
       "platform": "抖音",
-      "count": 67
+      "count": 63
     },
     {
       "platform": "百度",
-      "count": 105
+      "count": 89
     },
     {
       "platform": "知乎",
-      "count": 38
+      "count": 35
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 25,
-      "percentage": 5.2
+      "count": 33,
+      "percentage": 7.4
     },
     {
       "label": "neutral",
-      "count": 84,
-      "percentage": 17.4
+      "count": 67,
+      "percentage": 15.0
     },
     {
       "label": "positive",
-      "count": 374,
-      "percentage": 77.4
+      "count": 347,
+      "percentage": 77.6
     }
   ],
   "top_10_topics": [
     {
-      "title": "怎么看 DeepSeek 8 月 17 日涨价后的价格，这个峰谷定价你接受吗？",
-      "heat_score": 13660000,
-      "category": "问答",
-      "platform": "知乎"
+      "title": "印尼发生7.7级强震",
+      "heat_score": 16468676,
+      "category": "new",
+      "platform": "今日头条"
     },
     {
-      "title": "白海豚对河南的影响有多大",
-      "heat_score": 11707410,
+      "title": "日本投降81周年",
+      "heat_score": 15042249,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "台风白海豚杀了个“回马枪”",
+      "heat_score": 14653256,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "高市早苗向靖国神社供奉“玉串料”",
+      "heat_score": 13758823,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "人工智能激活力 “新”意盎然促发展",
+      "heat_score": 13483411,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "中方回应普京首登俄日争议岛屿",
+      "heat_score": 13258815,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "律师：结婚不领证影响很大",
+      "heat_score": 12200295,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "江泽民诞辰100周年纪念币将发行",
+      "heat_score": 12171841,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "印尼7.7级强震或引发区域海啸",
+      "heat_score": 11906677,
       "category": "其他",
       "platform": "抖音"
     },
     {
-      "title": "想和你一起去海边看晚霞",
-      "heat_score": 11706303,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "TI2026开赛",
-      "heat_score": 11101895,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "威少宣布退役",
-      "heat_score": 11100413,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "中国制造再添全球之最",
-      "heat_score": 11100176,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "谢震业全国田径锦标赛百米夺冠",
-      "heat_score": 11098374,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "如何评价在 8 月 13 日发布的 DeepSeek Harness？",
-      "heat_score": 11090000,
-      "category": "问答",
-      "platform": "知乎"
-    },
-    {
-      "title": "白海豚残涡回马枪杀到江苏",
-      "heat_score": 11080869,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "看看我拍到的英仙座流星雨吧",
-      "heat_score": 10914764,
+      "title": "日本战败投降81周年",
+      "heat_score": 11880963,
       "category": "其他",
       "platform": "抖音"
     }
   ],
   "data_quality": {
-    "issues_found": 10,
+    "issues_found": 11,
     "status": "completed"
   }
 }
