@@ -1,27 +1,27 @@
 {
-  "date": "2026-08-15",
-  "generated_at": "2026-08-15T10:01:00.471461",
+  "date": "2026-08-16",
+  "generated_at": "2026-08-16T10:01:11.073087",
   "summary": {
-    "total_topics": 447,
-    "sentiment_analyzed": 447,
+    "total_topics": 445,
+    "sentiment_analyzed": 445,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 56
+      "count": 59
     },
     {
       "platform": "今日头条",
-      "count": 97
+      "count": 88
     },
     {
       "platform": "微博",
-      "count": 107
+      "count": 102
     },
     {
       "platform": "抖音",
-      "count": 63
+      "count": 72
     },
     {
       "platform": "百度",
@@ -35,84 +35,84 @@
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 33,
-      "percentage": 7.4
+      "count": 31,
+      "percentage": 7.0
     },
     {
       "label": "neutral",
-      "count": 67,
-      "percentage": 15.0
+      "count": 61,
+      "percentage": 13.7
     },
     {
       "label": "positive",
-      "count": 347,
-      "percentage": 77.6
+      "count": 353,
+      "percentage": 79.3
     }
   ],
   "top_10_topics": [
     {
-      "title": "印尼发生7.7级强震",
-      "heat_score": 16468676,
+      "title": "纪念江泽民同志诞辰100周年大会将举行",
+      "heat_score": 17951668,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "河南贾鲁河堤防117米溃口成功合龙",
+      "heat_score": 16243340,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "中国博主发布进入靖国神社视频",
+      "heat_score": 16091761,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "日本投降81周年",
-      "heat_score": 15042249,
+      "title": "附近店家流泪称舍不得胖东来老店关闭",
+      "heat_score": 15587029,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "台风白海豚杀了个“回马枪”",
-      "heat_score": 14653256,
+      "title": "绿水青山间的生态答卷",
+      "heat_score": 14697582,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "高市早苗向靖国神社供奉“玉串料”",
-      "heat_score": 13758823,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "人工智能激活力 “新”意盎然促发展",
-      "heat_score": 13483411,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "中方回应普京首登俄日争议岛屿",
-      "heat_score": 13258815,
+      "title": "美国大模型帮日本对AI进行投毒",
+      "heat_score": 14560428,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "律师：结婚不领证影响很大",
-      "heat_score": 12200295,
+      "title": "于东来打卡小饭店消费380硬要付600",
+      "heat_score": 14340293,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "江泽民诞辰100周年纪念币将发行",
-      "heat_score": 12171841,
+      "title": "年轻人流行起夜间“拼蟹”",
+      "heat_score": 13571102,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "印尼7.7级强震或引发区域海啸",
-      "heat_score": 11906677,
+      "title": "日本人战斗分队在乌成立 与俄军作战",
+      "heat_score": 13298922,
       "category": "其他",
-      "platform": "抖音"
+      "platform": "今日头条"
     },
     {
-      "title": "日本战败投降81周年",
-      "heat_score": 11880963,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "陈熠0-4张本美和 止步女单八强",
+      "heat_score": 12404407,
+      "category": "new",
+      "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 11,
+    "issues_found": 10,
     "status": "completed"
   }
 }
