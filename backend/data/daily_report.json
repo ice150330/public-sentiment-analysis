@@ -1,114 +1,114 @@
 {
-  "date": "2026-08-16",
-  "generated_at": "2026-08-16T10:01:11.073087",
+  "date": "2026-08-17",
+  "generated_at": "2026-08-17T10:01:03.447660",
   "summary": {
-    "total_topics": 445,
-    "sentiment_analyzed": 445,
+    "total_topics": 466,
+    "sentiment_analyzed": 466,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 59
+      "count": 46
     },
     {
       "platform": "今日头条",
-      "count": 88
+      "count": 90
     },
     {
       "platform": "微博",
-      "count": 102
+      "count": 114
     },
     {
       "platform": "抖音",
-      "count": 72
+      "count": 73
     },
     {
       "platform": "百度",
-      "count": 89
+      "count": 97
     },
     {
       "platform": "知乎",
-      "count": 35
+      "count": 46
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 31,
-      "percentage": 7.0
+      "count": 30,
+      "percentage": 6.4
     },
     {
       "label": "neutral",
-      "count": 61,
-      "percentage": 13.7
+      "count": 65,
+      "percentage": 13.9
     },
     {
       "label": "positive",
-      "count": 353,
-      "percentage": 79.3
+      "count": 371,
+      "percentage": 79.6
     }
   ],
   "top_10_topics": [
     {
-      "title": "纪念江泽民同志诞辰100周年大会将举行",
-      "heat_score": 17951668,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "河南贾鲁河堤防117米溃口成功合龙",
-      "heat_score": 16243340,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "中国博主发布进入靖国神社视频",
-      "heat_score": 16091761,
+      "title": "国乒2冠1亚男队状态低迷",
+      "heat_score": 16402664,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "附近店家流泪称舍不得胖东来老店关闭",
-      "heat_score": 15587029,
-      "category": "new",
-      "platform": "今日头条"
-    },
-    {
-      "title": "绿水青山间的生态答卷",
-      "heat_score": 14697582,
+      "title": "朱镕基同志遗体18日火化",
+      "heat_score": 16155686,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "美国大模型帮日本对AI进行投毒",
-      "heat_score": 14560428,
+      "title": "四个儿子争着养95岁老母亲",
+      "heat_score": 14841744,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "于东来打卡小饭店消费380硬要付600",
-      "heat_score": 14340293,
+      "title": "小勒布伦战胜张本智和夺男单冠军",
+      "heat_score": 14841744,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "年轻人流行起夜间“拼蟹”",
-      "heat_score": 13571102,
+      "title": "市民打12345投诉月光太亮影响睡觉",
+      "heat_score": 14688362,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "日本人战斗分队在乌成立 与俄军作战",
-      "heat_score": 13298922,
+      "title": "莫斯科遭乌方600架无人机袭击",
+      "heat_score": 14618269,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "陈熠0-4张本美和 止步女单八强",
-      "heat_score": 12404407,
-      "category": "new",
+      "title": "朱镕基同志遗体18日火化 天安门等地将下半旗志哀",
+      "heat_score": 13330000,
+      "category": "问答",
+      "platform": "知乎"
+    },
+    {
+      "title": "一组数据看中国经济的澎湃动能",
+      "heat_score": 13227157,
+      "category": "其他",
       "platform": "今日头条"
+    },
+    {
+      "title": "问界儿童车即将上市",
+      "heat_score": 11968427,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "王曼昱瑞典大满贯冠军",
+      "heat_score": 11695897,
+      "category": "其他",
+      "platform": "抖音"
     }
   ],
   "data_quality": {
