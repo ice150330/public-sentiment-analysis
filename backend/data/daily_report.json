@@ -1,9 +1,9 @@
 {
-  "date": "2026-08-18",
-  "generated_at": "2026-08-18T10:00:33.322259",
+  "date": "2026-08-19",
+  "generated_at": "2026-08-19T10:00:17.386978",
   "summary": {
-    "total_topics": 438,
-    "sentiment_analyzed": 438,
+    "total_topics": 463,
+    "sentiment_analyzed": 463,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
@@ -13,106 +13,106 @@
     },
     {
       "platform": "今日头条",
-      "count": 92
+      "count": 104
     },
     {
       "platform": "微博",
-      "count": 103
+      "count": 100
     },
     {
       "platform": "抖音",
-      "count": 75
+      "count": 70
     },
     {
       "platform": "百度",
-      "count": 82
+      "count": 99
     },
     {
       "platform": "知乎",
-      "count": 35
+      "count": 39
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 25,
-      "percentage": 5.7
+      "count": 24,
+      "percentage": 5.2
     },
     {
       "label": "neutral",
-      "count": 66,
-      "percentage": 15.1
+      "count": 76,
+      "percentage": 16.4
     },
     {
       "label": "positive",
-      "count": 347,
-      "percentage": 79.2
+      "count": 363,
+      "percentage": 78.4
     }
   ],
   "top_10_topics": [
     {
-      "title": "天安门下半旗悼念朱镕基同志",
-      "heat_score": 15520000,
-      "category": "问答",
-      "platform": "知乎"
-    },
-    {
-      "title": "天安门下半旗悼念朱镕基",
-      "heat_score": 11720586,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "热身赛中国男篮77:84不敌新西兰",
-      "heat_score": 11660287,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "10后给00后的一封信",
-      "heat_score": 11395122,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "宇树科技8月19日上市",
-      "heat_score": 11390582,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "未来5年我国能源蓝图划重点",
-      "heat_score": 11211455,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "油价接下来涨还是跌",
-      "heat_score": 11096198,
-      "category": "其他",
-      "platform": "抖音"
-    },
-    {
-      "title": "中方回应上百中国公民在巴基斯坦被拘",
-      "heat_score": 11015919,
+      "title": "朱镕基同志生平",
+      "heat_score": 56329311,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "童年动漫照见00后的青春底色",
-      "heat_score": 10963913,
-      "category": "其他",
-      "platform": "抖音"
+      "title": "日本地震灾区有人假扮自卫队洗劫民宅",
+      "heat_score": 51994720,
+      "category": "new",
+      "platform": "今日头条"
     },
     {
-      "title": "谁贡献了俄罗斯上半年734亿美元顺差",
-      "heat_score": 10386928,
-      "category": "interpretation",
+      "title": "公积金新政来了",
+      "heat_score": 51719435,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "60万亿元，打开消费增长新空间",
+      "heat_score": 46118539,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "我国首次实现火箭陆地回收",
+      "heat_score": 42569676,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "杭州酒局事件赵某峰郁某栋被刑拘",
+      "heat_score": 41729780,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "今冬或现史上最强厄尔尼诺事件",
+      "heat_score": 38101845,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "伊朗最高领袖将主持活动",
+      "heat_score": 37898458,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "中科院80后博士干出460亿激光器王国",
+      "heat_score": 37758666,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "狗妈妈怕幼崽中暑每天叼进室内吹空调",
+      "heat_score": 34853103,
+      "category": "new",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 11,
+    "issues_found": 10,
     "status": "completed"
   }
 }
