@@ -1,112 +1,112 @@
 {
-  "date": "2026-08-19",
-  "generated_at": "2026-08-19T10:00:17.386978",
+  "date": "2026-08-20",
+  "generated_at": "2026-08-20T10:00:43.283814",
   "summary": {
-    "total_topics": 463,
-    "sentiment_analyzed": 463,
+    "total_topics": 450,
+    "sentiment_analyzed": 450,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 51
+      "count": 54
     },
     {
       "platform": "今日头条",
-      "count": 104
+      "count": 95
     },
     {
       "platform": "微博",
-      "count": 100
-    },
-    {
-      "platform": "抖音",
-      "count": 70
-    },
-    {
-      "platform": "百度",
       "count": 99
     },
     {
+      "platform": "抖音",
+      "count": 73
+    },
+    {
+      "platform": "百度",
+      "count": 95
+    },
+    {
       "platform": "知乎",
-      "count": 39
+      "count": 34
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 24,
-      "percentage": 5.2
+      "count": 38,
+      "percentage": 8.4
     },
     {
       "label": "neutral",
-      "count": 76,
-      "percentage": 16.4
+      "count": 67,
+      "percentage": 14.9
     },
     {
       "label": "positive",
-      "count": 363,
-      "percentage": 78.4
+      "count": 345,
+      "percentage": 76.7
     }
   ],
   "top_10_topics": [
     {
-      "title": "朱镕基同志生平",
-      "heat_score": 56329311,
+      "title": "12306回应2人买3座是否有处置权",
+      "heat_score": 82961731,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "日本地震灾区有人假扮自卫队洗劫民宅",
-      "heat_score": 51994720,
+      "title": "为何说市场大调整的信号越来越强了",
+      "heat_score": 81462214,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "公积金新政来了",
-      "heat_score": 51719435,
+      "title": "特朗普宣布对伊朗采取最严厉经济行动",
+      "heat_score": 76941104,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "60万亿元，打开消费增长新空间",
-      "heat_score": 46118539,
+      "title": "海军中将赵晓哲院士被工程院“除名”",
+      "heat_score": 76696987,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "我国首次实现火箭陆地回收",
-      "heat_score": 42569676,
+      "title": "北大报到日校园满是扛床垫的爸",
+      "heat_score": 69398304,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "多方回应车库出租被存放尸体",
+      "heat_score": 62994048,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "杭州酒局事件赵某峰郁某栋被刑拘",
-      "heat_score": 41729780,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "今冬或现史上最强厄尔尼诺事件",
-      "heat_score": 38101845,
+      "title": "激发下沉市场活力 这几点值得期待",
+      "heat_score": 62794182,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "伊朗最高领袖将主持活动",
-      "heat_score": 37898458,
+      "title": "美国制裁赤根智子 日本网民炸锅",
+      "heat_score": 56818525,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "中科院80后博士干出460亿激光器王国",
-      "heat_score": 37758666,
-      "category": "其他",
+      "title": "警方通报穿武磊球衣小球迷遭围攻",
+      "heat_score": 55610911,
+      "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "狗妈妈怕幼崽中暑每天叼进室内吹空调",
-      "heat_score": 34853103,
+      "title": "曝美军开展秘密行动打通运油航道",
+      "heat_score": 53706764,
       "category": "new",
       "platform": "今日头条"
     }
