@@ -1,118 +1,118 @@
 {
-  "date": "2026-08-20",
-  "generated_at": "2026-08-20T10:00:43.283814",
+  "date": "2026-08-21",
+  "generated_at": "2026-08-21T10:00:23.140079",
   "summary": {
-    "total_topics": 450,
-    "sentiment_analyzed": 450,
+    "total_topics": 435,
+    "sentiment_analyzed": 435,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 54
+      "count": 49
     },
     {
       "platform": "今日头条",
-      "count": 95
-    },
-    {
-      "platform": "微博",
       "count": 99
     },
     {
+      "platform": "微博",
+      "count": 98
+    },
+    {
       "platform": "抖音",
-      "count": 73
+      "count": 65
     },
     {
       "platform": "百度",
-      "count": 95
+      "count": 85
     },
     {
       "platform": "知乎",
-      "count": 34
+      "count": 39
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 38,
-      "percentage": 8.4
+      "count": 27,
+      "percentage": 6.2
     },
     {
       "label": "neutral",
-      "count": 67,
-      "percentage": 14.9
+      "count": 73,
+      "percentage": 16.8
     },
     {
       "label": "positive",
-      "count": 345,
-      "percentage": 76.7
+      "count": 335,
+      "percentage": 77.0
     }
   ],
   "top_10_topics": [
     {
-      "title": "12306回应2人买3座是否有处置权",
-      "heat_score": 82961731,
-      "category": "其他",
+      "title": "湖北通城集中销毁24辆“炸街”车",
+      "heat_score": 80824629,
+      "category": "onSite",
       "platform": "今日头条"
     },
     {
-      "title": "为何说市场大调整的信号越来越强了",
-      "heat_score": 81462214,
+      "title": "赖岳谦：解放军一旦登岛就不会再走",
+      "heat_score": 76878733,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "特朗普宣布对伊朗采取最严厉经济行动",
-      "heat_score": 76941104,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "海军中将赵晓哲院士被工程院“除名”",
-      "heat_score": 76696987,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "北大报到日校园满是扛床垫的爸",
-      "heat_score": 69398304,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "多方回应车库出租被存放尸体",
-      "heat_score": 62994048,
+      "title": "余承东官宣行业首发无网通信",
+      "heat_score": 74948701,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "激发下沉市场活力 这几点值得期待",
-      "heat_score": 62794182,
+      "title": "俄乌战场正变为日本大型军事试验场",
+      "heat_score": 74086628,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "美国制裁赤根智子 日本网民炸锅",
-      "heat_score": 56818525,
+      "title": "哈登3年9700万美元续约骑士",
+      "heat_score": 71353674,
+      "category": "hot",
+      "platform": "今日头条"
+    },
+    {
+      "title": "今年秋裤可能真的不用穿了",
+      "heat_score": 67036353,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "警方通报穿武磊球衣小球迷遭围攻",
-      "heat_score": 55610911,
+      "title": "女子飞机排泄全机人被迫闻40分钟臭味",
+      "heat_score": 62942983,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "曝美军开展秘密行动打通运油航道",
-      "heat_score": 53706764,
+      "title": "公积金新政来了，有哪些利好",
+      "heat_score": 60657001,
+      "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "男子同学聚会拒敬酒遭殴打致死已判赔",
+      "heat_score": 59876358,
       "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "华为阔直板手机亮相",
+      "heat_score": 58419448,
+      "category": "其他",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 10,
+    "issues_found": 11,
     "status": "completed"
   }
 }
