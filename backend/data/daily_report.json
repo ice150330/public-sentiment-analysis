@@ -1,118 +1,118 @@
 {
-  "date": "2026-08-21",
-  "generated_at": "2026-08-21T10:00:23.140079",
+  "date": "2026-08-22",
+  "generated_at": "2026-08-22T10:00:43.197470",
   "summary": {
-    "total_topics": 435,
-    "sentiment_analyzed": 435,
+    "total_topics": 447,
+    "sentiment_analyzed": 447,
     "coverage_rate": 100.0
   },
   "platform_distribution": [
     {
       "platform": "B站",
-      "count": 49
+      "count": 51
     },
     {
       "platform": "今日头条",
-      "count": 99
-    },
-    {
-      "platform": "微博",
       "count": 98
     },
     {
+      "platform": "微博",
+      "count": 105
+    },
+    {
       "platform": "抖音",
-      "count": 65
+      "count": 66
     },
     {
       "platform": "百度",
-      "count": 85
+      "count": 93
     },
     {
       "platform": "知乎",
-      "count": 39
+      "count": 34
     }
   ],
   "sentiment_distribution": [
     {
       "label": "negative",
-      "count": 27,
-      "percentage": 6.2
+      "count": 23,
+      "percentage": 5.1
     },
     {
       "label": "neutral",
-      "count": 73,
-      "percentage": 16.8
+      "count": 81,
+      "percentage": 18.1
     },
     {
       "label": "positive",
-      "count": 335,
-      "percentage": 77.0
+      "count": 343,
+      "percentage": 76.7
     }
   ],
   "top_10_topics": [
     {
-      "title": "湖北通城集中销毁24辆“炸街”车",
-      "heat_score": 80824629,
-      "category": "onSite",
-      "platform": "今日头条"
-    },
-    {
-      "title": "赖岳谦：解放军一旦登岛就不会再走",
-      "heat_score": 76878733,
+      "title": "美将向联合国支付7.25亿美元拖欠会费",
+      "heat_score": 23830049,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "余承东官宣行业首发无网通信",
-      "heat_score": 74948701,
+      "title": "铁路通报“旅客买票占座放零食”",
+      "heat_score": 22033744,
+      "category": "recentProgress",
+      "platform": "今日头条"
+    },
+    {
+      "title": "王毅当众点名美国 韩外长抿嘴点头",
+      "heat_score": 21562320,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "俄乌战场正变为日本大型军事试验场",
-      "heat_score": 74086628,
+      "title": "多地为何突然严查社保缴费基数",
+      "heat_score": 19837294,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "哈登3年9700万美元续约骑士",
-      "heat_score": 71353674,
-      "category": "hot",
-      "platform": "今日头条"
-    },
-    {
-      "title": "今年秋裤可能真的不用穿了",
-      "heat_score": 67036353,
+      "title": "未来五年将持续加大科技领域投入力度",
+      "heat_score": 19510394,
       "category": "其他",
       "platform": "今日头条"
     },
     {
-      "title": "女子飞机排泄全机人被迫闻40分钟臭味",
-      "heat_score": 62942983,
+      "title": "国际足联重罚阿根廷队",
+      "heat_score": 17653734,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "公积金新政来了，有哪些利好",
-      "heat_score": 60657001,
-      "category": "其他",
-      "platform": "今日头条"
-    },
-    {
-      "title": "男子同学聚会拒敬酒遭殴打致死已判赔",
-      "heat_score": 59876358,
+      "title": "游客玉佩落水被锦鲤衔住",
+      "heat_score": 15973759,
       "category": "new",
       "platform": "今日头条"
     },
     {
-      "title": "华为阔直板手机亮相",
-      "heat_score": 58419448,
+      "title": "两男子骑电动自行车抢手机被抓",
+      "heat_score": 14769660,
+      "category": "new",
+      "platform": "今日头条"
+    },
+    {
+      "title": "多方回应初中生夜间遭两人无故殴打",
+      "heat_score": 14695829,
       "category": "其他",
+      "platform": "今日头条"
+    },
+    {
+      "title": "当年轻人不喝白酒茅台神话会退潮吗",
+      "heat_score": 14453655,
+      "category": "new",
       "platform": "今日头条"
     }
   ],
   "data_quality": {
-    "issues_found": 11,
+    "issues_found": 10,
     "status": "completed"
   }
 }
